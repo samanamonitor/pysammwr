@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=39.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sammwr_samanagroup"
+version = "0.0.1"
+authors = [
+  { name="Fabian Baena", email="info@samanagroup.com" },
+]
+description = "Package that uses WinRM that queries and executes commands on a Windows server"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/samanamonitor/sammwr"
+"Bug Tracker" = "https://github.com/samanamonitor/sammwr/issues"
