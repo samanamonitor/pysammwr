@@ -160,9 +160,9 @@ class WRProtocol(Protocol):
                 'w:SelectorSet': { 
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        print(res)
+        #print(res)
         return res
 
     def get(self, resource_uri, selector=None, option=None):
@@ -183,7 +183,7 @@ class WRProtocol(Protocol):
                 'w:Option': option
             }
         req['env:Envelope'].setdefault('env:Body', {})
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
         return res
 
