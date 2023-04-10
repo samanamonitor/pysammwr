@@ -1,0 +1,8 @@
+Package: %PACKAGE_NAME%
+Version: %VERSION%
+Maintainer: Samana <info@samanagroup.com>
+Depends: %DEPENDS%
+Conflicts: %CONFLICTS%
+Architecture: amd64
+Homepage: https://www.samanagroup.com
+Description: SAMM WinRM libraries. Samana Advanced Monitoring and Management
