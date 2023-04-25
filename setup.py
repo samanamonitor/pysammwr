@@ -17,7 +17,7 @@ if __name__ == "__main__":
         version=__version__,
         packages=find_packages(include=['sammwr', 'sammwr.*']),
         install_requires=[
-            'winrm',
+#            'winrm',
             'xmltodict',
             'uuid'
         ]
