@@ -7,14 +7,14 @@ param(
 
 # Verification of file and content
 if (!(Test-path $LicenseFilePath)){
-    Write-host "UNKNOWN - The specified license file does not exist."
+    Write-host "The specified license file '$LicenseFilePath' does not exist."
     exit 3
 }
 
 $FileContent = Get-Content -Path $LicenseFilePath -Raw
 
 if ($FileContent -notmatch '\d{4}\.\d{4}'){
-    Write-host "UNKNOWN - The specified file is not a valid license file."
+    Write-host "The specified file '$LicenseFilePath' is not a valid license file."
     exit 3
 }
 
@@ -27,15 +27,15 @@ $daysRemaining = ($expire - (Get-Date)).Days
 
 #Calculate expiration
 if ($daysRemaining -lt 0) {
-    Write-Host "CRITICAL - The license has expired."
+    Write-Host "The license has expired."
     exit 2
 } elseif ($daysRemaining -lt $Critical) {
-    Write-Host "CRITICAL - The license will expire in $daysRemaining days."
+    Write-Host "The license will expire in $daysRemaining days."
     exit 2
 } elseif ($daysRemaining -lt $Warning) {
-    Write-Host "WARNING - The license will expire in $daysRemaining days."
+    Write-Host "The license will expire in $daysRemaining days."
     exit 1
 } else {
-    Write-Host "OK - The license will expire in $daysRemaining days."
+    Write-Host "The license will expire in $daysRemaining days."
     exit 0
 }
