@@ -3,3 +3,9 @@ dist
 *.egg-info
 __pycache__
 debian/control
+gpg
+samm-pysammwr_*_amd64
+*.deb
+*.private
+Packages
+Release
