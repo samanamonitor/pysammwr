@@ -151,6 +151,7 @@ class WMIQuery():
 
     def __next__(self):
         if self._ec is None:
+            self.p.close_session()
             raise StopIteration
         self._xml_pull = ET.fromstring(self.p.pull(self.resource_uri, self._ec, max_elements=1))
         if self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', self.p.xmlns) is not None:
