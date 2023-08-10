@@ -1,5 +1,5 @@
 from winrm.protocol import Protocol
-from winrm.exceptions import WinRMTransportError
+from winrm.exceptions import WinRMTransportError, WinRMOperationTimeoutError
 from base64 import b64encode, b64decode
 import xml.etree.ElementTree as ET
 from time import time
@@ -254,3 +254,8 @@ class WRProtocol(Protocol):
             return_code = -1
         return stdout, stderr, return_code, command_done, total_time
 
+    def close_session(self):
+        if not self.transport.session:
+            return
+        self.transport.session.close()
+        self.transport.session = None
