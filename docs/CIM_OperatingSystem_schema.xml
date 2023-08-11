@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:x="http://schemas.xmlsoap.org/ws/2004/09/transfer" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd" xml:lang="en-US">
+    <s:Header>
+        <a:Action>http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <a:MessageID>uuid:3119F746-38DE-4921-A031-F7F39E002A6A</a:MessageID>
+        <a:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+        <a:RelatesTo>uuid:5AE76BD2-A3A7-47C4-8409-18A56D953DDE</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <CLASS NAME="CIM_OperatingSystem" SUPERCLASS="CIM_LogicalElement">
+            <PROPERTY NAME="Caption" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="CreationClassName" CLASSORIGIN="CIM_OperatingSystem" TYPE="string" />
+            <PROPERTY NAME="CSCreationClassName" CLASSORIGIN="CIM_OperatingSystem" TYPE="string" />
+            <PROPERTY NAME="CSName" CLASSORIGIN="CIM_OperatingSystem" TYPE="string" />
+            <PROPERTY NAME="CurrentTimeZone" CLASSORIGIN="CIM_OperatingSystem" TYPE="sint16" />
+            <PROPERTY NAME="Description" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="Distributed" CLASSORIGIN="CIM_OperatingSystem" TYPE="boolean" />
+            <PROPERTY NAME="FreePhysicalMemory" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="FreeSpaceInPagingFiles" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="FreeVirtualMemory" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="InstallDate" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="datetime" />
+            <PROPERTY NAME="LastBootUpTime" CLASSORIGIN="CIM_OperatingSystem" TYPE="datetime" />
+            <PROPERTY NAME="LocalDateTime" CLASSORIGIN="CIM_OperatingSystem" TYPE="datetime" />
+            <PROPERTY NAME="MaxNumberOfProcesses" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint32" />
+            <PROPERTY NAME="MaxProcessMemorySize" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="Name" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="NumberOfLicensedUsers" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint32" />
+            <PROPERTY NAME="NumberOfProcesses" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint32" />
+            <PROPERTY NAME="NumberOfUsers" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint32" />
+            <PROPERTY NAME="OSType" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint16" />
+            <PROPERTY NAME="OtherTypeDescription" CLASSORIGIN="CIM_OperatingSystem" TYPE="string" />
+            <PROPERTY NAME="SizeStoredInPagingFiles" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="Status" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="TotalSwapSpaceSize" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="TotalVirtualMemorySize" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="TotalVisibleMemorySize" CLASSORIGIN="CIM_OperatingSystem" TYPE="uint64" />
+            <PROPERTY NAME="Version" CLASSORIGIN="CIM_OperatingSystem" TYPE="string" />
+            <METHOD NAME="Reboot" TYPE="uint32" CLASSORIGIN="CIM_OperatingSystem" />
+            <METHOD NAME="Shutdown" TYPE="uint32" CLASSORIGIN="CIM_OperatingSystem" />
+        </CLASS>
+    </s:Body>
+</s:Envelope>

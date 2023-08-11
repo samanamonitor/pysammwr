@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:x="http://schemas.xmlsoap.org/ws/2004/09/transfer" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd" xml:lang="en-US">
+    <s:Header>
+        <a:Action>http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <a:MessageID>uuid:6DBE7904-3F7B-496C-AC04-222B1052FEF5</a:MessageID>
+        <a:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+        <a:RelatesTo>uuid:821EA00C-EAAE-4425-844B-AA2C491E3E75</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <CLASS NAME="StdRegProv">
+            <METHOD NAME="CreateKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="DeleteKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="EnumKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="sNames" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="EnumValues" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="sNames" TYPE="string" />
+                <PARAMETER.ARRAY NAME="Types" TYPE="sint32" />
+            </METHOD>
+            <METHOD NAME="DeleteValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="SetDWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="uValue" TYPE="uint32" />
+            </METHOD>
+            <METHOD NAME="SetQWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="uValue" TYPE="uint64" />
+            </METHOD>
+            <METHOD NAME="GetDWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="uValue" TYPE="uint32" />
+            </METHOD>
+            <METHOD NAME="GetQWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="uValue" TYPE="uint64" />
+            </METHOD>
+            <METHOD NAME="SetStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="GetStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="SetMultiStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="GetMultiStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="SetExpandedStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="GetExpandedStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER NAME="sValue" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="SetBinaryValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="uValue" TYPE="uint8" />
+            </METHOD>
+            <METHOD NAME="GetBinaryValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="sValueName" TYPE="string" />
+                <PARAMETER.ARRAY NAME="uValue" TYPE="uint8" />
+            </METHOD>
+            <METHOD NAME="CheckAccess" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="uRequired" TYPE="uint32" />
+                <PARAMETER NAME="bGranted" TYPE="boolean" />
+            </METHOD>
+            <METHOD NAME="SetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="Descriptor" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="GetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                <PARAMETER NAME="Descriptor" TYPE="string" />
+            </METHOD>
+        </CLASS>
+    </s:Body>
+</s:Envelope>

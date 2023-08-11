@@ -1,0 +1,6 @@
+Schemas
+http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*
+    Selector: __namespace=root/cimv2, ClassName=Win32_LogicalDisk
+http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_LogicalDisk
+
+http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_WmiError
