@@ -1,0 +1,944 @@
+<?xml version="1.0" encoding="utf-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:n="http://schemas.xmlsoap.org/ws/2004/09/enumeration">
+    <env:Header />
+    <env:Body>
+        <n:PullReponse>
+            <n:Items>
+                <CLASS NAME="CIM_Indication">
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" TYPE="sint64" />
+                </CLASS>
+                <CLASS NAME="CIM_ClassIndication" SUPERCLASS="CIM_Indication">
+                    <PROPERTY NAME="ClassDefinition" CLASSORIGIN="CIM_ClassIndication" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                </CLASS>
+                <CLASS NAME="CIM_ClassDeletion" SUPERCLASS="CIM_ClassIndication">
+                    <PROPERTY NAME="ClassDefinition" CLASSORIGIN="CIM_ClassIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                </CLASS>
+                <CLASS NAME="CIM_ClassCreation" SUPERCLASS="CIM_ClassIndication">
+                    <PROPERTY NAME="ClassDefinition" CLASSORIGIN="CIM_ClassIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                </CLASS>
+                <CLASS NAME="CIM_ClassModification" SUPERCLASS="CIM_ClassIndication">
+                    <PROPERTY NAME="ClassDefinition" CLASSORIGIN="CIM_ClassIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="PreviousClassDefinition" CLASSORIGIN="CIM_ClassModification" TYPE="string" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                </CLASS>
+                <CLASS NAME="CIM_InstIndication" SUPERCLASS="CIM_Indication">
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                    <PROPERTY NAME="SourceInstance" CLASSORIGIN="CIM_InstIndication" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceHost" CLASSORIGIN="CIM_InstIndication" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceModelPath" CLASSORIGIN="CIM_InstIndication" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="CIM_InstCreation" SUPERCLASS="CIM_InstIndication">
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                    <PROPERTY NAME="SourceInstance" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceHost" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceModelPath" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="CIM_InstModification" SUPERCLASS="CIM_InstIndication">
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="PreviousInstance" CLASSORIGIN="CIM_InstModification" TYPE="string" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                    <PROPERTY NAME="SourceInstance" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceHost" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceModelPath" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="CIM_InstDeletion" SUPERCLASS="CIM_InstIndication">
+                    <PROPERTY.ARRAY NAME="CorrelatedIndications" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationFilterName" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationIdentifier" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="IndicationTime" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="datetime" />
+                    <PROPERTY NAME="OtherSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="SequenceContext" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SequenceNumber" CLASSORIGIN="CIM_Indication" PROPAGATED="true" TYPE="sint64" />
+                    <PROPERTY NAME="SourceInstance" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceHost" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SourceInstanceModelPath" CLASSORIGIN="CIM_InstIndication" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__NotifyStatus">
+                    <PROPERTY NAME="StatusCode" CLASSORIGIN="__NotifyStatus" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="__ExtendedStatus" SUPERCLASS="__NotifyStatus">
+                    <PROPERTY NAME="Description" CLASSORIGIN="__ExtendedStatus" TYPE="string" />
+                    <PROPERTY NAME="Operation" CLASSORIGIN="__ExtendedStatus" TYPE="string" />
+                    <PROPERTY NAME="ParameterInfo" CLASSORIGIN="__ExtendedStatus" TYPE="string" />
+                    <PROPERTY NAME="ProviderName" CLASSORIGIN="__ExtendedStatus" TYPE="string" />
+                    <PROPERTY NAME="StatusCode" CLASSORIGIN="__NotifyStatus" PROPAGATED="true" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="CIM_Error">
+                    <PROPERTY NAME="CIMStatusCode" CLASSORIGIN="CIM_Error" TYPE="uint32" />
+                    <PROPERTY NAME="CIMStatusCodeDescription" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="ErrorSource" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="ErrorSourceFormat" CLASSORIGIN="CIM_Error" TYPE="uint16" />
+                    <PROPERTY NAME="ErrorType" CLASSORIGIN="CIM_Error" TYPE="uint16" />
+                    <PROPERTY NAME="Message" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="MessageArguments" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="MessageID" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorSourceFormat" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorType" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="OWningEntity" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Error" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCause" CLASSORIGIN="CIM_Error" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCauseDescription" CLASSORIGIN="CIM_Error" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="RecommendedActions" CLASSORIGIN="CIM_Error" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="MSFT_WmiError" SUPERCLASS="CIM_Error">
+                    <PROPERTY NAME="CIMStatusCode" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="CIMStatusCodeDescription" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="error_Category" CLASSORIGIN="MSFT_WmiError" TYPE="uint16" />
+                    <PROPERTY NAME="error_Code" CLASSORIGIN="MSFT_WmiError" TYPE="uint32" />
+                    <PROPERTY NAME="error_Type" CLASSORIGIN="MSFT_WmiError" TYPE="string" />
+                    <PROPERTY NAME="error_WindowsErrorMessage" CLASSORIGIN="MSFT_WmiError" TYPE="string" />
+                    <PROPERTY NAME="ErrorSource" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="ErrorSourceFormat" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ErrorType" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="Message" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="MessageArguments" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MessageID" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorSourceFormat" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorType" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OWningEntity" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCause" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCauseDescription" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="RecommendedActions" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="MSFT_ExtendedStatus" SUPERCLASS="MSFT_WmiError">
+                    <PROPERTY NAME="CIMStatusCode" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="CIMStatusCodeDescription" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="error_Category" CLASSORIGIN="MSFT_WmiError" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="error_Code" CLASSORIGIN="MSFT_WmiError" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="error_Type" CLASSORIGIN="MSFT_WmiError" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="error_WindowsErrorMessage" CLASSORIGIN="MSFT_WmiError" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="ErrorSource" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="ErrorSourceFormat" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ErrorType" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="Message" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="MessageArguments" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MessageID" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="original_error" CLASSORIGIN="MSFT_ExtendedStatus" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorSourceFormat" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OtherErrorType" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OWningEntity" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="PerceivedSeverity" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCause" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="uint16" />
+                    <PROPERTY NAME="ProbableCauseDescription" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="RecommendedActions" CLASSORIGIN="CIM_Error" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__SecurityRelatedClass" />
+                <CLASS NAME="__Trustee" SUPERCLASS="__SecurityRelatedClass">
+                    <PROPERTY NAME="Domain" CLASSORIGIN="__Trustee" TYPE="string" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="__Trustee" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SID" CLASSORIGIN="__Trustee" TYPE="uint8" />
+                    <PROPERTY NAME="SidLength" CLASSORIGIN="__Trustee" TYPE="uint32" />
+                    <PROPERTY NAME="SIDString" CLASSORIGIN="__Trustee" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Trustee" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__NTLMUser9X" SUPERCLASS="__SecurityRelatedClass">
+                    <PROPERTY NAME="Authority" CLASSORIGIN="__NTLMUser9X" TYPE="string">
+                        <VALUE>.</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="Flags" CLASSORIGIN="__NTLMUser9X" TYPE="sint32" />
+                    <PROPERTY NAME="Mask" CLASSORIGIN="__NTLMUser9X" TYPE="sint32" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="__NTLMUser9X" TYPE="string" />
+                    <PROPERTY NAME="Type" CLASSORIGIN="__NTLMUser9X" TYPE="sint32" />
+                </CLASS>
+                <CLASS NAME="__ACE" SUPERCLASS="__SecurityRelatedClass">
+                    <PROPERTY NAME="AccessMask" CLASSORIGIN="__ACE" TYPE="uint32" />
+                    <PROPERTY NAME="AceFlags" CLASSORIGIN="__ACE" TYPE="uint32" />
+                    <PROPERTY NAME="AceType" CLASSORIGIN="__ACE" TYPE="uint32" />
+                    <PROPERTY NAME="GuidInheritedObjectType" CLASSORIGIN="__ACE" TYPE="string" />
+                    <PROPERTY NAME="GuidObjectType" CLASSORIGIN="__ACE" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__ACE" TYPE="uint64" />
+                    <PROPERTY NAME="Trustee" CLASSORIGIN="__ACE" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__SecurityDescriptor" SUPERCLASS="__SecurityRelatedClass">
+                    <PROPERTY NAME="ControlFlags" CLASSORIGIN="__SecurityDescriptor" TYPE="uint32" />
+                    <PROPERTY.ARRAY NAME="DACL" CLASSORIGIN="__SecurityDescriptor" TYPE="string" />
+                    <PROPERTY NAME="Group" CLASSORIGIN="__SecurityDescriptor" TYPE="string" />
+                    <PROPERTY NAME="Owner" CLASSORIGIN="__SecurityDescriptor" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SACL" CLASSORIGIN="__SecurityDescriptor" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__SecurityDescriptor" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__PARAMETERS" />
+                <CLASS NAME="__SystemClass" />
+                <CLASS NAME="__ProviderRegistration" SUPERCLASS="__SystemClass">
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" REFERENCECLASS="__Provider" />
+                </CLASS>
+                <CLASS NAME="__EventProviderRegistration" SUPERCLASS="__ProviderRegistration">
+                    <PROPERTY.ARRAY NAME="EventQueryList" CLASSORIGIN="__EventProviderRegistration" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                </CLASS>
+                <CLASS NAME="__ObjectProviderRegistration" SUPERCLASS="__ProviderRegistration">
+                    <PROPERTY NAME="InteractionType" CLASSORIGIN="__ObjectProviderRegistration" TYPE="sint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                    <PROPERTY.ARRAY NAME="QuerySupportLevels" CLASSORIGIN="__ObjectProviderRegistration" TYPE="string" />
+                    <PROPERTY NAME="SupportsBatching" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsDelete" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsEnumeration" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsGet" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsPut" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsTransactions" CLASSORIGIN="__ObjectProviderRegistration" TYPE="boolean" />
+                </CLASS>
+                <CLASS NAME="__ClassProviderRegistration" SUPERCLASS="__ObjectProviderRegistration">
+                    <PROPERTY NAME="CacheRefreshInterval" CLASSORIGIN="__ClassProviderRegistration" TYPE="datetime" />
+                    <PROPERTY NAME="InteractionType" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="sint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="PerUserSchema" CLASSORIGIN="__ClassProviderRegistration" TYPE="boolean" />
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                    <PROPERTY.ARRAY NAME="QuerySupportLevels" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="ReferencedSetQueries" CLASSORIGIN="__ClassProviderRegistration" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="ResultSetQueries" CLASSORIGIN="__ClassProviderRegistration" TYPE="string" />
+                    <PROPERTY NAME="ReSynchroniseOnNamespaceOpen" CLASSORIGIN="__ClassProviderRegistration" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsBatching" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsDelete" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsEnumeration" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsGet" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsPut" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsTransactions" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean" />
+                    <PROPERTY.ARRAY NAME="UnsupportedQueries" CLASSORIGIN="__ClassProviderRegistration" TYPE="string" />
+                    <PROPERTY NAME="Version" CLASSORIGIN="__ClassProviderRegistration" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="__InstanceProviderRegistration" SUPERCLASS="__ObjectProviderRegistration">
+                    <PROPERTY NAME="InteractionType" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="sint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                    <PROPERTY.ARRAY NAME="QuerySupportLevels" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="SupportsBatching" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsDelete" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsEnumeration" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsGet" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsPut" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsTransactions" CLASSORIGIN="__ObjectProviderRegistration" PROPAGATED="true" TYPE="boolean" />
+                </CLASS>
+                <CLASS NAME="__MethodProviderRegistration" SUPERCLASS="__ProviderRegistration">
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                </CLASS>
+                <CLASS NAME="__PropertyProviderRegistration" SUPERCLASS="__ProviderRegistration">
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                    <PROPERTY NAME="SupportsGet" CLASSORIGIN="__PropertyProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SupportsPut" CLASSORIGIN="__PropertyProviderRegistration" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                </CLASS>
+                <CLASS NAME="__EventConsumerProviderRegistration" SUPERCLASS="__ProviderRegistration">
+                    <PROPERTY.ARRAY NAME="ConsumerClassNames" CLASSORIGIN="__EventConsumerProviderRegistration" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="provider" CLASSORIGIN="__ProviderRegistration" PROPAGATED="true" REFERENCECLASS="__Provider" />
+                </CLASS>
+                <CLASS NAME="__thisNAMESPACE" SUPERCLASS="__SystemClass">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__thisNAMESPACE" TYPE="uint8" />
+                </CLASS>
+                <CLASS NAME="__NAMESPACE" SUPERCLASS="__SystemClass">
+                    <PROPERTY NAME="Name" CLASSORIGIN="__NAMESPACE" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__IndicationRelated" SUPERCLASS="__SystemClass" />
+                <CLASS NAME="__FilterToConsumerBinding" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY.REFERENCE NAME="Consumer" CLASSORIGIN="__FilterToConsumerBinding" REFERENCECLASS="__EventConsumer" />
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__FilterToConsumerBinding" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="DeliverSynchronously" CLASSORIGIN="__FilterToConsumerBinding" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="DeliveryQoS" CLASSORIGIN="__FilterToConsumerBinding" TYPE="uint32" />
+                    <PROPERTY.REFERENCE NAME="Filter" CLASSORIGIN="__FilterToConsumerBinding" REFERENCECLASS="__EventFilter" />
+                    <PROPERTY NAME="MaintainSecurityContext" CLASSORIGIN="__FilterToConsumerBinding" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SlowDownProviders" CLASSORIGIN="__FilterToConsumerBinding" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                </CLASS>
+                <CLASS NAME="__EventConsumer" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" TYPE="string" />
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="LogFileEventConsumer" SUPERCLASS="__EventConsumer">
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="Filename" CLASSORIGIN="LogFileEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="IsUnicode" CLASSORIGIN="LogFileEventConsumer" TYPE="boolean" />
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MaximumFileSize" CLASSORIGIN="LogFileEventConsumer" TYPE="uint64">
+                        <VALUE>65535</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="LogFileEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="Text" CLASSORIGIN="LogFileEventConsumer" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="ActiveScriptEventConsumer" SUPERCLASS="__EventConsumer">
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="KillTimeout" CLASSORIGIN="ActiveScriptEventConsumer" TYPE="uint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="ActiveScriptEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ScriptFilename" CLASSORIGIN="ActiveScriptEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ScriptingEngine" CLASSORIGIN="ActiveScriptEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ScriptText" CLASSORIGIN="ActiveScriptEventConsumer" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="NTEventLogEventConsumer" SUPERCLASS="__EventConsumer">
+                    <PROPERTY NAME="Category" CLASSORIGIN="NTEventLogEventConsumer" TYPE="uint16" />
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="EventID" CLASSORIGIN="NTEventLogEventConsumer" TYPE="uint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="EventType" CLASSORIGIN="NTEventLogEventConsumer" TYPE="uint32">
+                        <VALUE>1</VALUE>
+                    </PROPERTY>
+                    <PROPERTY.ARRAY NAME="InsertionStringTemplates" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string">
+                        <VALUE.ARRAY>
+                            <VALUE />
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="NameOfRawDataProperty" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="NameOfUserSIDProperty" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="NumberOfInsertionStrings" CLASSORIGIN="NTEventLogEventConsumer" TYPE="uint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SourceName" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="UNCServerName" CLASSORIGIN="NTEventLogEventConsumer" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="SMTPEventConsumer" SUPERCLASS="__EventConsumer">
+                    <PROPERTY NAME="BccLine" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="CcLine" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="FromLine" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="HeaderFields" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="Message" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ReplyToLine" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="SMTPServer" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="Subject" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ToLine" CLASSORIGIN="SMTPEventConsumer" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="CommandLineEventConsumer" SUPERCLASS="__EventConsumer">
+                    <PROPERTY NAME="CommandLineTemplate" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="CreateNewConsole" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="CreateNewProcessGroup" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="CreateSeparateWowVdm" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="CreateSharedWowVdm" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="DesktopName" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="ExecutablePath" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="FillAttribute" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="ForceOffFeedback" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="ForceOnFeedback" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="KillTimeout" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="MachineName" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="MaximumQueueSize" CLASSORIGIN="__EventConsumer" PROPAGATED="true" TYPE="uint32" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="Priority" CLASSORIGIN="CommandLineEventConsumer" TYPE="sint32">
+                        <VALUE>32</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="RunInteractively" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="ShowWindowCommand" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="UseDefaultErrorMode" CLASSORIGIN="CommandLineEventConsumer" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="WindowTitle" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="WorkingDirectory" CLASSORIGIN="CommandLineEventConsumer" TYPE="string" />
+                    <PROPERTY NAME="XCoordinate" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="XNumCharacters" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="XSize" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="YCoordinate" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="YNumCharacters" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                    <PROPERTY NAME="YSize" CLASSORIGIN="CommandLineEventConsumer" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="__AggregateEvent" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY NAME="NumberOfEvents" CLASSORIGIN="__AggregateEvent" TYPE="uint32" />
+                    <PROPERTY NAME="Representative" CLASSORIGIN="__AggregateEvent" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__TimerNextFiring" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY NAME="NextEvent64BitTime" CLASSORIGIN="__TimerNextFiring" TYPE="sint64" />
+                    <PROPERTY NAME="TimerId" CLASSORIGIN="__TimerNextFiring" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__EventFilter" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY.ARRAY NAME="CreatorSID" CLASSORIGIN="__EventFilter" TYPE="uint8">
+                        <VALUE.ARRAY>
+                            <VALUE>1</VALUE>
+                            <VALUE>1</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>5</VALUE>
+                            <VALUE>18</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                            <VALUE>0</VALUE>
+                        </VALUE.ARRAY>
+                    </PROPERTY.ARRAY>
+                    <PROPERTY NAME="EventAccess" CLASSORIGIN="__EventFilter" TYPE="string" />
+                    <PROPERTY NAME="EventNamespace" CLASSORIGIN="__EventFilter" TYPE="string" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="__EventFilter" TYPE="string" />
+                    <PROPERTY NAME="Query" CLASSORIGIN="__EventFilter" TYPE="string" />
+                    <PROPERTY NAME="QueryLanguage" CLASSORIGIN="__EventFilter" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__Event" SUPERCLASS="__IndicationRelated">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__NamespaceOperationEvent" SUPERCLASS="__Event">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetNamespace" CLASSORIGIN="__NamespaceOperationEvent" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__NamespaceModificationEvent" SUPERCLASS="__NamespaceOperationEvent">
+                    <PROPERTY NAME="PreviousNamespace" CLASSORIGIN="__NamespaceModificationEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetNamespace" CLASSORIGIN="__NamespaceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__NamespaceDeletionEvent" SUPERCLASS="__NamespaceOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetNamespace" CLASSORIGIN="__NamespaceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__NamespaceCreationEvent" SUPERCLASS="__NamespaceOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetNamespace" CLASSORIGIN="__NamespaceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__ClassOperationEvent" SUPERCLASS="__Event">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetClass" CLASSORIGIN="__ClassOperationEvent" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__ClassDeletionEvent" SUPERCLASS="__ClassOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetClass" CLASSORIGIN="__ClassOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__ClassModificationEvent" SUPERCLASS="__ClassOperationEvent">
+                    <PROPERTY NAME="PreviousClass" CLASSORIGIN="__ClassModificationEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetClass" CLASSORIGIN="__ClassOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__ClassCreationEvent" SUPERCLASS="__ClassOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetClass" CLASSORIGIN="__ClassOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__InstanceOperationEvent" SUPERCLASS="__Event">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetInstance" CLASSORIGIN="__InstanceOperationEvent" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__InstanceCreationEvent" SUPERCLASS="__InstanceOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetInstance" CLASSORIGIN="__InstanceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__MethodInvocationEvent" SUPERCLASS="__InstanceOperationEvent">
+                    <PROPERTY NAME="Method" CLASSORIGIN="__MethodInvocationEvent" TYPE="string" />
+                    <PROPERTY NAME="Parameters" CLASSORIGIN="__MethodInvocationEvent" TYPE="string" />
+                    <PROPERTY NAME="PreCall" CLASSORIGIN="__MethodInvocationEvent" TYPE="boolean" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetInstance" CLASSORIGIN="__InstanceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__InstanceModificationEvent" SUPERCLASS="__InstanceOperationEvent">
+                    <PROPERTY NAME="PreviousInstance" CLASSORIGIN="__InstanceModificationEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetInstance" CLASSORIGIN="__InstanceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__InstanceDeletionEvent" SUPERCLASS="__InstanceOperationEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TargetInstance" CLASSORIGIN="__InstanceOperationEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__TimerEvent" SUPERCLASS="__Event">
+                    <PROPERTY NAME="NumFirings" CLASSORIGIN="__TimerEvent" TYPE="uint32" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                    <PROPERTY NAME="TimerId" CLASSORIGIN="__TimerEvent" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__ExtrinsicEvent" SUPERCLASS="__Event">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__SystemEvent" SUPERCLASS="__ExtrinsicEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__EventDroppedEvent" SUPERCLASS="__SystemEvent">
+                    <PROPERTY NAME="Event" CLASSORIGIN="__EventDroppedEvent" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="IntendedConsumer" CLASSORIGIN="__EventDroppedEvent" REFERENCECLASS="__EventConsumer" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__EventQueueOverflowEvent" SUPERCLASS="__EventDroppedEvent">
+                    <PROPERTY NAME="CurrentQueueSize" CLASSORIGIN="__EventQueueOverflowEvent" TYPE="uint32" />
+                    <PROPERTY NAME="Event" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="IntendedConsumer" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" REFERENCECLASS="__EventConsumer" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__QOSFailureEvent" SUPERCLASS="__EventDroppedEvent">
+                    <PROPERTY NAME="ErrorCode" CLASSORIGIN="__QOSFailureEvent" TYPE="uint32" />
+                    <PROPERTY NAME="ErrorDescription" CLASSORIGIN="__QOSFailureEvent" TYPE="string" />
+                    <PROPERTY NAME="Event" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="IntendedConsumer" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" REFERENCECLASS="__EventConsumer" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="__ConsumerFailureEvent" SUPERCLASS="__EventDroppedEvent">
+                    <PROPERTY NAME="ErrorCode" CLASSORIGIN="__ConsumerFailureEvent" TYPE="uint32" />
+                    <PROPERTY NAME="ErrorDescription" CLASSORIGIN="__ConsumerFailureEvent" TYPE="string" />
+                    <PROPERTY NAME="ErrorObject" CLASSORIGIN="__ConsumerFailureEvent" TYPE="string" />
+                    <PROPERTY NAME="Event" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY.REFERENCE NAME="IntendedConsumer" CLASSORIGIN="__EventDroppedEvent" PROPAGATED="true" REFERENCECLASS="__EventConsumer" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="RegistryEvent" SUPERCLASS="__ExtrinsicEvent">
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="RegistryKeyChangeEvent" SUPERCLASS="RegistryEvent">
+                    <PROPERTY NAME="Hive" CLASSORIGIN="RegistryKeyChangeEvent" TYPE="string" />
+                    <PROPERTY NAME="KeyPath" CLASSORIGIN="RegistryKeyChangeEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="RegistryTreeChangeEvent" SUPERCLASS="RegistryEvent">
+                    <PROPERTY NAME="Hive" CLASSORIGIN="RegistryTreeChangeEvent" TYPE="string" />
+                    <PROPERTY NAME="RootPath" CLASSORIGIN="RegistryTreeChangeEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                </CLASS>
+                <CLASS NAME="RegistryValueChangeEvent" SUPERCLASS="RegistryEvent">
+                    <PROPERTY NAME="Hive" CLASSORIGIN="RegistryValueChangeEvent" TYPE="string" />
+                    <PROPERTY NAME="KeyPath" CLASSORIGIN="RegistryValueChangeEvent" TYPE="string" />
+                    <PROPERTY.ARRAY NAME="SECURITY_DESCRIPTOR" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint8" />
+                    <PROPERTY NAME="TIME_CREATED" CLASSORIGIN="__Event" PROPAGATED="true" TYPE="uint64" />
+                    <PROPERTY NAME="ValueName" CLASSORIGIN="RegistryValueChangeEvent" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__EventGenerator" SUPERCLASS="__IndicationRelated" />
+                <CLASS NAME="__TimerInstruction" SUPERCLASS="__EventGenerator">
+                    <PROPERTY NAME="SkipIfPassed" CLASSORIGIN="__TimerInstruction" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="TimerId" CLASSORIGIN="__TimerInstruction" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__AbsoluteTimerInstruction" SUPERCLASS="__TimerInstruction">
+                    <PROPERTY NAME="EventDateTime" CLASSORIGIN="__AbsoluteTimerInstruction" TYPE="datetime" />
+                    <PROPERTY NAME="SkipIfPassed" CLASSORIGIN="__TimerInstruction" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="TimerId" CLASSORIGIN="__TimerInstruction" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__IntervalTimerInstruction" SUPERCLASS="__TimerInstruction">
+                    <PROPERTY NAME="IntervalBetweenEvents" CLASSORIGIN="__IntervalTimerInstruction" TYPE="uint32" />
+                    <PROPERTY NAME="SkipIfPassed" CLASSORIGIN="__TimerInstruction" PROPAGATED="true" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="TimerId" CLASSORIGIN="__TimerInstruction" PROPAGATED="true" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__Provider" SUPERCLASS="__SystemClass">
+                    <PROPERTY NAME="Name" CLASSORIGIN="__Provider" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__Win32Provider" SUPERCLASS="__Provider">
+                    <PROPERTY NAME="ClientLoadableCLSID" CLASSORIGIN="__Win32Provider" TYPE="string" />
+                    <PROPERTY NAME="CLSID" CLASSORIGIN="__Win32Provider" TYPE="string" />
+                    <PROPERTY NAME="Concurrency" CLASSORIGIN="__Win32Provider" TYPE="sint32" />
+                    <PROPERTY NAME="DefaultMachineName" CLASSORIGIN="__Win32Provider" TYPE="string" />
+                    <PROPERTY NAME="Enabled" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="HostingModel" CLASSORIGIN="__Win32Provider" TYPE="string" />
+                    <PROPERTY NAME="ImpersonationLevel" CLASSORIGIN="__Win32Provider" TYPE="sint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="InitializationReentrancy" CLASSORIGIN="__Win32Provider" TYPE="sint32">
+                        <VALUE>0</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="InitializationTimeoutInterval" CLASSORIGIN="__Win32Provider" TYPE="datetime" />
+                    <PROPERTY NAME="InitializeAsAdminFirst" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="Name" CLASSORIGIN="__Provider" PROPAGATED="true" TYPE="string" />
+                    <PROPERTY NAME="OperationTimeoutInterval" CLASSORIGIN="__Win32Provider" TYPE="datetime" />
+                    <PROPERTY NAME="PerLocaleInitialization" CLASSORIGIN="__Win32Provider" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="PerUserInitialization" CLASSORIGIN="__Win32Provider" TYPE="boolean">
+                        <VALUE>FALSE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="Pure" CLASSORIGIN="__Win32Provider" TYPE="boolean">
+                        <VALUE>TRUE</VALUE>
+                    </PROPERTY>
+                    <PROPERTY NAME="SecurityDescriptor" CLASSORIGIN="__Win32Provider" TYPE="string" />
+                    <PROPERTY NAME="SupportsExplicitShutdown" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsExtendedStatus" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsQuotas" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsSendStatus" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsShutdown" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="SupportsThrottling" CLASSORIGIN="__Win32Provider" TYPE="boolean" />
+                    <PROPERTY NAME="UnloadTimeout" CLASSORIGIN="__Win32Provider" TYPE="datetime" />
+                    <PROPERTY NAME="Version" CLASSORIGIN="__Win32Provider" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="__CIMOMIdentification" SUPERCLASS="__SystemClass">
+                    <PROPERTY NAME="SetupDateTime" CLASSORIGIN="__CIMOMIdentification" TYPE="string" />
+                    <PROPERTY NAME="VersionCurrentlyRunning" CLASSORIGIN="__CIMOMIdentification" TYPE="string" />
+                    <PROPERTY NAME="VersionUsedToCreateDB" CLASSORIGIN="__CIMOMIdentification" TYPE="string" />
+                    <PROPERTY NAME="WorkingDirectory" CLASSORIGIN="__CIMOMIdentification" TYPE="string" />
+                </CLASS>
+                <CLASS NAME="__AdapStatus" SUPERCLASS="__SystemClass">
+                    <PROPERTY NAME="LastStartTime" CLASSORIGIN="__AdapStatus" TYPE="datetime" />
+                    <PROPERTY NAME="LastStopTime" CLASSORIGIN="__AdapStatus" TYPE="datetime" />
+                    <PROPERTY NAME="Status" CLASSORIGIN="__AdapStatus" TYPE="uint32" />
+                </CLASS>
+                <CLASS NAME="__SystemSecurity">
+                    <METHOD NAME="GetSD" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER.ARRAY NAME="SD" TYPE="uint8" />
+                    </METHOD>
+                    <METHOD NAME="GetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER NAME="Descriptor" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="Get9XUserList" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER.ARRAY NAME="ul" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="SetSD" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER.ARRAY NAME="SD" TYPE="uint8" />
+                    </METHOD>
+                    <METHOD NAME="SetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER NAME="Descriptor" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="Set9XUserList" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER.ARRAY NAME="ul" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="GetCallerAccessRights" TYPE="uint32" CLASSORIGIN="__SystemSecurity">
+                        <PARAMETER NAME="rights" TYPE="sint32" />
+                    </METHOD>
+                </CLASS>
+                <CLASS NAME="StdRegProv">
+                    <METHOD NAME="CreateKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="DeleteKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="EnumKey" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="sNames" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="EnumValues" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="sNames" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="Types" TYPE="sint32" />
+                    </METHOD>
+                    <METHOD NAME="DeleteValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="SetDWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="uValue" TYPE="uint32" />
+                    </METHOD>
+                    <METHOD NAME="SetQWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="uValue" TYPE="uint64" />
+                    </METHOD>
+                    <METHOD NAME="GetDWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="uValue" TYPE="uint32" />
+                    </METHOD>
+                    <METHOD NAME="GetQWORDValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="uValue" TYPE="uint64" />
+                    </METHOD>
+                    <METHOD NAME="SetStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="GetStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="SetMultiStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="GetMultiStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="SetExpandedStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="GetExpandedStringValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER NAME="sValue" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="SetBinaryValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="uValue" TYPE="uint8" />
+                    </METHOD>
+                    <METHOD NAME="GetBinaryValue" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="sValueName" TYPE="string" />
+                        <PARAMETER.ARRAY NAME="uValue" TYPE="uint8" />
+                    </METHOD>
+                    <METHOD NAME="CheckAccess" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="uRequired" TYPE="uint32" />
+                        <PARAMETER NAME="bGranted" TYPE="boolean" />
+                    </METHOD>
+                    <METHOD NAME="SetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="Descriptor" TYPE="string" />
+                    </METHOD>
+                    <METHOD NAME="GetSecurityDescriptor" TYPE="uint32" CLASSORIGIN="StdRegProv">
+                        <PARAMETER NAME="hDefKey" TYPE="uint32" />
+                        <PARAMETER NAME="sSubKeyName" TYPE="string" />
+                        <PARAMETER NAME="Descriptor" TYPE="string" />
+                    </METHOD>
+                </CLASS>
+            </n:Items>
+        </n:PullReponse>
+    </env:Body>
+</env:Envelope>

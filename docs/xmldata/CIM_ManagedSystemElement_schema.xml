@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:x="http://schemas.xmlsoap.org/ws/2004/09/transfer" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd" xml:lang="en-US">
+    <s:Header>
+        <a:Action>http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <a:MessageID>uuid:364C148D-1782-4B34-9DB0-FB84DFCDE3C3</a:MessageID>
+        <a:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+        <a:RelatesTo>uuid:B5CB655A-899D-4125-B5A8-8CF364F1602C</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <CLASS NAME="CIM_ManagedSystemElement">
+            <PROPERTY NAME="Caption" CLASSORIGIN="CIM_ManagedSystemElement" TYPE="string" />
+            <PROPERTY NAME="Description" CLASSORIGIN="CIM_ManagedSystemElement" TYPE="string" />
+            <PROPERTY NAME="InstallDate" CLASSORIGIN="CIM_ManagedSystemElement" TYPE="datetime" />
+            <PROPERTY NAME="Name" CLASSORIGIN="CIM_ManagedSystemElement" TYPE="string" />
+            <PROPERTY NAME="Status" CLASSORIGIN="CIM_ManagedSystemElement" TYPE="string" />
+        </CLASS>
+    </s:Body>
+</s:Envelope>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:x="http://schemas.xmlsoap.org/ws/2004/09/transfer" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd" xml:lang="en-US">
+    <s:Header>
+        <a:Action>http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <a:MessageID>uuid:4A5B7DEB-223B-439D-8CAF-52C6ECF14FEF</a:MessageID>
+        <a:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+        <a:RelatesTo>uuid:49690F86-D3CC-488C-9315-78C9E396AE35</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <CLASS NAME="Win32_Process" SUPERCLASS="CIM_Process">
+            <PROPERTY NAME="Caption" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="CommandLine" CLASSORIGIN="Win32_Process" TYPE="string" />
+            <PROPERTY NAME="CreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="CreationDate" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="datetime" />
+            <PROPERTY NAME="CSCreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="CSName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="Description" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="ExecutablePath" CLASSORIGIN="Win32_Process" TYPE="string" />
+            <PROPERTY NAME="ExecutionState" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint16" />
+            <PROPERTY NAME="Handle" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="HandleCount" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="InstallDate" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="datetime" />
+            <PROPERTY NAME="KernelModeTime" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64" />
+            <PROPERTY NAME="MaximumWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="MinimumWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="Name" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="OSCreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="OSName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="OtherOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="OtherTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="PageFaults" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="PageFileUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="ParentProcessId" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="PeakPageFileUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="PeakVirtualSize" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="PeakWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="Priority" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint32" />
+            <PROPERTY NAME="PrivatePageCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="ProcessId" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="QuotaNonPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="QuotaPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="QuotaPeakNonPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="QuotaPeakPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="ReadOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="ReadTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="SessionId" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="Status" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string" />
+            <PROPERTY NAME="TerminationDate" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="datetime" />
+            <PROPERTY NAME="ThreadCount" CLASSORIGIN="Win32_Process" TYPE="uint32" />
+            <PROPERTY NAME="UserModeTime" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64" />
+            <PROPERTY NAME="VirtualSize" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="WindowsVersion" CLASSORIGIN="Win32_Process" TYPE="string" />
+            <PROPERTY NAME="WorkingSetSize" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64" />
+            <PROPERTY NAME="WriteOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <PROPERTY NAME="WriteTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64" />
+            <METHOD NAME="Create" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="CommandLine" TYPE="string" />
+                <PARAMETER NAME="CurrentDirectory" TYPE="string" />
+                <PARAMETER NAME="ProcessStartupInformation" TYPE="string" />
+                <PARAMETER NAME="ProcessId" TYPE="uint32" />
+            </METHOD>
+            <METHOD NAME="Terminate" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="Reason" TYPE="uint32" />
+            </METHOD>
+            <METHOD NAME="GetOwner" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="User" TYPE="string" />
+                <PARAMETER NAME="Domain" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="GetOwnerSid" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="Sid" TYPE="string" />
+            </METHOD>
+            <METHOD NAME="SetPriority" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="Priority" TYPE="sint32" />
+            </METHOD>
+            <METHOD NAME="AttachDebugger" TYPE="uint32" CLASSORIGIN="Win32_Process" />
+            <METHOD NAME="GetAvailableVirtualSize" TYPE="uint32" CLASSORIGIN="Win32_Process">
+                <PARAMETER NAME="AvailableVirtualSize" TYPE="uint64" />
+            </METHOD>
+        </CLASS>
+    </s:Body>
+</s:Envelope>
