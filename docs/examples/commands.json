@@ -9,5 +9,15 @@
             "username": "$(resources.wmi_username)",
             "password": "$(resources.wmi_password)"
         }
+    },
+    {
+        "object_type": "command",
+        "name": "wrcertificates",
+        "type": "sammwr.certificates.WRCertificates",
+        "args": {
+            "endpoint": "http://$(instance.address):5985/wsman",
+            "username": "$(resources.wmi_username)",
+            "password": "$(resources.wmi_password)"
+        }
     }
 ]
