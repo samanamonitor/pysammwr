@@ -1,4 +1,4 @@
-__version__='0.0.4'
+__version__='0.0.5'
 
 try:
     from .cmd import CMDCommand
@@ -7,5 +7,6 @@ try:
     from .shell import WinRMShell
     from .protocol import WRProtocol
     from .winrmcommand import WinRMCommand
+    from .certificates import WRCertificates
 except Exception as e:
     pass
