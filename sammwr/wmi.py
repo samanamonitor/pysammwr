@@ -46,6 +46,11 @@ class WmiInstance:
         return self._root.find("./p:%s" % key, self._xmlns) is not None
     def __getitem__(self, key):
         return self.__getattr__(key)
+    def get(self, key, default):
+        try:
+            return self.__getattr__(key)
+        except AttributeError:
+            return default
     def return_type(self, xml_value, value_type):
         if value_type[1:4] == "int":
             return int(xml_value.text)
