@@ -165,6 +165,20 @@ class WRProtocol(Protocol):
         #print(res)
         return res
 
+    def execute_method(self, resource_uri, method_name, **kwargs):
+        message_id = uuid.uuid4()
+        req = {
+            'env:Envelope': self._get_soap_header(
+                resource_uri=resource_uri,
+                action='%s/%s' % (resource_uri, method_name))}
+        body = req['env:Envelope'].setdefault('env:Body', {})
+        enumkey = body.setdefault('p:%s_INPUT' % method_name, {})
+        _ = enumkey.setdefault('@xmlns:p', resource_uri)
+        for k in kwargs:
+            _ = enumkey.setdefault('p:%s' % k, kwargs[k])
+        res = self.send_message(xmltodict.unparse(req))
+        return res
+
     def get(self, resource_uri, selector=None, option=None):
         message_id = uuid.uuid4()
         req = {
