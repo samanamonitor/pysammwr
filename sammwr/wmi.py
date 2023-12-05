@@ -46,7 +46,7 @@ class WmiInstance:
         return self._root.find("./p:%s" % key, self._xmlns) is not None
     def __getitem__(self, key):
         return self.__getattr__(key)
-    def get(self, key, default):
+    def get(self, key, default=None):
         try:
             return self.__getattr__(key)
         except AttributeError:
@@ -165,6 +165,8 @@ class WMIQuery():
             self._ec = self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EnumerationContext', 
                 self.p.xmlns).text
         item = self._xml_pull.find('.//wsen:Items/', self.p.xmlns)
+        if item is None:
+            raise StopIteration
         return WmiInstance(xml_root=item, xml_schema=self._xml_schema)
 
     def get_instance(self, class_name):
