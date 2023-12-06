@@ -109,7 +109,7 @@ class WMIQuery():
     resource_uri=""
     _ec=None
 
-    def __init__(self, class_name=None, namespace="root/cimv2", wql=None, protocol=None, *args, **kwargs):
+    def __init__(self, class_name=None, namespace="root/cimv2", wql=None, protocol=None, max_elements=50, *args, **kwargs):
         if protocol is not None:
             if not isinstance(protocol, WRProtocol):
                 raise Exception("Can only accept WRProtocol")
@@ -127,6 +127,7 @@ class WMIQuery():
         else:
             raise ValueError("one parameter 'class_name' or 'wql' must be defined.")
         self.namespace = namespace
+        self.max_elements = max_elements
 
     def get_schema_xml(self):
         if self._xml_schema is not None and self._xml_schema.attrib['NAME'] == self.class_name:
@@ -152,22 +153,27 @@ class WMIQuery():
         self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, wql=self._wql))
         self._ec = self._xml_enum.find('s:Body/wsen:EnumerateResponse/wsen:EnumerationContext', 
             self.p.xmlns).text
+        self._item_iter = iter([])
         return self
 
     def __next__(self):
-        if self._ec is None:
-            self.p.close_session()
-            raise StopIteration
-        self._xml_pull = ET.fromstring(self.p.pull(self.resource_uri, self._ec, max_elements=1))
-        if self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', self.p.xmlns) is not None:
-            self._ec = None
-        else:
-            self._ec = self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EnumerationContext', 
-                self.p.xmlns).text
-        item = self._xml_pull.find('.//wsen:Items/', self.p.xmlns)
-        if item is None:
-            raise StopIteration
-        return WmiInstance(xml_root=item, xml_schema=self._xml_schema)
+        while True:
+            try:
+                next_item = next(self._item_iter)
+                break
+            except StopIteration:
+                if self._ec is None:
+                    raise
+                self._xml_pull = ET.fromstring(self.p.pull(self.resource_uri, self._ec, max_elements=self.max_elements))
+                items = self._xml_pull.findall('.//wsen:Items/', self.p.xmlns)
+                self._item_iter = iter(items)
+                if self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', self.p.xmlns) is not None:
+                    self._ec = None
+                else:
+                    self._ec = self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EnumerationContext',
+                        self.p.xmlns).text
+        return WmiInstance(xml_root=next_item, xml_schema=self._xml_schema)
+
 
     def get_instance(self, class_name):
         try:
