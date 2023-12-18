@@ -11,6 +11,9 @@ def cert_key_prov_info(s):
 
 
 class CertBlob:
+    '''Certificate info taken from:
+    https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gpef/e051aba9-c9df-4f82-a42a-c13012c9d381
+    '''
     PropertyTransform = {
         2: lambda x: cert_key_prov_info(x),
         3: lambda x: binascii.hexlify(x).upper(),
@@ -20,6 +23,7 @@ class CertBlob:
         11: lambda x: x.decode('utf-16').strip('\0'),
         13: lambda x: x.decode('utf-16').strip('\0'),
         15: lambda x: binascii.hexlify(x).upper(),
+        19: lambda x: True,
         20: lambda x: binascii.hexlify(x).upper(),
         21: lambda x: x.decode('utf-16').strip('\0'),
         22: lambda x: x,
@@ -43,6 +47,7 @@ class CertBlob:
         11: 'friendly_name',
         13: 'description',
         15: 'signature_hash',
+        19: 'disabled',
         20: 'key_identifier',
         21: 'auto_enroll',
         22: 'pubkey_alg_para',
