@@ -174,6 +174,11 @@ class WMIQuery():
                         self.p.xmlns).text
         return WmiInstance(xml_root=next_item, xml_schema=self._xml_schema)
 
+    def release(self):
+        if self._ec is not None:
+            self.p.release(self.resource_uri, self._ec)
+            return True
+        return False
 
     def get_instance(self, class_name):
         try:
