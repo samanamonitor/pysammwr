@@ -8,6 +8,10 @@ import uuid
 from .error import WRError
 import os
 
+import logging
+
+log = logging.getLogger(__name__)
+
 override = lambda x, y: y if x is None else x
 
 class WRProtocol(Protocol):
@@ -118,8 +122,22 @@ class WRProtocol(Protocol):
                         raise
         return resp
 
+    def release(self, resource_uri, enumeration_ctx):
+        req = {
+            'env:Envelope': self._get_soap_header(
+            resource_uri=resource_uri,  # NOQA
+            action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Release')}
+        req['env:Envelope'].setdefault('env:Body', {}).setdefault(
+            'n:Release', {
+                'n:EnumerationContext': enumeration_ctx
+            })
+        log.debug("request: %s" % xmltodict.unparse(req))
+        res=self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
+        return res
+
+
     def pull(self, resource_uri, enumeration_ctx, max_elements=10, selector=None):
-        message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
@@ -133,12 +151,12 @@ class WRProtocol(Protocol):
             req['env:Envelope']['env:Header']['w:SelectorSet'] = {
                 'w:Selector': selector
             }
-        #print(xmltodict.unparse(req))
+        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
         return res
 
     def enumerate(self, resource_uri, en_filter=None, wql=None, selector=None):
-        message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
@@ -160,9 +178,9 @@ class WRProtocol(Protocol):
                 'w:SelectorSet': { 
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
-        #print(xmltodict.unparse(req))
+        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        #print(res)
+        log.debug("response: %s" % res)
         return res
 
     def execute_method(self, resource_uri, method_name, **kwargs):
@@ -176,7 +194,10 @@ class WRProtocol(Protocol):
         _ = enumkey.setdefault('@xmlns:p', resource_uri)
         for k in kwargs:
             _ = enumkey.setdefault('p:%s' % k, kwargs[k])
+
+        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
         return res
 
     def get(self, resource_uri, selector=None, option=None):
@@ -197,8 +218,10 @@ class WRProtocol(Protocol):
                 'w:Option': option
             }
         req['env:Envelope'].setdefault('env:Body', {})
-        #print(xmltodict.unparse(req))
+
+        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
         return res
 
     def signal(self, shell_id, command_id, s):
@@ -215,7 +238,9 @@ class WRProtocol(Protocol):
         signal['@CommandId'] = command_id
         signal['rsp:Code'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/signal/%s' % s  # NOQA
 
+        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))        
+        log.debug("response: %s" % res)
         return res
 
     def send(self, shell_id, command_id, stdin_input, end=False):
@@ -231,7 +256,9 @@ class WRProtocol(Protocol):
         stdin_envelope['@xmlns:rsp'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell'
         stdin_envelope['#text'] = b64encode(stdin_input)
         start_time = time()
+        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
         total_time = time() - start_time
         return (res, total_time)
 
@@ -245,7 +272,9 @@ class WRProtocol(Protocol):
         stream['@CommandId'] = command_id
         stream['#text'] = 'stdout stderr'
         start_time = time()
+        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
         total_time = time() - start_time
         root = ET.fromstring(res)
 
