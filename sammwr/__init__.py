@@ -1,4 +1,4 @@
-__version__='0.0.8'
+__version__='0.0.9'
 
 try:
     from .cmd import CMDCommand
@@ -8,5 +8,6 @@ try:
     from .protocol import WRProtocol
     from .winrmcommand import WinRMCommand
     from .certificates import WRCertificates
+    from .event import CIMEvent
 except Exception as e:
     pass
