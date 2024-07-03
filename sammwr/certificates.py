@@ -21,13 +21,20 @@ class WRCertificates:
 				break
 		days_to_expire = (cb.certificate.not_valid_after - datetime.now()).days
 
-		san = cb.certificate.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
-		san_list = list(map(lambda x: x.value, san.value))
-		cn = cb.certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
-		cn_list = list(map(lambda x: x.value, cn))
-		common_name = ''
-		if len(cn_list) > 0:
-			common_name = cn_list[0]
+		try:
+			san = cb.certificate.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
+			san_list = list(map(lambda x: x.value, san.value))
+		except:
+			san_list = []
+
+		try:
+			cn = cb.certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+			cn_list = list(map(lambda x: x.value, cn))
+			common_name = ''
+			if len(cn_list) > 0:
+				common_name = cn_list[0]
+		except:
+			common_name = ''
 
 		if cb.has_property('friendly_name'):
 			friendly_name = cb.friendly_name
