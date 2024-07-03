@@ -2,23 +2,83 @@ from .error import WRError
 from .protocol import WRProtocol
 import xml.etree.ElementTree as ET
 import re, time
+import xmltodict
+
+schema_cache = {}
+
+def get_schema_xml(protocol, namespace, class_name):
+    global schema_cache
+    key = "%s/%s" % (namespace, class_name)
+    if key in schema_cache:
+        return schema_cache[key]
+
+    schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
+    schema_str = protocol.get(schema_uri, selector=[{
+            '@Name': '__cimnamespace',
+            '#text': namespace
+        },
+        {
+            '@Name': 'ClassName',
+            '#text': class_name
+        }])
+    schema_root=ET.fromstring(schema_str)
+    schema_cache[key] = schema_root.find(".//CLASS")
+
+    return schema_cache[key]
+
+
+class WmiReference:
+    def __init__(self, protocol, xml_root):
+        self._root = xml_root
+        self.protocol = protocol
+        self._selectors_dict = {}
+
+        resource_uri_node = self._root.find('.//{http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd}ResourceURI')
+        if resource_uri_node is not None:
+            self._resource_uri = resource_uri_node.text
+        else:
+            raise TypeError("Reference cannot be followed without ResourceURI. %s" % ET.tostring(self._root))
+        self._class_name = self._resource_uri.rsplit('/', 1)[-1]
+
+        selector_set_node = self._root.find('.//{http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd}SelectorSet')
+        if selector_set_node is not None:
+            selectorset = xmltodict.parse(ET.tostring(selector_set_node))
+            self._selectors = selectorset.get('ns0:SelectorSet', {}).get('ns0:Selector')
+            if isinstance(self._selectors, list):
+                self._selectors_dict = { i.get('@Name', 'unknown'): i.get('#text') for i in self._selectors }
+            elif isinstance(self._selectors, dict):
+                self._selectors_dict[self._selectors.get('@Name', 'unknown')] = self._selectors.get('#text')
+
+        else:
+            raise TypeError("Reference cannot be followed without SelectorSet. %s" % ET.tostring(self._root))
+
+    def follow(self):
+        data = self.protocol.get(self._resource_uri, selector=self._selectors)
+        data_xml = ET.fromstring(data)
+        instance = data_xml.find(".//p:%s" % self._class_name, {'p':self._resource_uri})
+        return WmiInstance(instance, self.protocol)
+
+    def __repr__(self):
+        return "<%s class_name=%s selectors=%s" % (
+            self.__class__.__name__,
+            self._class_name, self._selectors_dict)
 
 class WmiInstance:
     _data=None
-    def __init__(self, xml_str="", xml_root=None, xml_schema=None):
-        if xml_str is not None and len(xml_str) > 0:
-            self._xml_str=xml_str
-            self._root = ET.fromstring(xml_str)
-        elif xml_root is not None:
-            self._root = xml_root
-        else:
-            raise TypeError("xml_str or xml_root must be defined")
-        if '}' not in self._root.tag:
-            raise TypeError("Bad XML data.")
-        temp=self._root.tag.split('}')
-        self.class_name=temp[1]
-        self._xmlns = { "p": temp[0][1:]}
-        self._xml_schema=xml_schema
+    ns_class_pattern=re.compile(r'{(http://schemas.microsoft.com/wbem/wsman/1/wmi/(.*)/(.*))}')
+
+    def __init__(self, xml_root, protocol):
+        self.protocol = protocol
+        self._root = xml_root
+        match = next(re.finditer(self.ns_class_pattern, self._root.tag))
+        allgroups = match.groups()
+        if len(allgroups) != 3:
+            raise TypeError("Invalid XML namespace. %s" % ET.tostring(self._root))
+        self._xmlns = { "p": allgroups[0] }
+        self.namespace = allgroups[1]
+        self.class_name = allgroups[2]
+        self._xml_schema=get_schema_xml(self.protocol, self.namespace, self.class_name)
+
     def keys(self):
         properties=[]
         for p in self._root:
@@ -27,6 +87,7 @@ class WmiInstance:
             else:
                 properties += [p.tag]
         return properties
+
     def data(self, update=False):
         if isinstance(self._data, dict) and not update: return self._data
         self._data = {}
@@ -34,23 +95,29 @@ class WmiInstance:
             if p.tag[:8] != "PROPERTY": continue
             self._data[p.attrib['NAME']] = self.__getattr__(p.attrib['NAME'])
         return self._data
+
     def __repr__(self):
         return "<%s class_name=%s with_schema=%s data=%s>" % (
             self.__class__.__name__, 
             self.class_name, 
             self._xml_schema is not None,
             str(self.data()))
+
     def __str__(self):
         return str(self.data())
+
     def __contains__(self, key):
         return self._root.find("./p:%s" % key, self._xmlns) is not None
+
     def __getitem__(self, key):
         return self.__getattr__(key)
+
     def get(self, key, default=None):
         try:
             return self.__getattr__(key)
         except AttributeError:
             return default
+
     def return_type(self, xml_value, value_type):
         if value_type[1:4] == "int":
             return int(xml_value.text)
@@ -84,14 +151,18 @@ class WmiInstance:
             return None
         value_type="string"
         if self._xml_schema is not None:
+            reference = False
+            array = False
             vt_xml=self._xml_schema.find(".//*[@NAME='%s']" % attr)
             if vt_xml is None:
                 raise AttributeError(attr)
-            value_type=vt_xml.attrib["TYPE"]
-            if vt_xml.tag == "PROPERTY.ARRAY":
+            if vt_xml.tag == "PROPERTY.REFERENCE":
+                reference = True
+            elif vt_xml.tag == "PROPERTY.ARRAY":
                 array = True
-            else:
-                array = False
+            if reference:
+                return WmiReference(self.protocol, value[0])
+            value_type=vt_xml.attrib["TYPE"]
             if not array:
                 return self.return_type(value[0], value_type)
             else:
@@ -102,14 +173,12 @@ class WmiInstance:
 
 class WMIQuery():
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi'
-    schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
-    _xml_schema=None
     _wql=None
     class_name=None
     resource_uri=""
     _ec=None
 
-    def __init__(self, class_name=None, namespace="root/cimv2", wql=None, protocol=None, max_elements=50, *args, **kwargs):
+    def __init__(self, class_name=None, namespace="root/cimv2", wql=None, selector=None, protocol=None, max_elements=50, *args, **kwargs):
         if protocol is not None:
             if not isinstance(protocol, WRProtocol):
                 raise Exception("Can only accept WRProtocol")
@@ -118,39 +187,22 @@ class WMIQuery():
             self.p = WRProtocol(*args, **kwargs)
         if isinstance(wql, str):
             self._wql = wql
-            temp = re.search(r'FROM (\S+)', wql, re.IGNORECASE)
-            if temp is None:
-                raise ValueError("Invalid WQL query.")
-            self.class_name = temp[1]
         elif isinstance(class_name, str):
             self.class_name = class_name
+            self.selector = selector
         else:
             raise ValueError("one parameter 'class_name' or 'wql' must be defined.")
         self.namespace = namespace
         self.max_elements = max_elements
 
-    def get_schema_xml(self):
-        if self._xml_schema is not None and self._xml_schema.attrib['NAME'] == self.class_name:
-            return
-        self._schema_str = self.p.get(self.schema_uri, selector=[{
-                '@Name': '__cimnamespace', 
-                '#text': self.namespace
-            },
-            {
-                '@Name': 'ClassName',
-                '#text': self.class_name
-            }])
-        self._schema_root=ET.fromstring(self._schema_str)
-        self._xml_schema=self._schema_root.find(".//CLASS")
-
     def __iter__(self):
         self.resource_uri = "%s/%s/" % (self.base_uri, self.namespace)
         if self._wql is not None:
             self.resource_uri += "*"
+            self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, wql=self._wql))
         else:
             self.resource_uri += self.class_name
-        self.get_schema_xml()
-        self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, wql=self._wql))
+            self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, selector=self.selector))
         self._ec = self._xml_enum.find('s:Body/wsen:EnumerateResponse/wsen:EnumerationContext', 
             self.p.xmlns).text
         self._item_iter = iter([])
@@ -172,7 +224,7 @@ class WMIQuery():
                 else:
                     self._ec = self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EnumerationContext',
                         self.p.xmlns).text
-        return WmiInstance(xml_root=next_item, xml_schema=self._xml_schema)
+        return WmiInstance(xml_root=next_item, protocol=self.p)
 
     def release(self):
         if self._ec is not None:
@@ -213,7 +265,6 @@ class WMIQuery():
             self.p.xmlns).text
 
         data = []
-        self.get_schema_xml()
         while True:
             self.ec_data = self.p.pull(self.resource_uri, self._ec)
             self._pullresponse = ET.fromstring(self.ec_data)
@@ -221,7 +272,7 @@ class WMIQuery():
             items = self._pullresponse.findall('.//wsen:Items/', 
                 self.p.xmlns)
             for item in items:
-                data += [WmiInstance(xml_root=item, xml_schema=self._xml_schema)]
+                data += [WmiInstance(xml_root=item, protocol=self.p)]
 
             if self._pullresponse.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', 
                 self.p.xmlns) is not None:
@@ -260,42 +311,3 @@ class WMIQuery():
 
                         data[tagname][e_tagname] = e.text
         return data
-
-#class WMICommand(WinRMCommand):
-#    def __init__(self, shell, class_name=None, class_filter=None):
-#        WinRMCommand.__init__(self, shell)
-#        self.class_name = class_name
-#        self.class_filter = class_filter
-#        self.interactive = self.class_name is not None
-#
-#    def run(self):
-#        params = []
-#        self.error = False
-#        if self.class_name is not None:
-#            params += [ 'PATH', self.class_name ]
-#            if self.class_filter is not None:
-#                params += [ 'WHERE', self.class_filter ]
-#            params += [ 'GET', '/FORMAT:RAWXML' ]
-#        self.command_id = self.shell.run_command('wmic', params)
-#        self.receive()
-#        if self.class_name is not None:
-#            self.process_result()
-#
-#    def process_result(self):
-#        try:
-#            self.root = ET.fromstringlist(self.std_out.replace('\r','').split('\n')[:-1])
-#        except Exception as e:
-#            return
-#        for property in self.root.findall(".//PROPERTY"):
-#            n=property.attrib['NAME']
-#            v=property.find("./VALUE")
-#            self.data[n]=v.text if v is not None else None
-#
-#    def __repr__(self):
-#        return "<%s interactive=%s code=%d%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
-#            (self.__class__.__name__, self.interactive, self.code,
-#                " class_name=%s" % self.class_name if self.class_name is not None else "",
-#                " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
-#                self.error,
-#                len(self.std_out), len(self.std_err))
-#
