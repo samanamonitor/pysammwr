@@ -21,7 +21,7 @@ class CIMEvent:
         self._max_seconds = max_seconds
         self._logfile = logfile
         self._record_number = 0
-        self._event_type = event_type
+        self._event_type = int(event_type)
         self._wql = "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = '%s'" \
              % (self._get_time(), self._event_type, self._logfile)
         self._cim_query = WMIQuery(wql=self._wql, *args, **kwargs)
