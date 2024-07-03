@@ -31,16 +31,15 @@ class WRCertificates:
 
 		if cb.has_property('friendly_name'):
 			friendly_name = cb.friendly_name
+		elif len(cn_list) > 0:
+			friendly_name = cn_list[0]
+		elif len(san_list) > 0:
+			friendly_name = san_list[0]
 		else:
-			if len(cn_list) > 0:
-				friendly_name = cn_list[0]
-			elif len(san_list) > 0:
-				friendly_name = san_list[0]
-			else:
-				friendly_name = cb.sha1_hash.decode('utf-8')
+			friendly_name = cb.sha1_hash.decode('utf-8')
 
 		return {
-			'not_valid_after': cb.certificate.not_valid_after.timestamp(),
+			'not_valid_after': int(cb.certificate.not_valid_after.timestamp() * 1000),
 			'friendly_name': friendly_name,
 			'common_name': cn_list,
 			'subject': cb.certificate.subject.rfc4514_string(),
