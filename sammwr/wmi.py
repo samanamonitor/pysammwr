@@ -3,28 +3,39 @@ from .protocol import WRProtocol
 import xml.etree.ElementTree as ET
 import re, time
 import xmltodict
+from pymemcache.client.base import Client
+import logging
 
 schema_cache = {}
+log = logging.getLogger(__name__)
 
-def get_schema_xml(protocol, namespace, class_name):
-    global schema_cache
-    key = "%s/%s" % (namespace, class_name)
-    if key in schema_cache:
-        return schema_cache[key]
-
+def get_schema_xml(protocol, namespace, class_name, memcache_client=None, memcache_expire=90):
     schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
-    schema_str = protocol.get(schema_uri, selector=[{
-            '@Name': '__cimnamespace',
-            '#text': namespace
-        },
-        {
-            '@Name': 'ClassName',
-            '#text': class_name
-        }])
+    cache_key = "_".join(["schema", namespace, class_name])
+    schema_str = None
+    if memcache_client is not None:
+        schema_str = memcache_client.get(cache_key)
+    else:
+        schema_str = schema_cache.get(cache_key)
+    if schema_str is None:
+        schema_str = protocol.get(schema_uri, selector=[{
+                '@Name': '__cimnamespace',
+                '#text': namespace
+            },
+            {
+                '@Name': 'ClassName',
+                '#text': class_name
+            }])
+        if memcache_client is not None:
+            memcache_client.set(cache_key, schema_str, expire=memcache_expire)
+            log.debug("cache refresh for %s", cache_key)
+        else:
+            schema_cache[cache_key] = schema_str
+    else:
+        log.debug("Cache hit for %s", cache_key)
     schema_root=ET.fromstring(schema_str)
-    schema_cache[key] = schema_root.find(".//CLASS")
 
-    return schema_cache[key]
+    return schema_root.find(".//CLASS")
 
 
 class WmiReference:
@@ -33,14 +44,14 @@ class WmiReference:
         self.protocol = protocol
         self._selectors_dict = {}
 
-        resource_uri_node = self._root.find('.//{http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd}ResourceURI')
+        resource_uri_node = self._root.find('.//w:ResourceURI', self.protocol.xmlns)
         if resource_uri_node is not None:
             self._resource_uri = resource_uri_node.text
         else:
             raise TypeError("Reference cannot be followed without ResourceURI. %s" % ET.tostring(self._root))
         self._class_name = self._resource_uri.rsplit('/', 1)[-1]
 
-        selector_set_node = self._root.find('.//{http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd}SelectorSet')
+        selector_set_node = self._root.find('.//w:SelectorSet', self.protocol.xmlns)
         if selector_set_node is not None:
             selectorset = xmltodict.parse(ET.tostring(selector_set_node))
             self._selectors = selectorset.get('ns0:SelectorSet', {}).get('ns0:Selector')
@@ -55,7 +66,7 @@ class WmiReference:
     def follow(self):
         data = self.protocol.get(self._resource_uri, selector=self._selectors)
         data_xml = ET.fromstring(data)
-        instance = data_xml.find(".//p:%s" % self._class_name, {'p':self._resource_uri})
+        instance = data_xml.find(".//{*}%s" % self._class_name)
         return WmiInstance(instance, self.protocol)
 
     def __repr__(self):
@@ -67,7 +78,7 @@ class WmiInstance:
     _data=None
     ns_class_pattern=re.compile(r'{(http://schemas.microsoft.com/wbem/wsman/1/wmi/(.*)/(.*))}')
 
-    def __init__(self, xml_root, protocol):
+    def __init__(self, xml_root, protocol, schema=None):
         self.protocol = protocol
         self._root = xml_root
         match = next(re.finditer(self.ns_class_pattern, self._root.tag))
@@ -77,7 +88,10 @@ class WmiInstance:
         self._xmlns = { "p": allgroups[0] }
         self.namespace = allgroups[1]
         self.class_name = allgroups[2]
-        self._xml_schema=get_schema_xml(self.protocol, self.namespace, self.class_name)
+        if schema is not None:
+            self._xml_schema = schema
+        else:
+            self._xml_schema=get_schema_xml(self.protocol, self.namespace, self.class_name)
 
     def keys(self):
         properties=[]
@@ -98,8 +112,8 @@ class WmiInstance:
 
     def __repr__(self):
         return "<%s class_name=%s with_schema=%s data=%s>" % (
-            self.__class__.__name__, 
-            self.class_name, 
+            self.__class__.__name__,
+            self.class_name,
             self._xml_schema is not None,
             str(self.data()))
 
@@ -126,7 +140,7 @@ class WmiInstance:
         elif value_type == "boolean":
             return True if xml_value.text.lower() == "true" else False
         elif value_type == "datetime":
-            xml_value=xml_value.find("./{http://schemas.dmtf.org/wbem/wscim/1/common}Datetime", self._xmlns)
+            xml_value=xml_value.find("./cim:Datetime", self.protocol.xmlns)
             dt_str=xml_value.text
             if dt_str[-1] == "Z":
                 timezonesecs=0
@@ -145,7 +159,7 @@ class WmiInstance:
         value=self._root.findall("./p:%s" % attr, self._xmlns)
         array=False
         if len(value) == 0:
-            return None
+            raise AttributeError(attr)
         nil=value[0].attrib.get('{http://www.w3.org/2001/XMLSchema-instance}nil', 'false')
         if nil == 'true':
             return None
@@ -173,39 +187,104 @@ class WmiInstance:
 
 class WMIQuery():
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi'
-    _wql=None
-    class_name=None
-    resource_uri=""
-    _ec=None
 
-    def __init__(self, class_name=None, namespace="root/cimv2", wql=None, selector=None, protocol=None, max_elements=50, *args, **kwargs):
+    def __init__(self, class_name=None, namespace="root/cimv2", wql=None,
+            selector=None, protocol=None, max_elements=50,
+            memcache_host=None, memcache_expire=90, *args, **kwargs):
+        self._wql=None
         if protocol is not None:
             if not isinstance(protocol, WRProtocol):
                 raise Exception("Can only accept WRProtocol")
             self.p = protocol
         else:
             self.p = WRProtocol(*args, **kwargs)
+        self.namespace = namespace
+        self.resource_uri = "%s/%s/" % (self.base_uri, self.namespace)
         if isinstance(wql, str):
             self._wql = wql
+            x=re.search(r'select +\* +from +([^ ]+)', wql, re.I)
+            if x is None:
+                raise ValueError("Fragments not supported")
+            self.class_name = x[1]
+            self.resource_uri += "*"
         elif isinstance(class_name, str):
             self.class_name = class_name
             self.selector = selector
+            self.resource_uri += "%s" % class_name
         else:
             raise ValueError("one parameter 'class_name' or 'wql' must be defined.")
-        self.namespace = namespace
         self.max_elements = max_elements
+        self.schema = None
+        if memcache_host is not None:
+            self._memcache_client = Client(memcache_host)
+            self._memcache_expire = memcache_expire
+
+    def enumerate(self):
+        _txt_enum = None
+        cache_key = hex(hash("_".join([
+            self.p.transport.endpoint,
+            self.resource_uri,
+            str(self._wql),
+            str(self.selector)
+            ])) & ((1<<64)-1))
+        if self._memcache_client is not None:
+            _txt_enum = self._memcache_client.get(cache_key)
+
+        if _txt_enum is None:
+            _txt_enum = self.p.enumerate(self.resource_uri, optimize=True,
+                max_elements=self.max_elements, wql=self._wql, selector=self.selector)
+            if self._memcache_client is not None:
+                self._memcache_client.set(cache_key, _txt_enum, expire=self._memcache_expire)
+
+        _xml_enum = ET.fromstring(_txt_enum)
+        items = _xml_enum.findall('.//{*}Items/', self.p.xmlns)
+        _ec = _xml_enum.find('.//wsen:EnumerationContext', self.p.xmlns).text
+        return _ec, items
+
+    def pull(self, _ec):
+        _txt_pull = None
+        cache_key = hex(hash("_".join([
+            self.p.transport.endpoint,
+            self.resource_uri,
+            str(_ec),
+            ])) & ((1<<64)-1))
+        if self._memcache_client is not None:
+            _txt_pull = self._memcache_client.get(cache_key)
+
+        if _txt_pull is None:
+            _txt_pull = self.p.pull(self.resource_uri, _ec,
+                max_elements=self.max_elements)
+            if self._memcache_client is not None:
+                self._memcache_client.set(cache_key, _txt_pull, expire=self._memcache_expire)
+
+        _xml_pull = ET.fromstring(_txt_pull)
+        items = _xml_pull.findall('.//{*}Items/', self.p.xmlns)
+        ec_node = _xml_pull.find('.//wsen:EnumerationContext',self.p.xmlns)
+        if ec_node is not None:
+            _ec = ec_node.text
+        else:
+            _ec = None
+        return _ec, items
+
+    def collect(self):
+        if self.class_name is not None:
+            self.schema = get_schema_xml(self.p, self.namespace, self.class_name, self._memcache_client)
+        _ec, items = self.enumerate()
+        while True:
+            if len(items) == 0:
+                if _ec is None:
+                    return
+                _ec, items = self.pull(_ec)
+            instance = WmiInstance(xml_root=items.pop(), protocol=self.p, schema=self.schema)
+            if self.schema is None:
+                self.schema = instance._xml_schema
+            yield instance
 
     def __iter__(self):
-        self.resource_uri = "%s/%s/" % (self.base_uri, self.namespace)
-        if self._wql is not None:
-            self.resource_uri += "*"
-            self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, wql=self._wql))
-        else:
-            self.resource_uri += self.class_name
-            self._xml_enum = ET.fromstring(self.p.enumerate(self.resource_uri, selector=self.selector))
-        self._ec = self._xml_enum.find('s:Body/wsen:EnumerateResponse/wsen:EnumerationContext', 
-            self.p.xmlns).text
-        self._item_iter = iter([])
+        if self.class_name is not None:
+            self.schema = get_schema_xml(self.p, self.namespace, self.class_name)
+        self._ec, items = self.enumerate()
+        self._item_iter = iter(items)
         return self
 
     def __next__(self):
@@ -216,15 +295,9 @@ class WMIQuery():
             except StopIteration:
                 if self._ec is None:
                     raise
-                self._xml_pull = ET.fromstring(self.p.pull(self.resource_uri, self._ec, max_elements=self.max_elements))
-                items = self._xml_pull.findall('.//wsen:Items/', self.p.xmlns)
+                self._ec, items = self.pull(self._ec)
                 self._item_iter = iter(items)
-                if self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', self.p.xmlns) is not None:
-                    self._ec = None
-                else:
-                    self._ec = self._xml_pull.find('s:Body/wsen:PullResponse/wsen:EnumerationContext',
-                        self.p.xmlns).text
-        return WmiInstance(xml_root=next_item, protocol=self.p)
+        return WmiInstance(xml_root=next_item, protocol=self.p, schema=self.schema)
 
     def release(self):
         if self._ec is not None:
@@ -236,7 +309,7 @@ class WMIQuery():
         try:
             self._class_data = self.p.get("%s/%s/%s" % (self.base_uri, self.namespace, class_name))
         except WRError as e:
-            error_code = e.fault_detail.find('wmie:MSFT_WmiError/wmie:error_Code', 
+            error_code = e.fault_detail.find('wmie:MSFT_WmiError/wmie:error_Code',
                 self.p.xmlns)
             if error_code is not None and error_code.text == '2150859002':
                 return self.enumerate_instance(class_name)
@@ -261,7 +334,7 @@ class WMIQuery():
             self.class_name = class_name
 
         self._root = ET.fromstring(self._class_data)
-        self._ec = self._root.find('s:Body/wsen:EnumerateResponse/wsen:EnumerationContext', 
+        self._ec = self._root.find('s:Body/wsen:EnumerateResponse/wsen:EnumerationContext',
             self.p.xmlns).text
 
         data = []
@@ -269,15 +342,15 @@ class WMIQuery():
             self.ec_data = self.p.pull(self.resource_uri, self._ec)
             self._pullresponse = ET.fromstring(self.ec_data)
 
-            items = self._pullresponse.findall('.//wsen:Items/', 
+            items = self._pullresponse.findall('.//wsen:Items/',
                 self.p.xmlns)
             for item in items:
                 data += [WmiInstance(xml_root=item, protocol=self.p)]
 
-            if self._pullresponse.find('s:Body/wsen:PullResponse/wsen:EndOfSequence', 
+            if self._pullresponse.find('s:Body/wsen:PullResponse/wsen:EndOfSequence',
                 self.p.xmlns) is not None:
                 break
-            _ec = self._pullresponse.find('s:Body/wsen:PullResponse/wsen:EnumerationContext', 
+            _ec = self._pullresponse.find('s:Body/wsen:PullResponse/wsen:EnumerationContext',
                 self.p.xmlns)
             if _ec is None:
                 raise WRError("Invalid EnumerationContext.")
