@@ -156,15 +156,17 @@ class WRProtocol(Protocol):
         log.debug("response: %s" % res)
         return res
 
-    def enumerate(self, resource_uri, max_elements=10, en_filter=None, wql=None, selector=None):
+    def enumerate(self, resource_uri, optimize=False, max_elements=10, en_filter=None, wql=None, selector=None):
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
-        req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {
+        if optimize:
+            enum_options = {
                 "w:OptimizeEnumeration": {},
                 "w:MaxElements": { "#text": str(max_elements) }
-            })
+            }
+        req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', enum_options)
 
         if selector is not None:
             req['env:Envelope']['env:Header']['w:SelectorSet'] = {
