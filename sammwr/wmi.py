@@ -3,7 +3,10 @@ from .protocol import WRProtocol
 import xml.etree.ElementTree as ET
 import re, time
 import xmltodict
-from pymemcache.client.base import Client
+try:
+    from pymemcache.client.base import Client
+except:
+    pass
 import logging
 
 schema_cache = {}
@@ -215,6 +218,7 @@ class WMIQuery():
             raise ValueError("one parameter 'class_name' or 'wql' must be defined.")
         self.max_elements = max_elements
         self.schema = None
+        self._memcache_client = None
         if memcache_host is not None:
             self._memcache_client = Client(memcache_host)
             self._memcache_expire = memcache_expire
