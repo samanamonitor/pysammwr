@@ -195,6 +195,7 @@ class WMIQuery():
             selector=None, protocol=None, max_elements=50,
             memcache_host=None, memcache_expire=90, *args, **kwargs):
         self._wql=None
+        self.selector = None
         if protocol is not None:
             if not isinstance(protocol, WRProtocol):
                 raise Exception("Can only accept WRProtocol")
