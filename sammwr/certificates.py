@@ -1,7 +1,7 @@
 from sammwr.registry import HKEY_LOCAL_MACHINE, CIM_RegistryKey
 from sammwr.utils import CertBlob
 import re
-from datetime import datetime
+from datetime import datetime, UTC
 from cryptography.x509 import NameOID, ExtensionOID
 
 class WRCertificates:
@@ -19,7 +19,7 @@ class WRCertificates:
 			cb = CertBlob(cert.getvalue('Blob').value)
 			if not cb.has_property('disabled'):
 				break
-		days_to_expire = (cb.certificate.not_valid_after - datetime.now()).days
+		days_to_expire = (cb.certificate.not_valid_after_utc - datetime.now(UTC)).days
 
 		try:
 			san = cb.certificate.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
@@ -46,7 +46,7 @@ class WRCertificates:
 			friendly_name = cb.sha1_hash.decode('utf-8')
 
 		return {
-			'not_valid_after': int(cb.certificate.not_valid_after.timestamp() * 1000),
+			'not_valid_after': int(cb.certificate.not_valid_after_utc.timestamp() * 1000),
 			'friendly_name': friendly_name,
 			'common_name': cn_list,
 			'subject': cb.certificate.subject.rfc4514_string(),
