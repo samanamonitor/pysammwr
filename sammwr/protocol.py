@@ -76,7 +76,7 @@ class WRProtocol(Protocol):
                         # We need to retry because after about 5 minutes, we get a 400 without text response.
                         # this is because the authentication information is stale and we need to setup
                         # encryption with new authentication data
-                        self.transport.setup_encryption()
+                        self.transport.build_session()
                         retries += 1
                     else:
                         raise

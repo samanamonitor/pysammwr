@@ -39,9 +39,8 @@ class WinRMShell:
         return self.shell_id
 
     def __repr__(self):
-        return "<%s connected=%s hostaddress=%s username=%s domain=%s shell_id=%s>" % \
-            (self.__class__.__name__, self.connected, self.hostaddress, \
-                self.username, self.domain, self.shell_id)
+        return "<%s connected=%s shell_id=%s>" % \
+            (self.__class__.__name__, self.connected, self.shell_id)
 
     def close(self):
         if not self.connected:
