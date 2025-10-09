@@ -3,6 +3,9 @@ from sammwr.utils import CertBlob
 import re
 from datetime import datetime, UTC
 from cryptography.x509 import NameOID, ExtensionOID
+import logging
+
+log = logging.getLogger(__name__)
 
 class WRCertificates:
 	def __init__(self, *args, **kwargs):
@@ -16,7 +19,11 @@ class WRCertificates:
 	def __next__(self):
 		while True:
 			cert = next(self._iter)
-			cb = CertBlob(cert.getvalue('Blob').value)
+			try:
+				cb = CertBlob(cert.getvalue('Blob').value)
+			except Exception as e:
+				log.warning("Ignoring certificate: %s", str(e))
+				continue
 			if not cb.has_property('disabled'):
 				break
 		days_to_expire = (cb.certificate.not_valid_after_utc - datetime.now(UTC)).days
