@@ -161,6 +161,7 @@ class WRProtocol(Protocol):
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
+        enum_options={}
         if optimize:
             enum_options = {
                 "w:OptimizeEnumeration": {},
