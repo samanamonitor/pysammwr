@@ -11,3 +11,10 @@ docker run --rm -it -v $(pwd):/usr/src -v $(pwd)/../gpg:/gpg -v ~/.aws:/root/.aw
 
 # To compile
 `docker run -it --rm --mount type=bind,source=$(pwd),target=/usr/src/pysammwr -w /usr/src/pysammwr ubuntu:bionic /bin/bash`
+
+# Docs
+https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsmv/1bcf0ed8-3511-4ea9-9c55-bdfcf4e3f4bd
+
+
+# Installed applications that wmi doesn't show
+`Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`
