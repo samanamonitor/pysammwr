@@ -9,3 +9,5 @@ samm-pysammwr_*_amd64
 *.private
 Packages
 Release
+krb5.conf
+python3.*
