@@ -190,21 +190,29 @@ class WRProtocol(Protocol):
         log.debug("response: %s" % res)
         return res
 
-    def execute_method(self, resource_uri, method_name, **kwargs):
+    def execute_method(self, namespace, resource_uri, method_name, **kwargs):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
                 resource_uri=resource_uri,
                 action='%s/%s' % (resource_uri, method_name))}
+        req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+            'w:Selector': [{
+                '@Name': '__cimnamespace',
+                '#text': namespace,
+            }]
+        }
         body = req['env:Envelope'].setdefault('env:Body', {})
-        enumkey = body.setdefault('p:%s_INPUT' % method_name, {})
-        _ = enumkey.setdefault('@xmlns:p', resource_uri)
-        for k in kwargs:
-            _ = enumkey.setdefault('p:%s' % k, kwargs[k])
-
-        log.debug("request: %s" % xmltodict.unparse(req))
-        res = self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
+        parameters = body.setdefault('p:%s_INPUT' % method_name, {})
+        _ = parameters.setdefault('@xmlns:p', resource_uri)
+        for k, v in kwargs.items():
+            param = parameters.setdefault('p:%s' % k, {})
+            if isinstance(v, CimClass):
+                param.update(v.dict())
+            else:
+                param['#text'] = str(v)
+        log.debug(req)
+        res = self.p.send_message(xmltodict.unparse(req))
         return res
 
     def get(self, resource_uri, selector=None, option=None):
