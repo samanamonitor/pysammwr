@@ -19,6 +19,7 @@ class SoapFault(Exception):
     def __init__(self, fault_element, root=None, response_text=""):
         self.root = root
         self.response_text = response_text
+        self._get_namespaces()
         if not isinstance(fault_element, ET.Element):
             raise TypeError
 
@@ -44,10 +45,15 @@ class SoapFault(Exception):
         self.detail_type = "text"
         if len(detail) > 0:
             self.detail = fault_element.find("s:Detail/", self.ns)
-            self.detail_type = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
+            detail_type = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type').split(":")
+            if len(detail_type) == 2:
+                ns = self.namespaces.get(detail_type[0])
+                self.detail_type = f"{{{ns}}}{detail_type[1]}"
+            else:
+                self.detail_type = f"{detail_type[0]}"
+
             detail_str = self.detail_type
 
-        self._get_namespaces()
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
     def _get_namespaces(self):
