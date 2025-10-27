@@ -247,7 +247,7 @@ class WRProtocol(Protocol):
             else:
                 param['#text'] = str(v)
         log.debug(req)
-        res = self.p.send_message(xmltodict.unparse(req))
+        res = self.send_message(xmltodict.unparse(req))
         return res
 
     def get(self, resource_uri, selector=None, option=None):
