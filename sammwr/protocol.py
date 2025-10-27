@@ -36,7 +36,7 @@ class SoapFault(Exception):
         if self.reason is not None:
             self.reason = self.reason.text
 
-        self.detail = fault_element.find("s:Detail/", self.ns)
+        self.detail = fault_element.find("s:Detail", self.ns)
         super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: (more)")
 
     def process_subcode(self, element):
