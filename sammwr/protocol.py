@@ -17,7 +17,7 @@ override = lambda x, y: y if x is None else x
 class SoapFault(Exception):
     ns={'s': 'http://www.w3.org/2003/05/soap-envelope'}
     def __init__(self, fault_element):
-        if not isinstance(body, ET.Element):
+        if not isinstance(fault_element, ET.Element):
             raise TypeError
 
         if fault_element.tag != f"{{{self.ns['s']}}}Fault":
