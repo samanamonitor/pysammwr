@@ -43,7 +43,7 @@ class SoapFault(Exception):
             self.detail = fault_element.find("s:Detail/", self.ns)
             detail_str = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
 
-        super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: ({detail_str})")
+        super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
     def process_subcode(self, element):
         out = {}
