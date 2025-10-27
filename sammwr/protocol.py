@@ -44,17 +44,9 @@ class SoapFault(Exception):
         detail_str = self.detail
         self.detail_type = "text"
         if len(detail) > 0:
-            self.detail = fault_element.find("s:Detail/", self.ns)
-            detail_type = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
-            if detail_type is not None:
-                detail_type = detail_type.split(":")
-                if len(detail_type) == 2:
-                    ns = self.namespaces.get(detail_type[0])
-                    self.detail_type = f"{{{ns}}}{detail_type[1]}"
-                else:
-                    self.detail_type = f"{detail_type[0]}"
-
-            detail_str = self.detail_type
+            self.detail = fault_element.find("s:Detail", self.ns)
+            self.detail_types = [ dt.tag for dt in detail ]
+            detail_str = "(check detail_types)"
 
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
