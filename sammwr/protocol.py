@@ -16,7 +16,9 @@ override = lambda x, y: y if x is None else x
 
 class SoapFault(Exception):
     ns={'s': 'http://www.w3.org/2003/05/soap-envelope'}
-    def __init__(self, fault_element):
+    def __init__(self, fault_element, root=None, response_text=""):
+        self.root = root
+        self.response_text = response_text
         if not isinstance(fault_element, ET.Element):
             raise TypeError
 
@@ -39,9 +41,11 @@ class SoapFault(Exception):
         detail = fault_element.find("s:Detail", self.ns)
         self.detail = detail.text
         detail_str = self.detail
+        self.detail_type = "text"
         if len(detail) > 0:
             self.detail = fault_element.find("s:Detail/", self.ns)
-            detail_str = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
+            self.detail_type = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
+            detail_str = self.detail_type
 
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
@@ -127,38 +131,7 @@ class WRProtocol(Protocol):
                         root = ET.fromstring(ex.response_text)
                         fault = root.find('s:Body/s:Fault', self.xmlns)
                         if fault is not None:
-                            raise SoapFault(fault)
-                            fault_data = dict(
-                                transport_message=ex.message,
-                                http_status_code=ex.code
-                            )
-                            wsmanfault_code = fault.find('s:Detail/wf:WSManFault[@Code]', self.xmlns)
-                            if wsmanfault_code is not None:
-                                fault_data['wsmanfault_code'] = wsmanfault_code.get('Code')
-                                # convert receive timeout code to WinRMOperationTimeoutError
-                                if fault_data['wsmanfault_code'] == '2150858793':
-                                    # TODO: this fault code is specific to the Receive operation; convert all op timeouts?
-                                    raise WinRMOperationTimeoutError()
-
-                            fault_code = fault.find('s:Code/s:Value', self.xmlns)
-                            if fault_code is not None:
-                                fault_data['fault_code'] = fault_code.text
-
-                            fault_subcode = fault.find('s:Code/s:Subcode/s:Value', self.xmlns)
-                            if fault_subcode is not None:
-                                fault_data['fault_subcode'] = fault_subcode.text
-
-                            error_message = fault.find('s:Reason/s:Text', self.xmlns)
-                            if error_message is not None:
-                                error_message = error_message.text
-                            else:
-                                error_message = "(no error message in fault)"
-
-                            fault_detail = fault.find('s:Detail', self.xmlns)
-
-                            raise WRError(f'{error_message} (extended fault data: {fault_data})', \
-                                ex.response_text,
-                                fault_data, fault_detail)
+                            raise SoapFault(fault, root=root, response_text=ex.response_text)
                         else:
                             raise
                     except Exception:
