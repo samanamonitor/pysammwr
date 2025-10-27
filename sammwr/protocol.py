@@ -14,6 +14,41 @@ log = logging.getLogger(__name__)
 
 override = lambda x, y: y if x is None else x
 
+class SoapFault(Exception):
+    ns={'s': 'http://www.w3.org/2003/05/soap-envelope'}
+    def __init__(self, fault_element):
+        if not isinstance(body, ET.Element):
+            raise TypeError
+
+        if fault_element.tag != f"{{{self.ns['s']}}}Fault":
+            raise TypeError(fault_element.tag)
+
+        code=fault_element.find("s:Code/s:Value", self.ns)
+        if code is not None:
+            self.code = code.text
+
+        subcode = fault_element.find("s:Code/s:Subcode", self.ns)
+        self.subcode = None
+        if subcode is not None:
+            self.subcode = self.process_subcode(subcode)
+
+        self.reason = fault_element.find("s:Reason/s:Text", self.ns)
+        if self.reason is not None:
+            self.reason = self.reason.text
+
+        self.detail = fault_element.find("s:Detail/", self.ns)
+        super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: (more)")
+
+    def process_subcode(self, element):
+        out = {}
+        value = element.find("s:Value", self.ns)
+        if value is not None:
+            out['value'] = value.text
+        subcode = element.find("s:Subcode", self.ns)
+        if subcode is not None:
+            out['subcode'] = self.process_subcode(subcode)
+        return out
+
 class WRProtocol(Protocol):
     xmlns = {
         'a': "http://schemas.xmlsoap.org/ws/2004/08/addressing",
@@ -86,6 +121,7 @@ class WRProtocol(Protocol):
                         root = ET.fromstring(ex.response_text)
                         fault = root.find('s:Body/s:Fault', self.xmlns)
                         if fault is not None:
+                            raise SoapFault(fault)
                             fault_data = dict(
                                 transport_message=ex.message,
                                 http_status_code=ex.code
@@ -117,6 +153,8 @@ class WRProtocol(Protocol):
                             raise WRError(f'{error_message} (extended fault data: {fault_data})', \
                                 ex.response_text,
                                 fault_data, fault_detail)
+                        else:
+                            raise
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
