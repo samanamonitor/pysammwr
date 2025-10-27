@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ET
 from time import time
 import xmltodict
 import uuid
-from .error import WRError
 import os
+import io
 
 import logging
 
@@ -32,7 +32,7 @@ class SoapFault(Exception):
         subcode = fault_element.find("s:Code/s:Subcode", self.ns)
         self.subcode = None
         if subcode is not None:
-            self.subcode = self.process_subcode(subcode)
+            self.subcode = self._process_subcode(subcode)
 
         self.reason = fault_element.find("s:Reason/s:Text", self.ns)
         if self.reason is not None:
@@ -47,9 +47,27 @@ class SoapFault(Exception):
             self.detail_type = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             detail_str = self.detail_type
 
+        self._get_namespaces()
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
-    def process_subcode(self, element):
+    def _get_namespaces(self):
+        """
+        Extracts all declared namespaces from an XML file.
+
+        Args:
+            xml_file_path (str): The path to the XML file.
+
+        Returns:
+            dict: A dictionary where keys are namespace prefixes (or an empty string for the default namespace)
+                  and values are the corresponding namespace URIs.
+        """
+        f=io.StringIO(self.response_text)
+        self.namespaces = {}
+        for event, node in ET.iterparse(f, events=['start-ns']):
+            prefix, uri = node
+            self.namespaces[prefix] = uri
+
+    def _process_subcode(self, element):
         out = {}
         value = element.find("s:Value", self.ns)
         if value is not None:
