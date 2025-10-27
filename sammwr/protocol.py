@@ -36,8 +36,14 @@ class SoapFault(Exception):
         if self.reason is not None:
             self.reason = self.reason.text
 
-        self.detail = fault_element.find("s:Detail", self.ns)
-        super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: (more)")
+        detail = fault_element.find("s:Detail", self.ns)
+        if len(detail) > 0:
+            self.detail = fault_element.find("s:Detail/", self.ns)
+            detail_str = detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
+        else:
+            self.detail = detail.text
+            detail_str = self.detail
+        super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: ({detail_str})")
 
     def process_subcode(self, element):
         out = {}
