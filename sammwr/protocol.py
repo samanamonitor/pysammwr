@@ -243,7 +243,7 @@ class WRProtocol(Protocol):
         for k, v in kwargs.items():
             param = parameters.setdefault('p:%s' % k, {})
             if hasattr(v, 'dict'):
-                log.debug("##############################")
+                log.debug(f"{k}##############################{v.dict()}")
                 param.update(v.dict())
             else:
                 param['#text'] = str(v)
