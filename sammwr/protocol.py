@@ -114,7 +114,7 @@ class WRProtocol(Protocol):
 
                             fault_detail = fault.find('s:Detail', self.xmlns)
 
-                            raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), \
+                            raise WRError(f'{error_message} (extended fault data: {fault_data})', \
                                 ex.response_text,
                                 fault_data, fault_detail)
                     except Exception:
