@@ -41,7 +41,7 @@ class SoapFault(Exception):
         detail_str = self.detail
         if len(detail) > 0:
             self.detail = fault_element.find("s:Detail/", self.ns)
-            detail_str = detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
+            detail_str = self.detail.get('{http://www.w3.org/2001/XMLSchema-instance}type')
 
         super().__init__(f"SoapFault (code: {self.code}, subcode: {self.subcode}): \nreason: {self.reason}\ndetail: ({detail_str})")
 
