@@ -242,8 +242,8 @@ class WRProtocol(Protocol):
         _ = parameters.setdefault('@xmlns:p', resource_uri)
         for k, v in kwargs.items():
             param = parameters.setdefault('p:%s' % k, {})
+            log.debug(f"{k}##############################{v}   {hasattr(v, 'dict')}")
             if hasattr(v, 'dict'):
-                log.debug(f"{k}##############################{v.dict()}")
                 param.update(v.dict())
             else:
                 param['#text'] = str(v)
