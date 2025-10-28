@@ -280,6 +280,30 @@ class WRProtocol(Protocol):
         log.debug("response: %s" % res)
         return res
 
+    def delete(self, resource_uri, selector=None, option=None):
+        message_id = uuid.uuid4()
+        req = {
+            'env:Envelope': self._get_soap_header(
+            resource_uri=resource_uri,  # NOQA
+            action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Delete')}
+        if selector is not None:
+            #{
+            #    'w:Selector': { '@Name': 'ShellId', '#text': '1'}
+            #    }
+            req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+                'w:Selector': selector
+            }
+        if option is not None:
+            req['env:Envelope']['env:Header']['w:OptionSet'] = {
+                'w:Option': option
+            }
+        req['env:Envelope'].setdefault('env:Body', {})
+
+        log.debug("request: %s" % xmltodict.unparse(req))
+        res=self.send_message(xmltodict.unparse(req))
+        log.debug("response: %s" % res)
+        return res
+
     def signal(self, shell_id, command_id, s):
         message_id = uuid.uuid4()
         req = {'env:Envelope': self._get_soap_header(
