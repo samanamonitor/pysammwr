@@ -1,6 +1,9 @@
+import xml.etree.ElementTree as ET
 
 class WRError(Exception):
     def __init__(self, *args):
+        if len(args) > 1:
+            self.root = ET.fromstring(args[1])
         super().__init__(self.args[0])
     code = 500
     @property
