@@ -241,12 +241,17 @@ class WRProtocol(Protocol):
         parameters = body.setdefault('p:%s_INPUT' % method_name, {})
         _ = parameters.setdefault('@xmlns:p', resource_uri)
         for k, v in kwargs.items():
-            param = parameters.setdefault('p:%s' % k, {})
-            log.debug(f"{k}##############################{v}   {hasattr(v, 'dict')}")
-            if hasattr(v, 'dict'):
-                param.update(v.dict())
+            if isinstance(v, list):
+                param = parameters.setdefault(f'p:{k}', [])
+                for i in v:
+                    if hasattr(i, 'dict'):
+                        param.append(i.dict())
+                    else:
+                        param.append(str(i))
+            elif hasattr(v, 'dict'):
+                _ = parameters.setdefault(f'p:{k}', v.dict())
             else:
-                param['#text'] = str(v)
+                _ = parameters.setdefault(f'p:{k}', str(v))
         log.debug(req)
         res = self.send_message(xmltodict.unparse(req))
         return res
