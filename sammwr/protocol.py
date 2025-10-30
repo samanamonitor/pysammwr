@@ -40,13 +40,21 @@ class SoapFault(Exception):
             self.reason = self.reason.text
 
         detail = fault_element.find("s:Detail", self.ns)
-        self.detail = detail.text
-        detail_str = self.detail
+        detail_str = ""
         self.detail_type = "text"
-        if len(detail) > 0:
-            self.detail = fault_element.find("s:Detail", self.ns)
-            self.detail_types = [ dt.tag for dt in detail ]
-            detail_str = "(check detail_types)"
+        if len(detail) == 0:
+            self.detail = detail.text
+            detail_str = self.detail
+        else:
+            self.detail = detail
+            detail_types = []
+            for d in self.detail:
+                if "FaultDetail" in d.tag:
+                    self.fault_detail = d.text
+                    continue
+                (_, tag) = tagns(d.tag)
+                detail_types.append(dt.tag)
+            detail_str = ",".join(detail_types)
 
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
 
