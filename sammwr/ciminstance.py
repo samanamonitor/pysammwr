@@ -210,6 +210,7 @@ class CimInstance(CimClass):
 			if itype_re is None:
 				raise TypeError("Invalid 'type' attribute.cmdletOutput: "+ ET.tostring(cmdletOutput))
 			class_name = itype_re.group(2)
+			log.debug(f"{self.namespace}/{class_name}")
 			instance = CimInstance(self.namespace, class_name, cmdletOutput, protocol=self.p)
 			return return_value, instance
 		except SoapFault as sf:
