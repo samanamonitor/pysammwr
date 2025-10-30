@@ -2,6 +2,7 @@ import struct
 import binascii
 from cryptography import x509
 import re
+import io
 
 def cert_key_prov_info(s):
     offset_to_container_name, offset_to_provider_name, provider_type, \
