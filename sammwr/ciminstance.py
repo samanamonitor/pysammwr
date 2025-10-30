@@ -108,7 +108,16 @@ def NewCimInstance(type, value):
 class CimInstance(CimClass):
 	def __init__(self, namespace, class_name=None, xml=None, protocol=None, **kwargs):
 		if protocol is None:
-			self.p = WRProtocol(**kwargs)
+			proto_kwargs = {}
+			proto_keys = [ 'endpoint','transport','username','password','realm','service',
+				'keytab','ca_trust_path','cert_pem','cert_key_pem','server_cert_validation',
+				'kerberos_delegation','read_timeout_sec','operation_timeout_sec',
+				'kerberos_hostname_override','message_encryption','credssp_disable_tlsv1_2',
+				'send_cbt','proxy']
+			for k in proto_keys:
+				if k in kwargs:
+					proto_kwargs[k] = kwargs[k]
+			self.p = WRProtocol(**proto_kwargs)
 		else:
 			self.p = protocol
 		self.namespace = namespace
