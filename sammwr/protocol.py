@@ -122,6 +122,7 @@ class WRProtocol(Protocol):
         # TODO add message_id vs relates_to checking
         # TODO port error handling code
         retries = 0
+        log.debug("Request: " + message)
         while True:
             try:
                 resp = self.transport.send_message(message)
@@ -148,6 +149,7 @@ class WRProtocol(Protocol):
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
+        log.debug("Response: " + resp)
         return resp
 
     def release(self, resource_uri, enumeration_ctx):
@@ -159,9 +161,7 @@ class WRProtocol(Protocol):
             'n:Release', {
                 'n:EnumerationContext': enumeration_ctx
             })
-        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         return res
 
 
@@ -179,9 +179,7 @@ class WRProtocol(Protocol):
             req['env:Envelope']['env:Header']['w:SelectorSet'] = {
                 'w:Selector': selector
             }
-        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         return res
 
     def enumerate(self, resource_uri, optimize=False, max_elements=10, en_filter=None, wql=None, selector=None):
@@ -213,10 +211,7 @@ class WRProtocol(Protocol):
                 'w:SelectorSet': { 
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
-        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
-        return res
 
     def execute_method(self, namespace, resource_uri, method_name, **kwargs):
         message_id = uuid.uuid4()
@@ -245,7 +240,6 @@ class WRProtocol(Protocol):
                 _ = parameters.setdefault(f'p:{k}', v.dict())
             else:
                 _ = parameters.setdefault(f'p:{k}', str(v))
-        log.debug(req)
         res = self.send_message(xmltodict.unparse(req))
         return res
 
@@ -268,9 +262,7 @@ class WRProtocol(Protocol):
             }
         req['env:Envelope'].setdefault('env:Body', {})
 
-        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         return res
 
     def delete(self, resource_uri, selector=None, option=None):
@@ -292,9 +284,7 @@ class WRProtocol(Protocol):
             }
         req['env:Envelope'].setdefault('env:Body', {})
 
-        log.debug("request: %s" % xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         return res
 
     def signal(self, shell_id, command_id, s):
@@ -311,9 +301,7 @@ class WRProtocol(Protocol):
         signal['@CommandId'] = command_id
         signal['rsp:Code'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/signal/%s' % s  # NOQA
 
-        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))        
-        log.debug("response: %s" % res)
         return res
 
     def send(self, shell_id, command_id, stdin_input, end=False):
@@ -329,9 +317,7 @@ class WRProtocol(Protocol):
         stdin_envelope['@xmlns:rsp'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell'
         stdin_envelope['#text'] = b64encode(stdin_input)
         start_time = time()
-        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         total_time = time() - start_time
         return (res, total_time)
 
@@ -345,9 +331,7 @@ class WRProtocol(Protocol):
         stream['@CommandId'] = command_id
         stream['#text'] = 'stdout stderr'
         start_time = time()
-        log.debug("request: %s" % xmltodict.unparse(req))
         res = self.send_message(xmltodict.unparse(req))
-        log.debug("response: %s" % res)
         total_time = time() - start_time
         root = ET.fromstring(res)
 
