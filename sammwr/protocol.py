@@ -7,6 +7,7 @@ import xmltodict
 import uuid
 import os
 import io
+from .utils import tagns
 
 import logging
 
