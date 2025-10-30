@@ -194,7 +194,7 @@ class CimInstance(CimClass):
 			ret = self.p.execute_method(self.namespace, self.schema_uri, method_name, **properties)
 			root = ET.fromstring(ret)
 			output = root.find(f".//p:{method_name}_OUTPUT", {"p": self.schema_uri})
-			return_value_e = output.find("p:ReturnValue", {"p":pst.schema_uri})
+			return_value_e = output.find("p:ReturnValue", {"p": self.schema_uri})
 			return_value = None
 			if return_value_e is not None:
 				try:
@@ -202,7 +202,7 @@ class CimInstance(CimClass):
 				except:
 					return_value = None
 			namespaces=get_xml_namespaces(ret.decode("utf-8"))
-			cmdletOutput=output.find("p:cmdletOutput", {"p": pst.schema_uri})
+			cmdletOutput=output.find("p:cmdletOutput", {"p": self.schema_uri})
 			itype_ns=cmdletOutput.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
 			if itype_ns is None:
 				raise TypeError("Missing 'type' attribute. cmdletOutput: "+ ET.tostring(cmdletOutput))
