@@ -42,7 +42,7 @@ class SoapFault(Exception):
 
         detail = fault_element.find("s:Detail", self.ns)
         detail_str = ""
-        self.soap_fault = ""
+        self.fault_detail = ""
         self.detail_type = "text"
         if len(detail) == 0:
             self.detail = detail.text
