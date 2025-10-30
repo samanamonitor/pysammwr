@@ -149,7 +149,7 @@ class WRProtocol(Protocol):
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
-        log.debug("Response: " + resp)
+        log.debug("Response: " + resp.decode('utf-8'))
         return resp
 
     def release(self, resource_uri, enumeration_ctx):
