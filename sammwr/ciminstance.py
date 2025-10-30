@@ -362,7 +362,7 @@ class CimInstanceIterator:
 		return _ec, items
 
 # https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
-class WsManFault(SoapFault):
+class WsManFault(Exception):
 	def __init__(self, wmf_detail, ns, soap_fault):
 		self.detail = wmf_detail.text
 		self.code = wmf_detail.attrib.get('Code')
@@ -395,7 +395,7 @@ class WsManFault(SoapFault):
 			fault_list.append(f"      Inner Fault: {str(self.provider_fault)}")
 		super().__init__("\n".join(fault_list))
 
-class MSFT_WmiError(SoapFault):
+class MSFT_WmiError(Exception):
 	def __init__(self, err_instance, wsman_fault=None, soap_fault=None):
 		self.soap_fault=soap_fault
 		self.wsman_fault=wsman_fault
