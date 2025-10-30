@@ -1,6 +1,7 @@
 import struct
 import binascii
 from cryptography import x509
+import re
 
 def cert_key_prov_info(s):
     offset_to_container_name, offset_to_provider_name, provider_type, \
@@ -89,3 +90,10 @@ def hexdump(binstring):
       print("%02x " % binstring[pos], end='')
    print('')
 
+def tagns(tag):
+    if "{" not in tag:
+        return None, tag
+    tagmatch = re.match(r"\{(.+)\}(.+)", tag)
+    if tagmatch is None:
+        raise TypeError(f"Invalid xml tag {tag}")
+    return tagmatch.group(1), tagmatch.group(2)
