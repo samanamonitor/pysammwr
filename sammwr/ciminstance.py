@@ -2,6 +2,9 @@ import re
 import xml.etree.ElementTree as ET
 from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
+import logging
+
+log = logging.getLogger(__name__)
 
 schema_cache = {}
 
