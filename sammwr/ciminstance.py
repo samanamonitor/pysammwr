@@ -116,7 +116,7 @@ class CimInstance(CimClass):
 				'send_cbt','proxy']
 			for k in proto_keys:
 				if k in kwargs:
-					proto_kwargs[k] = kwargs[k]
+					proto_kwargs[k] = kwargs.pop(k)
 			self.p = WRProtocol(**proto_kwargs)
 		else:
 			self.p = protocol
