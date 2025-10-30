@@ -7,7 +7,7 @@ import xmltodict
 import uuid
 import os
 import io
-from .utils import tagns
+from .utils import tagns, get_xml_namespaces
 
 import logging
 
@@ -20,7 +20,7 @@ class SoapFault(Exception):
     def __init__(self, fault_element, root=None, response_text=""):
         self.root = root
         self.response_text = response_text
-        self._get_namespaces()
+        self.namespaces = get_xml_namespaces(response_text)
         if not isinstance(fault_element, ET.Element):
             raise TypeError
 
@@ -57,24 +57,7 @@ class SoapFault(Exception):
                 detail_types.append(tag)
             detail_str = ",".join(detail_types)
 
-        super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
-
-    def _get_namespaces(self):
-        """
-        Extracts all declared namespaces from an XML file.
-
-        Args:
-            xml_file_path (str): The path to the XML file.
-
-        Returns:
-            dict: A dictionary where keys are namespace prefixes (or an empty string for the default namespace)
-                  and values are the corresponding namespace URIs.
-        """
-        f=io.StringIO(self.response_text)
-        self.namespaces = {}
-        for event, node in ET.iterparse(f, events=['start-ns']):
-            prefix, uri = node
-            self.namespaces[prefix] = uri
+        super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' fault_detail: '{self.fault_detail}' detail: '{detail_str}'")
 
     def _process_subcode(self, element):
         out = {}

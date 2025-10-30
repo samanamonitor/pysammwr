@@ -97,3 +97,21 @@ def tagns(tag):
     if tagmatch is None:
         raise TypeError(f"Invalid xml tag {tag}")
     return tagmatch.group(1), tagmatch.group(2)
+
+def get_xml_namespaces(response_text):
+    """
+    Extracts all declared namespaces from an XML file.
+
+    Args:
+        xml_file_path (str): The path to the XML file.
+
+    Returns:
+        dict: A dictionary where keys are namespace prefixes (or an empty string for the default namespace)
+              and values are the corresponding namespace URIs.
+    """
+    f=io.StringIO(response_text)
+    namespaces = {}
+    for event, node in ET.iterparse(f, events=['start-ns']):
+        prefix, uri = node
+        namespaces[prefix] = uri
+    return namespaces
