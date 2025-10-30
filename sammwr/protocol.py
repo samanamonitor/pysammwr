@@ -54,7 +54,7 @@ class SoapFault(Exception):
                     self.fault_detail = d.text
                     continue
                 (_, tag) = tagns(d.tag)
-                detail_types.append(dt.tag)
+                detail_types.append(d.tag)
             detail_str = ",".join(detail_types)
 
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' detail: '{detail_str}'")
