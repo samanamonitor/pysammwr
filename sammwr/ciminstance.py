@@ -146,6 +146,41 @@ class CimMethod:
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} params={str(self.params)}>"
 
+class CimClassSchema:
+	def __init__(self, cimnamespace, root):
+		self.root = root
+		self.cimnamespace = cimnamespace
+		self.name = root.attrib.get('NAME')
+		self.property = {}
+		self.method = {}
+		for i in self.root:
+			if i.tag[:len("PROPERTY")] == "PROPERTY":
+				prop = CimProperty(i)
+				_ = self.property.setdefault(prop.name, prop)
+			elif i.tag[:len("METHOD")] == "METHOD":
+				method = CimMethod(i)
+				_ = self.method.setdefault(method.name, method)
+
+	@property
+	def props(self):
+		return [ pname for pname in self.property ]
+
+	@property
+	def methods(self):
+		return [ mname for mname in self.method ]
+
+	def __getattr__(self, key):
+		prop = self.property.get(key)
+		if prop is not None:
+			return prop
+		method = self.method.get(key)
+		if method is not None:
+			return method
+		raise AttributeError(f"{key} is not a property or a method in class {self.name} cimnamespace {self.cimnamespace}.")
+
+	def __repr__(self):
+		return f"<self.__class__.__name__ cimnamespace={self.cimnamespace} name={self.name} properties={self.props} methods={self.methods}>"
+
 def NewCimInstance(type, value):
 	if type is None:
 		raise TypeError("Invalid type 'None'")
@@ -379,21 +414,7 @@ class CimInstance(CimClass):
 			log.debug("Cache hit for %s", cache_key)
 		schema_root=ET.fromstring(schema_str)
 		self.schema =  schema_root.find(".//CLASS")
-		if cache_key in newschema_cache:
-			return
-		schema = {
-			'root': self.schema,
-			'property': {},
-			'method': {}
-		}
-		for i in self.schema:
-			if i.tag[:len("PROPERTY")] == "PROPERTY":
-				prop = CimProperty(i)
-				schema['property'][prop.name] = prop
-			elif i.tag[:len("METHOD")] == "METHOD":
-				method = CimMethod(i)
-				schema['method'][method.name] = method
-		newschema_cache[cache_key] = schema
+		self.newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
 
 	def get(self):
 		selectors = []
