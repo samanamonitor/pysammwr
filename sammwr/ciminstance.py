@@ -10,6 +10,7 @@ ns = {
 }
 
 schema_cache = {}
+newschema_cache = {}
 
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
@@ -372,14 +373,21 @@ class CimInstance(CimClass):
 			log.debug("Cache hit for %s", cache_key)
 		schema_root=ET.fromstring(schema_str)
 		self.schema =  schema_root.find(".//CLASS")
+		if cache_key in newschema_cache:
+			return
 		class_object = {
+			'root': schema_root,
 			'property': {},
-			'method': {},
+			'method': {}
 		}
-		for i in self.schema_root:
+		for i in schema_root:
 			if i.tag[:len("PROPERTY")] == len("PROPERTY"):
 				prop = CIMProperty(i)
-
+				class_object['property'][prop.name] = prop
+			elif i.tag[:len("METHOD")] == len("METHOD"):
+				method = CimMethod(i)
+				class_object['method'][method.name] = method
+		newschema_cache[cache_key]
 
 	def get(self):
 		selectors = []
