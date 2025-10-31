@@ -124,7 +124,7 @@ class CimParamProp:
 			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root)}")
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} type={self.type} cim_type={self.cim_type}>"
+		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} type={self.type} cim_type={self.cim_type.__name__}>"
 
 class CimProperty(CimParamProp):
 	typename="PROPERTY"
