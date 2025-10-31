@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
+import datetime.datetime
 
 log = logging.getLogger(__name__)
 ns = {
@@ -39,6 +40,8 @@ class CimString(CimClass):
 			self.value = value.value
 		elif isinstance(value, str):
 			self.value = value
+		elif isinstance(value, ET.Element):
+			self.value = value.text
 		elif value is None:
 			self.value = value
 		else:
@@ -53,6 +56,8 @@ class CimBoolean(CimClass):
 			self.value = value
 		elif isinstance(value, str):
 			self.value = bool(value)
+		elif isinstance(value, ET.Element):
+			self.value = bool(value.text)
 		elif value is None:
 			self.value = value
 		else:
@@ -68,7 +73,13 @@ class CimInt(CimClass):
 		elif isinstance(value, str):
 			try:
 				self.value = int(value)
-			except ValueError("Invalid int", value) as e:
+			except ValueError("Invalid int ", value) as e:
+				log.error(e)
+				self.value = -1
+		elif isinstance(value, ET.Element):
+			try:
+				self.value = int(value.text)
+			except ValueError("Invalid int ", value.text) as e:
 				log.error(e)
 				self.value = -1
 		elif value is None:
@@ -85,9 +96,26 @@ class CimDateTime(CimClass):
 		if isinstance(value, CimDateTime):
 			self.value = value.value
 			return
+		elif isinstance(value, ET.Element):
+			dt = value.find("{*}Datetime")
+			if dt is None:
+				self.value = None
+			self.value = datetime.fromisoformat(dt.text)
 		elif value is None:
 			self.value = value
 		self.value = "undefined"
+
+	def dict(self):
+		if self.value is None:
+			return { 
+				"@xsi:type": self.type_name,
+				"@xsi:nil": "true" 
+			}
+		return {
+			"@xmlns:cim": self.xmlns,
+			"@xsi:type": self.type_name,
+			"#text": datetime.isoformat(self.value)
+		}
 
 cim_types={
 	"boolean": CimBoolean,
@@ -137,14 +165,18 @@ class CimMethod:
 		self.root = root
 		self.name = root.attrib.get('NAME')
 		self.value_type = root.attrib.get('TYPE')
-		self.params = {}
+		self.parameter = {}
 		for param in self.root:
 			if param.tag[:len("PARAMETER")] == "PARAMETER":
 				_param = CimParameter(param)
-				self.params[_param.name] = _param
+				_ = self.parameters.setdefault(_param.name, _param)
+
+	@property
+	def params(self):
+		return [ param for param in self.parameters ]
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} params={str(self.params)}>"
+		return f"<{self.__class__.__name__} name='{self.name}' value_type='{self.value_type}' params={str(self.params)}>"
 
 class CimClassSchema:
 	def __init__(self, cimnamespace, root):
@@ -176,10 +208,10 @@ class CimClassSchema:
 		method = self.method.get(key)
 		if method is not None:
 			return method
-		raise AttributeError(f"{key} is not a property or a method in class {self.name} cimnamespace {self.cimnamespace}.")
+		raise AttributeError(f"{key} is not a property or a method in class '{self.name}' cimnamespace '{self.cimnamespace}'.")
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} cimnamespace={self.cimnamespace} name={self.name} properties={self.props} methods={self.methods}>"
+		return f"<{self.__class__.__name__} cimnamespace='{self.cimnamespace}' name='{self.name}' properties={self.props} methods={self.methods}>"
 
 def NewCimInstance(type, value):
 	if type is None:
@@ -325,46 +357,30 @@ class CimInstance(CimClass):
 
 	def set_xml(self, prop):
 		_, prop_name = tagns(prop.tag)
-		schema_prop = self.schema.find(f".//PROPERTY[@NAME='{prop_name}']")
-		is_list = False
 
-		if schema_prop is None:
-			schema_prop = self.schema.find(f".//PROPERTY.ARRAY[@NAME='{prop_name}']")
-			is_list = True
-		if schema_prop is None:
-			raise AttributeError("Invalid property " + prop_name + "in class " + self.class_name)
+		schema_prop = getattr(self.newschema, prop_name)
 
-		prop_type = schema_prop.attrib.get('TYPE')
-		if prop_type is None:
-			raise AttributeError(f"Schema invalid. Property {prop_name} in schema doesn't have type")
-
-		value = NewCimInstanceXml(prop_type, prop, self.cimnamespace, self.p)
-		if not is_list:
-			self.properties[prop_name] = value
+		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
+		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString':
+			class_name = xsitype_to_class_name(xsitype)
+			value = CimInstance(cimnamespace, class_name, xml=prop, protocol=protocol)
 		else:
+			value = schema_prop.cim_type(prop)
+
+		if schema_prop.type == 'array':
 			_ = self.properties.setdefault(prop_name, []).append(value)
+		else:
+			self.properties.setdefault(prop_name, value)
 		return value
 
 	def set(self, prop_name, prop_value):
-		schema_prop = self.schema.find(f".//PROPERTY[@NAME='{prop_name}']")
-		is_list = False
+		schema_prop = getattr(self.newschema, prop_name)
+		value = schema_prop.cim_type(prop)
 
-		if schema_prop is None:
-			schema_prop = self.schema.find(f".//PROPERTY.ARRAY[@NAME='{prop_name}']")
-			is_list = True
-			if schema_prop is None:
-				raise AttributeError("Invalid property " + prop_name + 
-					"in class " + self.class_name)
-
-		prop_type = schema_prop.attrib.get('TYPE')
-		if prop_type is None:
-			raise AttributeError(f"Schema invalid. Property {prop_name} in schema doesn't have type")
-
-		value = NewCimInstance(prop_type, prop_value)
-		if not is_list:
-			self.properties[prop_name] = value
+		if schema_prop.type == 'array':
+			_ = self.properties.setdefault(prop_name, []).append(value)
 		else:
-			self.properties.setdefault(prop_name, []).append(value)
+			self.properties.setdefault(prop_name, value)
 		return value
 
 	def dict(self):
