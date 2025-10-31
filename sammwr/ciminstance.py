@@ -224,7 +224,7 @@ def NewCimInstance(type, value):
 	return cl(value)
 
 def xsitype_to_class_name(s):
-	m = re.match(r"[^:]+:(.+)_Type", s)
+	m = re.match(r"[^:]+:(.+)(_Type)?", s)
 	if m is None:
 		raise TypeError("Invalid xsi:type " + s)
 	return m.group(1)
