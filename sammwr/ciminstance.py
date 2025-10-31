@@ -80,6 +80,10 @@ class CimInt(CimClass):
 				log.error(e)
 				self.value = -1
 		elif isinstance(value, ET.Element):
+			nil = bool(value.attrib.get(f"{{{ns['xsi']}}}nil", "false"))
+			if nil:
+				self.value = None
+				return
 			try:
 				self.value = int(value.text)
 			except ValueError("Invalid int ", value.text) as e:
