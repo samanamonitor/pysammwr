@@ -179,7 +179,7 @@ class CimClassSchema:
 		raise AttributeError(f"{key} is not a property or a method in class {self.name} cimnamespace {self.cimnamespace}.")
 
 	def __repr__(self):
-		return f"<self.__class__.__name__ cimnamespace={self.cimnamespace} name={self.name} properties={self.props} methods={self.methods}>"
+		return f"<{self.__class__.__name__} cimnamespace={self.cimnamespace} name={self.name} properties={self.props} methods={self.methods}>"
 
 def NewCimInstance(type, value):
 	if type is None:
