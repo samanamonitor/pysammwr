@@ -243,10 +243,13 @@ def NewCimInstance(type, value):
 	return cl(value)
 
 def xsitype_to_class_name(s):
-	m = re.match(r"[^:]+:(.+)(_Type)?", s)
-	if m is None:
-		raise TypeError("Invalid xsi:type " + s)
-	return m.group(1)
+	typelist = s.split(":")
+	class_name = typelist[0]
+	if len(typelist) > 1:
+		class_name = typelist[1]
+	if "_Type" in class_name:
+		class_name = class_name[:-len("_Type")]
+	return class_name
 
 def NewCimInstanceXml(type, xe, cimnamespace=None, protocol=None):
 	if type is None:
