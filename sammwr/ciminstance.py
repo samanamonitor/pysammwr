@@ -381,7 +381,7 @@ class CimInstance(CimClass):
 		schema_prop = getattr(self.newschema, prop_name)
 
 		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
-		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString':
+		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString' and xsitype[:4] != "cim:":
 			log.debug(prop.attrib)
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
