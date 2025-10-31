@@ -165,7 +165,7 @@ class CimMethod:
 		self.root = root
 		self.name = root.attrib.get('NAME')
 		self.value_type = root.attrib.get('TYPE')
-		self.parameter = {}
+		self.parameters = {}
 		for param in self.root:
 			if param.tag[:len("PARAMETER")] == "PARAMETER":
 				_param = CimParameter(param)
