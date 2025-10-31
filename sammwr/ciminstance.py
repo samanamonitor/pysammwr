@@ -13,6 +13,9 @@ ns = {
 schema_cache = {}
 newschema_cache = {}
 
+def cache():
+	return newschema_cache
+
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
 	def dict(self):
