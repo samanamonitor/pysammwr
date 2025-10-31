@@ -322,13 +322,11 @@ class CimInstance(CimClass):
 
 	@property
 	def props(self):
-		out = [ name.attrib.get("NAME") for name in self.schema.findall(".//PROPERTY") ]
-		out += [ name.attrib.get("NAME") for name in self.schema.findall(".//PROPERTY.ARRAY") ]
-		return out
+		return self.newschema.property.key()
 
 	@property
 	def methods(self):
-		return [ name.attrib.get("NAME") for name in self.schema.findall(".//METHOD") ]
+		return self.newschema.method.key()
 
 	def run_method(self, method_name, **kwargs):
 		properties = {}
@@ -386,7 +384,7 @@ class CimInstance(CimClass):
 		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString':
 			log.debug(prop.attrib)
 			class_name = xsitype_to_class_name(xsitype)
-			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.protocol)
+			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
 		else:
 			value = schema_prop.cim_type(prop)
 
