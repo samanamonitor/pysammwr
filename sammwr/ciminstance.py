@@ -375,7 +375,7 @@ class CimInstance(CimClass):
 		self.schema =  schema_root.find(".//CLASS")
 		if cache_key in newschema_cache:
 			return
-		class_object = {
+		schema = {
 			'root': schema_root,
 			'property': {},
 			'method': {}
@@ -383,11 +383,11 @@ class CimInstance(CimClass):
 		for i in schema_root:
 			if i.tag[:len("PROPERTY")] == len("PROPERTY"):
 				prop = CIMProperty(i)
-				class_object['property'][prop.name] = prop
+				schema['property'][prop.name] = prop
 			elif i.tag[:len("METHOD")] == len("METHOD"):
 				method = CimMethod(i)
-				class_object['method'][method.name] = method
-		newschema_cache[cache_key]
+				schema['method'][method.name] = method
+		newschema_cache[cache_key] = schema
 
 	def get(self):
 		selectors = []
