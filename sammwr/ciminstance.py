@@ -411,6 +411,7 @@ class CimInstance(CimClass):
 		return f"<{self.cimnamespace}/{self.class_name}>" + self.properties.__repr__()
 
 	def _get_schema_xml(self, cimnamespace, class_name):
+		global newschema_cache
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
