@@ -140,6 +140,7 @@ class WRProtocol(Protocol):
                         raise
                 else:
                     try:
+                        log.debug("ResponseError: " + ex.response_text)
                         # if response is XML-parseable, it's probably a SOAP fault; extract the details
                         root = ET.fromstring(ex.response_text)
                         fault = root.find('s:Body/s:Fault', self.xmlns)
