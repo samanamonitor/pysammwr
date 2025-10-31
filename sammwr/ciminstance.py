@@ -88,7 +88,7 @@ class CimInt(CimClass):
 				log.error(e)
 				self.value = -1
 		elif isinstance(value, ET.Element):
-			nil = bool(value.attrib.get(f"{{{ns['xsi']}}}nil", "false"))
+			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -381,7 +381,7 @@ class CimInstance(CimClass):
 		schema_prop = getattr(self.newschema, prop_name)
 
 		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
-		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString' and xsitype[:4] != "cim:":
+		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
 			log.debug(prop.attrib)
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
@@ -391,7 +391,7 @@ class CimInstance(CimClass):
 		if schema_prop.type == 'array':
 			_ = self.properties.setdefault(prop_name, []).append(value)
 		else:
-			self.properties.setdefault(prop_name, value)
+			_ = self.properties.setdefault(prop_name, value)
 		return value
 
 	def set(self, prop_name, prop_value):
