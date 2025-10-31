@@ -386,7 +386,7 @@ class CimInstance(CimClass):
 		if xsitype is not None and schema_prop.cim_type.__name__ == 'CimString':
 			log.debug(prop.attrib)
 			class_name = xsitype_to_class_name(xsitype)
-			value = CimInstance(cimnamespace, class_name, xml=prop, protocol=protocol)
+			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=protocol)
 		else:
 			value = schema_prop.cim_type(prop)
 
