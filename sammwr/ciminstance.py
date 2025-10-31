@@ -448,7 +448,7 @@ class CimInstance(CimClass):
 				schema_root=ET.fromstring(schema_str)
 				self.schema =  schema_root.find(".//CLASS")
 				self.newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
-				newschema_cache = self.newschema
+				newschema_cache.setdefault(cache_key, self.newschema)
 			except SoapFault as sf:
 				raise self._soap_fault(sf)
 		else:
