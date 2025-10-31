@@ -44,7 +44,7 @@ class CimString(CimClass):
 		elif isinstance(value, str):
 			self.value = value
 		elif isinstance(value, ET.Element):
-			nil = bool(value.attrib.get(f"{{{ns['xsi']}}}nil", "false"))
+			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -64,7 +64,7 @@ class CimBoolean(CimClass):
 		elif isinstance(value, str):
 			self.value = bool(value)
 		elif isinstance(value, ET.Element):
-			nil = bool(value.attrib.get(f"{{{ns['xsi']}}}nil", "false"))
+			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -112,7 +112,7 @@ class CimDateTime(CimClass):
 			self.value = value.value
 			return
 		elif isinstance(value, ET.Element):
-			nil = bool(value.attrib.get(f"{{{ns['xsi']}}}nil", "false"))
+			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
