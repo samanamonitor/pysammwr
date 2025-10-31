@@ -5,6 +5,9 @@ from .utils import tagns, get_xml_namespaces
 import logging
 
 log = logging.getLogger(__name__)
+ns = {
+	"xsi": "http://www.w3.org/2001/XMLSchema-instance"
+}
 
 schema_cache = {}
 
@@ -98,6 +101,44 @@ cim_types={
 	"uint8": CimUnsignedInt
 }
 
+class CimParamProp:
+	def __init__(self, root):
+		self.root = root
+		self.name = root.attrib.get('NAME')
+		self.value_type = root.attrib.get('TYPE')
+		self.type = None
+		self.cim_type = cim_types.get(self.value_type)
+		if self.cim_type is None:
+			raise TypeError(f"Invalid cim_type {self.typename} data={ET.tostring(root)}")
+		if len(root.tag) < len(self.typename):
+			raise TypeError(f"Invalid tag {self.typename} data={ET.tostring(root)}")
+		tag = root.tag[len(self.typename):]
+		if tag == "":
+			self.type = "singleton"
+		elif root.tag == "PROPERTY.ARRAY":
+			self.type = 'array'
+		elif root.tag == "PROPERTY.REFERENCE":
+			self.type == 'reference'
+		else:
+			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root)}")
+
+class CimProperty(CimParamProp):
+	typename="PROPERTY"
+
+class CimParameter(CimParamProp):
+	typename="PARAMETER"
+
+class CimMethod:
+	def __init__(self, root):
+		self.root = root
+		self.name = root.attrib.get('NAME')
+		self.value_type = root.attrib.get('TYPE')
+		self.params = {}
+		for param in self.root:
+			if param.tag[:len("PROPERTY")] == "PROPERTY":
+				_param = CimParameter(param)
+				self.params[_param.name] = _param
+
 def NewCimInstance(type, value):
 	if type is None:
 		raise TypeError("Invalid type 'None'")
@@ -108,8 +149,30 @@ def NewCimInstance(type, value):
 		raise TypeError(type)
 	return cl(value)
 
+def xsitype_to_class_name(s):
+	m = re.match(r"[^:]+:(.+)_Type", s)
+	if m is None:
+		raise TypeError("Invalid xsi:type " + s)
+	return m.group(1)
+
+def NewCimInstanceXml(type, xe, cimnamespace=None, protocol=None):
+	if type is None:
+		raise TypeError("Invalid type 'None'")
+
+	if isinstance(value, CimClass):
+		return value
+
+	xsitype = xe.attrib.get(f"{{{ns['xsi']}}}type")
+	if xsitype is not None and type == 'string':
+		class_name = xsitype_to_class_name(xsitype)
+		return CimInstance(cimnamespace, class_name, xml=xe, protocol=protocol)
+
+	cl = cim_types.get(type)
+	if cl is None:
+		raise TypeError("type not defined " + type)
+
 class CimInstance(CimClass):
-	def __init__(self, namespace, class_name=None, xml=None, protocol=None, **kwargs):
+	def __init__(self, cimnamespace, class_name=None, xml=None, protocol=None, **kwargs):
 		if protocol is None:
 			proto_kwargs = {}
 			proto_keys = [ 'endpoint','transport','username','password','realm','service',
@@ -121,57 +184,54 @@ class CimInstance(CimClass):
 				if k in kwargs:
 					proto_kwargs[k] = kwargs.pop(k)
 			self.p = WRProtocol(**proto_kwargs)
+
 		else:
 			self.p = protocol
-		self.namespace = namespace
+
+		self.cimnamespace = cimnamespace
 		self.ns = "p1"
 		self.properties = {}
 		self.class_name = self._get_class_name(xml, class_name)
-		if self.namespace is None or self.class_name is None:
-			raise TypeError("Must define 'namespace' and 'class_name'.")
-		self.schema = self._get_schema_xml(self.namespace, self.class_name)
+
+		if self.cimnamespace is None or self.class_name is None:
+			raise TypeError("Must define 'cimnamespace' and 'class_name'.")
+
+		self._get_schema_xml(self.cimnamespace, self.class_name)
+
 		if xml is not None:
 			self._from_xml(xml)
 		else:
 			for prop_name, prop_value in kwargs.items():
 				self.set(prop_name, prop_value)
+
 	@property
 	def schema_uri(self):
 		return f"http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/{self.class_name}"
+
 	@property
 	def resource_uri(self):
-		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.namespace}/{self.class_name}"
+		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
+
 	def _get_class_name(self, element, class_name):
-		if not isinstance(element, ET.Element):
-			return class_name
-		etype = element.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
+		etype = element.attrib.get(f"{{{ns['xsi']}}}type")
 		if etype is None:
 			return class_name
-		retype = re.match(r'[^:]+:(.*)_Type', etype)
-		if retype is None :
-			return class_name
-		return retype.group(1)
+		return xsitype_to_class_name(etype)
+
 	def _from_xml(self, xml):
-		if not isinstance(xml, ET.Element):
-			raise TypeError("Parameter 'xml' must be ET.Element")
 		for prop in xml:
-			prop_name = prop.tag
-			tagmatch = re.match(r'\{[^\}]+\}(.*)', prop_name)
-			if tagmatch is not None:
-				prop_name = tagmatch.group(1)
-			if len(prop) > 0:
-				value = CimInstance(self.namespace, xml=prop, protocol=self.p)
-			else:
-				value = prop.text
-			self.set(prop_name, value)
+			self.set_xml(prop)
+
 	@property
 	def props(self):
 		out = [ name.attrib.get("NAME") for name in self.schema.findall(".//PROPERTY") ]
 		out += [ name.attrib.get("NAME") for name in self.schema.findall(".//PROPERTY.ARRAY") ]
 		return out
+
 	@property
 	def methods(self):
 		return [ name.attrib.get("NAME") for name in self.schema.findall(".//METHOD") ]
+
 	def run_method(self, method_name, **kwargs):
 		properties = {}
 		method = self.schema.find(f".//METHOD[@NAME='{method_name}']")
@@ -194,7 +254,7 @@ class CimInstance(CimClass):
 			else:
 				properties.setdefault(prop_name, []).append(value)
 		try:
-			ret = self.p.execute_method(self.namespace, self.schema_uri, method_name, **properties)
+			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **properties)
 			root = ET.fromstring(ret)
 			output = root.find(f".//p:{method_name}_OUTPUT", {"p": self.schema_uri})
 			return_value_e = output.find("p:ReturnValue", {"p": self.schema_uri})
@@ -213,28 +273,56 @@ class CimInstance(CimClass):
 			if itype_re is None:
 				raise TypeError("Invalid 'type' attribute.cmdletOutput: "+ ET.tostring(cmdletOutput))
 			class_name = itype_re.group(2)
-			log.debug(f"{self.namespace}/{class_name}")
-			instance = CimInstance(self.namespace, class_name, cmdletOutput, protocol=self.p)
+			log.debug(f"{self.cimnamespace}/{class_name}")
+			instance = CimInstance(self.cimnamespace, class_name, cmdletOutput, protocol=self.p)
 			return return_value, instance
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
+
+	def set_xml(self, prop):
+		_, prop_name = tagns(prop.tag)
+		schema_prop = self.schema.find(f".//PROPERTY[@NAME='{prop_name}']")
+		is_list = False
+
+		if schema_prop is None:
+			schema_prop = self.schema.find(f".//PROPERTY.ARRAY[@NAME='{prop_name}']")
+			is_list = True
+		if schema_prop is None:
+			raise AttributeError("Invalid property " + prop_name + "in class " + self.class_name)
+
+		prop_type = schema_prop.attrib.get('TYPE')
+		if prop_type is None:
+			raise AttributeError(f"Schema invalid. Property {prop_name} in schema doesn't have type")
+
+		value = NewCimInstanceXml(prop_type, prop, self.cimnamespace, self.p)
+		if not is_list:
+			self.properties[prop_name] = value
+		else:
+			_ = self.properties.setdefault(prop_name, []).append(value)
+		return value
+
 	def set(self, prop_name, prop_value):
 		schema_prop = self.schema.find(f".//PROPERTY[@NAME='{prop_name}']")
 		is_list = False
+
 		if schema_prop is None:
 			schema_prop = self.schema.find(f".//PROPERTY.ARRAY[@NAME='{prop_name}']")
 			is_list = True
 			if schema_prop is None:
-				raise AttributeError("Invalid property " + prop_name + "in class " + self.class_name)
+				raise AttributeError("Invalid property " + prop_name + 
+					"in class " + self.class_name)
+
 		prop_type = schema_prop.attrib.get('TYPE')
 		if prop_type is None:
 			raise AttributeError(f"Schema invalid. Property {prop_name} in schema doesn't have type")
+
 		value = NewCimInstance(prop_type, prop_value)
 		if not is_list:
 			self.properties[prop_name] = value
 		else:
 			self.properties.setdefault(prop_name, []).append(value)
 		return value
+
 	def dict(self):
 		out = {}
 		for k, v in self.properties.items():
@@ -247,6 +335,7 @@ class CimInstance(CimClass):
 		out[f"@xmlns:{self.ns}"] = self.schema_uri
 		out["@xsi:type"] = f"{self.ns}:{self.class_name}_Type"	
 		return out
+
 	def __getattr__(self, attr):
 		if attr not in self.props:
 			raise AttributeError(attr)
@@ -256,28 +345,42 @@ class CimInstance(CimClass):
 		elif isinstance(value, list):
 			return value
 		return value
+
 	def __repr__(self):
-		return f"<{self.namespace}/{self.class_name}>" + self.properties.__repr__()
-	def _get_schema_xml(self, namespace, class_name):
+		return f"<{self.cimnamespace}/{self.class_name}>" + self.properties.__repr__()
+
+	def _get_schema_xml(self, cimnamespace, class_name):
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
-		cache_key = "_".join(["schema", namespace, class_name])
+		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
 		if schema_str is None:
 			try:
 				schema_str = self.p.get(schema_uri, selector=[{
 						'@Name': '__cimnamespace',
-						'#text': namespace
+						'#text': cimnamespace
 					},
 					{
 						'@Name': 'ClassName',
 						'#text': class_name
 					}])
+				schema_cache[cache_key] = schema_str
 			except SoapFault as sf:
 				raise self._soap_fault(sf)
 		else:
 			log.debug("Cache hit for %s", cache_key)
 		schema_root=ET.fromstring(schema_str)
-		return schema_root.find(".//CLASS")
+		self.schema =  schema_root.find(".//CLASS")
+		class_object = {
+			'property': {},
+			'method': {},
+
+		}
+		for i in self.schema_root:
+			if i.tag == "PROPERTY":
+				prop_name = i.attrib.get('NAME')
+				prop_type = i.attrib.get('TYPE')
+
+
 	def get(self):
 		selectors = []
 		for k, v in self.properties.items():
@@ -293,6 +396,7 @@ class CimInstance(CimClass):
 			self._from_xml(obj)
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
+
 	def delete(self, properties=[]):
 		selectors = []
 		for k in properties:
@@ -307,6 +411,7 @@ class CimInstance(CimClass):
 			return res
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
+
 	def _soap_fault(self, sf):
 		fault_detail = ""
 		wmfe = None
@@ -328,24 +433,24 @@ class CimInstance(CimClass):
 	def __str__(self):
 		return self.__repr__()
 	def __iter__(self):
-		return CimInstanceIterator(self.namespace, self.class_name, self.p)
+		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p)
 
 class CimInstanceIterator:
-	def __init__(self, namespace, class_name, protocol):
-		self.namespace = namespace
+	def __init__(self, cimnamespace, class_name, protocol):
+		self.cimnamespace = cimnamespace
 		self.class_name = class_name
 		self.protocol = protocol
 		self.ec, self.items = self.enumerate()
 	@property
 	def resource_uri(self):
-		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.namespace}/{self.class_name}"
+		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 	def __next__(self):
 		if len(self.items) == 0:
 			if self.ec is None:
 				raise StopIteration
 			(self.ec, self.items) = self.pull(self.ec)
 		i = self.items.pop()
-		return CimInstance(self.namespace, self.class_name, 
+		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
 	def enumerate(self, max_elements=50, selector=None):
 		_txt_enum = self.protocol.enumerate(self.resource_uri, optimize=True, 
