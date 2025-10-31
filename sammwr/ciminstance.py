@@ -135,7 +135,7 @@ class CimMethod:
 		self.value_type = root.attrib.get('TYPE')
 		self.params = {}
 		for param in self.root:
-			if param.tag[:len("PROPERTY")] == "PROPERTY":
+			if param.tag[:len("PARAMETER")] == "PARAMETER":
 				_param = CimParameter(param)
 				self.params[_param.name] = _param
 
@@ -373,12 +373,10 @@ class CimInstance(CimClass):
 		class_object = {
 			'property': {},
 			'method': {},
-
 		}
 		for i in self.schema_root:
-			if i.tag == "PROPERTY":
-				prop_name = i.attrib.get('NAME')
-				prop_type = i.attrib.get('TYPE')
+			if i.tag[:len("PROPERTY")] == len("PROPERTY"):
+				prop = CIMProperty(i)
 
 
 	def get(self):
