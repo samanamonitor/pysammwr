@@ -143,6 +143,9 @@ class CimMethod:
 				_param = CimParameter(param)
 				self.params[_param.name] = _param
 
+	def __repr__(self):
+		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} params={str(self.params)}>"
+
 def NewCimInstance(type, value):
 	if type is None:
 		raise TypeError("Invalid type 'None'")
