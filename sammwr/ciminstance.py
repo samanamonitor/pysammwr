@@ -381,10 +381,10 @@ class CimInstance(CimClass):
 			'method': {}
 		}
 		for i in self.schema:
-			if i.tag[:len("PROPERTY")] == len("PROPERTY"):
+			if i.tag[:len("PROPERTY")] == "PROPERTY":
 				prop = CIMProperty(i)
 				schema['property'][prop.name] = prop
-			elif i.tag[:len("METHOD")] == len("METHOD"):
+			elif i.tag[:len("METHOD")] == "METHOD":
 				method = CimMethod(i)
 				schema['method'][method.name] = method
 		newschema_cache[cache_key] = schema
