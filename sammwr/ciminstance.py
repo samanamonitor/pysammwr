@@ -382,7 +382,7 @@ class CimInstance(CimClass):
 		}
 		for i in self.schema:
 			if i.tag[:len("PROPERTY")] == "PROPERTY":
-				prop = CIMProperty(i)
+				prop = CimProperty(i)
 				schema['property'][prop.name] = prop
 			elif i.tag[:len("METHOD")] == "METHOD":
 				method = CimMethod(i)
