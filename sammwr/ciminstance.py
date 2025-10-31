@@ -414,6 +414,7 @@ class CimInstance(CimClass):
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
+		newschema = newschema_cache.get(cache_key)
 		if schema_str is None:
 			try:
 				schema_str = self.p.get(schema_uri, selector=[{
@@ -475,8 +476,12 @@ class CimInstance(CimClass):
 			elif tag == "WSManFault":
 				wmfe = WsManFault(i, ns, sf)
 			elif tag == "MSFT_WmiError":
-				errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
-				wmie = MSFT_WmiError(errinst, wmfe, sf)
+				try:
+					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
+					wmie = MSFT_WmiError(errinst, wmfe, sf)
+				except Exception:
+					wmie=None
+					pass
 		if wmie is not None:
 			raise wmie
 		if wmfe is not None:
