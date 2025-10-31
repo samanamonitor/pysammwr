@@ -414,8 +414,8 @@ class CimInstance(CimClass):
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
-		newschema = newschema_cache.get(cache_key)
-		if schema_str is None:
+		self.newschema = newschema_cache.get(cache_key)
+		if self.newschema is None:
 			try:
 				schema_str = self.p.get(schema_uri, selector=[{
 						'@Name': '__cimnamespace',
@@ -426,13 +426,14 @@ class CimInstance(CimClass):
 						'#text': class_name
 					}])
 				schema_cache[cache_key] = schema_str
+				schema_root=ET.fromstring(schema_str)
+				self.schema =  schema_root.find(".//CLASS")
+				self.newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
+				newschema_cache = self.newschema
 			except SoapFault as sf:
 				raise self._soap_fault(sf)
 		else:
 			log.debug("Cache hit for %s", cache_key)
-		schema_root=ET.fromstring(schema_str)
-		self.schema =  schema_root.find(".//CLASS")
-		self.newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
 
 	def get(self):
 		selectors = []
