@@ -213,6 +213,8 @@ class CimInstance(CimClass):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def _get_class_name(self, element, class_name):
+		if element is None:
+			return class_name
 		etype = element.attrib.get(f"{{{ns['xsi']}}}type")
 		if etype is None:
 			return class_name
