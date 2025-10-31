@@ -122,10 +122,11 @@ class WRProtocol(Protocol):
         # TODO add message_id vs relates_to checking
         # TODO port error handling code
         retries = 0
-        log.debug("Request: " + message)
         while True:
             try:
+                log.debug("Request: " + message)
                 resp = self.transport.send_message(message)
+                log.debug("Response: " + resp.decode('utf-8'))
                 break
             except WinRMTransportError as ex:
                 if ex.response_text == '' and int(ex.code) == 400:
@@ -149,7 +150,6 @@ class WRProtocol(Protocol):
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
-        log.debug("Response: " + resp.decode('utf-8'))
         return resp
 
     def release(self, resource_uri, enumeration_ctx):
