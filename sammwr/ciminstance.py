@@ -376,7 +376,7 @@ class CimInstance(CimClass):
 		if cache_key in newschema_cache:
 			return
 		schema = {
-			'root': schema_root,
+			'root': self.schema,
 			'property': {},
 			'method': {}
 		}
