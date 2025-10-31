@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
-import datetime.datetime
+from datetime import datetime
 
 log = logging.getLogger(__name__)
 ns = {
