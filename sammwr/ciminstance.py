@@ -502,7 +502,8 @@ class CimInstance(CimClass):
 				try:
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
-				except Exception:
+				except Exception as e:
+					log.error("cannot generate wmie:" + str(e))
 					wmie=None
 					pass
 		if wmie is not None:
