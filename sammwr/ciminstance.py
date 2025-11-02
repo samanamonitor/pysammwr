@@ -500,6 +500,7 @@ class CimInstance(CimClass):
 			elif tag == "MSFT_WmiError":
 				log.debug("generate wmie")
 				try:
+					log.debug(ET.tostring(i))
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
 				except Exception as e:
