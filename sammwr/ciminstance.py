@@ -467,6 +467,7 @@ class CimInstance(CimClass):
 					'#text': str(v)
 					})
 		try:
+			log.debug("get " + self.resource_uri + " selectors=" + selectors)
 			res = self.p.get(self.resource_uri, selector=selectors)
 			root = ET.fromstring(res)
 			obj = root.find(".//{http://www.w3.org/2003/05/soap-envelope}Body/")
