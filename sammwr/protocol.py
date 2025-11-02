@@ -151,6 +151,15 @@ class WRProtocol(Protocol):
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
+            except kerberos.GSSError as e:
+                err_maj = e.args[0][1]
+                err_min = e.args[1][1]
+                if err_maj == 0x80000 and err_min == 0x25ea107:
+                    # Resets the session, so that a retry will create a new session
+                    # maj = 'No context has been established'
+                    self.transport.session = None
+                else:
+                    raise
         return resp
 
     def release(self, resource_uri, enumeration_ctx):
