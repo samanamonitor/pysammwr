@@ -4,6 +4,7 @@ from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
 from datetime import datetime
+import traceback
 
 log = logging.getLogger(__name__)
 ns = {
@@ -418,7 +419,7 @@ class CimInstance(CimClass):
 		return out
 
 	def __getattr__(self, attr):
-		if attr not in self.props:
+		if attr not in self.newschema.property.key():
 			raise AttributeError(attr)
 		value = self.properties.get(attr)
 		if isinstance(value, CimClass):
@@ -504,6 +505,7 @@ class CimInstance(CimClass):
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
 				except Exception as e:
+					traceback.print_stack()
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
 					pass
