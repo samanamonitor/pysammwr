@@ -157,18 +157,18 @@ class CimParamProp:
 		self.type = None
 		self.cim_type = cim_types.get(self.value_type)
 		if self.cim_type is None:
-			raise TypeError(f"Invalid cim_type {self.typename} data={ET.tostring(root)}")
+			raise TypeError(f"Invalid cim_type {self.typename} data={ET.tostring(root).decode("utf-8")}")
 		if len(root.tag) < len(self.typename):
-			raise TypeError(f"Invalid tag {self.typename} data={ET.tostring(root)}")
+			raise TypeError(f"Invalid tag {self.typename} data={ET.tostring(root).decode("utf-8")}")
 		tag = root.tag[len(self.typename):]
 		if tag == "":
 			self.type = "singleton"
-		elif root.tag == "PROPERTY.ARRAY":
+		elif root.tag == "PARAMETER.ARRAY":
 			self.type = 'array'
-		elif root.tag == "PROPERTY.REFERENCE":
+		elif root.tag == "PARAMETER.REFERENCE":
 			self.type == 'reference'
 		else:
-			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root)}")
+			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root).decode("utf-8")}")
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} type={self.type} cim_type={self.cim_type.__name__}>"
@@ -533,6 +533,7 @@ class CimInstanceIterator:
 	def enumerate(self, max_elements=50, selector=None):
 		_txt_enum = self.protocol.enumerate(self.resource_uri, optimize=True, 
 			max_elements=max_elements, selector=selector)
+		log.debug(_txt_enum)
 		_xml_enum = ET.fromstring(_txt_enum)
 		items = _xml_enum.findall('.//{*}Items/')
 		_ec = _xml_enum.find('.//wsen:EnumerationContext', self.protocol.xmlns).text
