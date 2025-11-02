@@ -8,6 +8,10 @@ import uuid
 import os
 import io
 from .utils import tagns, get_xml_namespaces
+try:
+    from kerberos import GSSError
+except ModuleNotFoundError:
+    GSSError=Exception
 
 import logging
 
@@ -151,7 +155,7 @@ class WRProtocol(Protocol):
                     except Exception:
                         # assume some other transport error; raise the original exception
                         raise
-            except kerberos.GSSError as e:
+            except GSSError as e:
                 err_maj = e.args[0][1]
                 err_min = e.args[1][1]
                 if err_maj == 0x80000 and err_min == 0x25ea107:
