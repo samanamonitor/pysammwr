@@ -496,11 +496,12 @@ class CimInstance(CimClass):
 				fault_detail = i.text
 			elif tag == "WSManFault":
 				wmfe = WsManFault(i, ns, sf)
+				log.debug("WSManFault: " + smfe)
 			elif tag == "MSFT_WmiError":
+				log.debug("generate wmie")
 				try:
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
-					log.debug("generate wmie")
 				except Exception:
 					wmie=None
 					pass
