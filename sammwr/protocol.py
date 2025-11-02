@@ -226,6 +226,7 @@ class WRProtocol(Protocol):
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
         res=self.send_message(xmltodict.unparse(req))
+        return res
 
     def execute_method(self, namespace, resource_uri, method_name, **kwargs):
         message_id = uuid.uuid4()
