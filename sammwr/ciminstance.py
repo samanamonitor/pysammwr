@@ -505,8 +505,10 @@ class CimInstance(CimClass):
 				try:
 					log.debug(ET.tostring(i))
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
+					log.debug("MSFT_WmiError instance created. " + errinst.__repr__())
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
 				except Exception as e:
+					log.debug()
 					traceback.print_stack()
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
