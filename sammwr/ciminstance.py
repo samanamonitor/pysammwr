@@ -602,7 +602,5 @@ class MSFT_WmiError(Exception):
 		if wsman_fault is not None:
 			fault_list.append(str(wsman_fault))
 		self.cim = err_instance
-		fault_list.append("MSFT_WmiError instance")
-		#fault_list.append(f"WMI Error({self.cim.MessageID}): {self.cim.Message}")
-		#fault_list.append(f"WMI Error: {self.cim.Message}")
+		fault_list.append(f"WMI Error({self.cim.MessageID}): {self.cim.Message}")
 		super().__init__("\n".join(fault_list))
