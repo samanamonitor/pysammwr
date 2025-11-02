@@ -287,7 +287,8 @@ class CimInstance(CimClass):
 
 		self.cimnamespace = cimnamespace
 		self.ns = "p1"
-		self.properties = {}
+		self._properties = {}
+		self._newschema = None
 		self.class_name = self._get_class_name(xml, class_name)
 
 		if self.cimnamespace is None or self.class_name is None:
@@ -323,11 +324,11 @@ class CimInstance(CimClass):
 
 	@property
 	def props(self):
-		return self.newschema.property.key()
+		return self._newschema.property.key()
 
 	@property
 	def methods(self):
-		return self.newschema.method.key()
+		return self._newschema.method.key()
 
 	def run_method(self, method_name, **kwargs):
 		properties = {}
@@ -379,7 +380,7 @@ class CimInstance(CimClass):
 	def set_xml(self, prop):
 		_, prop_name = tagns(prop.tag)
 
-		schema_prop = getattr(self.newschema, prop_name)
+		schema_prop = getattr(self._newschema, prop_name)
 
 		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
 		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
@@ -390,24 +391,24 @@ class CimInstance(CimClass):
 			value = schema_prop.cim_type(prop)
 
 		if schema_prop.type == 'array':
-			_ = self.properties.setdefault(prop_name, []).append(value)
+			_ = self._properties.setdefault(prop_name, []).append(value)
 		else:
-			_ = self.properties.setdefault(prop_name, value)
+			_ = self._properties.setdefault(prop_name, value)
 		return value
 
 	def set(self, prop_name, prop_value):
-		schema_prop = getattr(self.newschema, prop_name)
+		schema_prop = getattr(self._newschema, prop_name)
 		value = schema_prop.cim_type(prop)
 
 		if schema_prop.type == 'array':
-			_ = self.properties.setdefault(prop_name, []).append(value)
+			_ = self._properties.setdefault(prop_name, []).append(value)
 		else:
-			self.properties.setdefault(prop_name, value)
+			self._properties.setdefault(prop_name, value)
 		return value
 
 	def dict(self):
 		out = {}
-		for k, v in self.properties.items():
+		for k, v in self._properties.items():
 			value = v
 			if isinstance(v, CimClass):
 				value = v.dict()
@@ -419,9 +420,10 @@ class CimInstance(CimClass):
 		return out
 
 	def __getattr__(self, attr):
-		if attr not in self.newschema.property.key():
+		log.debug("getattr " + attr)
+		if attr not in self._newschema.property.key():
 			raise AttributeError(attr)
-		value = self.properties.get(attr)
+		value = self._properties.get(attr)
 		if isinstance(value, CimClass):
 			return value.value
 		elif isinstance(value, list):
@@ -429,14 +431,14 @@ class CimInstance(CimClass):
 		return value
 
 	def __repr__(self):
-		return f"<{self.cimnamespace}/{self.class_name}>" + self.properties.__repr__()
+		return f"<{self.cimnamespace}/{self.class_name}>" + self._properties.__repr__()
 
 	def _get_schema_xml(self, cimnamespace, class_name):
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
-		self.newschema = newschema_cache.get(cache_key)
-		if self.newschema is None:
+		self._newschema = newschema_cache.get(cache_key)
+		if self._newschema is None:
 			try:
 				schema_str = self.p.get(schema_uri, selector=[{
 						'@Name': '__cimnamespace',
@@ -449,8 +451,8 @@ class CimInstance(CimClass):
 				schema_cache[cache_key] = schema_str
 				schema_root=ET.fromstring(schema_str)
 				self.schema =  schema_root.find(".//CLASS")
-				self.newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
-				newschema_cache.setdefault(cache_key, self.newschema)
+				self._newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
+				newschema_cache.setdefault(cache_key, self._newschema)
 			except SoapFault as sf:
 				raise self._soap_fault(sf)
 		else:
@@ -458,7 +460,7 @@ class CimInstance(CimClass):
 
 	def get(self):
 		selectors = []
-		for k, v in self.properties.items():
+		for k, v in self._properties.items():
 			if v is not None:
 				selectors.append({
 					'@Name': k,
@@ -475,7 +477,7 @@ class CimInstance(CimClass):
 	def delete(self, properties=[]):
 		selectors = []
 		for k in properties:
-			v = self.properties.get(k)
+			v = self._properties.get(k)
 			if v is not None:
 				selectors.append({
 					'@Name': k,
