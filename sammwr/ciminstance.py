@@ -324,11 +324,11 @@ class CimInstance(CimClass):
 
 	@property
 	def props(self):
-		return self._newschema.property.key()
+		return self._newschema.props()
 
 	@property
 	def methods(self):
-		return self._newschema.method.key()
+		return self._newschema.methods()
 
 	def run_method(self, method_name, **kwargs):
 		properties = {}
