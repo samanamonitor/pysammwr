@@ -508,7 +508,6 @@ class CimInstance(CimClass):
 					log.debug("MSFT_WmiError instance created. ")
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
 				except Exception as e:
-					log.debug()
 					traceback.print_stack()
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
