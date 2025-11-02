@@ -421,7 +421,7 @@ class CimInstance(CimClass):
 
 	def __getattr__(self, attr):
 		log.debug("getattr " + attr)
-		if attr not in self._newschema.property.key():
+		if attr not in self._newschema.props():
 			raise AttributeError(attr)
 		value = self._properties.get(attr)
 		if isinstance(value, CimClass):
