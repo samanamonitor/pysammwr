@@ -203,29 +203,29 @@ class CimClassSchema:
 		self.root = root
 		self.cimnamespace = cimnamespace
 		self.name = root.attrib.get('NAME')
-		self.property = {}
-		self.method = {}
+		self._property = {}
+		self._method = {}
 		for i in self.root:
 			if i.tag[:len("PROPERTY")] == "PROPERTY":
 				prop = CimProperty(i)
-				_ = self.property.setdefault(prop.name, prop)
+				_ = self._property.setdefault(prop.name, prop)
 			elif i.tag[:len("METHOD")] == "METHOD":
 				method = CimMethod(i)
-				_ = self.method.setdefault(method.name, method)
+				_ = self._method.setdefault(method.name, method)
 
 	@property
 	def props(self):
-		return [ pname for pname in self.property ]
+		return [ pname for pname in self._property ]
 
 	@property
 	def methods(self):
-		return [ mname for mname in self.method ]
+		return [ mname for mname in self._method ]
 
 	def __getattr__(self, key):
-		prop = self.property.get(key)
+		prop = self._property.get(key)
 		if prop is not None:
 			return prop
-		method = self.method.get(key)
+		method = self._method.get(key)
 		if method is not None:
 			return method
 		raise AttributeError(f"{key} is not a property or a method in class '{self.name}' cimnamespace '{self.cimnamespace}'.")
