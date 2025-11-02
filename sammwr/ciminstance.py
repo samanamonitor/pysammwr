@@ -4,7 +4,6 @@ from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
 from datetime import datetime
-import traceback
 
 log = logging.getLogger(__name__)
 ns = {
@@ -371,7 +370,6 @@ class CimInstance(CimClass):
 			if itype_re is None:
 				raise TypeError("Invalid 'type' attribute.cmdletOutput: "+ ET.tostring(cmdletOutput))
 			class_name = itype_re.group(2)
-			log.debug(f"{self.cimnamespace}/{class_name}")
 			instance = CimInstance(self.cimnamespace, class_name, cmdletOutput, protocol=self.p)
 			return return_value, instance
 		except SoapFault as sf:
@@ -384,7 +382,6 @@ class CimInstance(CimClass):
 
 		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
 		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
-			log.debug(prop.attrib)
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
 		else:
@@ -420,7 +417,6 @@ class CimInstance(CimClass):
 		return out
 
 	def __getattr__(self, attr):
-		log.debug("getattr " + attr)
 		if attr not in self._newschema.props:
 			raise AttributeError(attr)
 		value = self._properties.get(attr)
@@ -467,7 +463,6 @@ class CimInstance(CimClass):
 					'#text': str(v)
 					})
 		try:
-			log.debug("get " + self.resource_uri + " selectors=" + str(selectors))
 			res = self.p.get(self.resource_uri, selector=selectors)
 			root = ET.fromstring(res)
 			obj = root.find(".//{http://www.w3.org/2003/05/soap-envelope}Body/")
@@ -500,16 +495,11 @@ class CimInstance(CimClass):
 				fault_detail = i.text
 			elif tag == "WSManFault":
 				wmfe = WsManFault(i, ns, sf)
-				log.debug("WSManFault: " + smfe)
 			elif tag == "MSFT_WmiError":
-				log.debug("generate wmie")
 				try:
-					log.debug(ET.tostring(i))
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
-					log.debug("MSFT_WmiError instance created. ")
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
 				except Exception as e:
-					traceback.print_stack()
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
 					pass
