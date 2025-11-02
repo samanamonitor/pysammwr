@@ -184,15 +184,21 @@ class CimMethod:
 		self.root = root
 		self.name = root.attrib.get('NAME')
 		self.value_type = root.attrib.get('TYPE')
-		self.parameters = {}
+		self._parameters = {}
 		for param in self.root:
 			if param.tag[:len("PARAMETER")] == "PARAMETER":
 				_param = CimParameter(param)
-				_ = self.parameters.setdefault(_param.name, _param)
+				_ = self._parameters.setdefault(_param.name, _param)
 
 	@property
 	def params(self):
-		return [ param for param in self.parameters ]
+		return [ param for param in self._parameters ]
+
+	@property
+	def __getattr__(self, attr):
+		param = self._parameters.get(attr)
+		if param is None:
+			raise AttributeError("Parameter " + attr + " not defined in method " + self.name)
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name='{self.name}' value_type='{self.value_type}' params={str(self.params)}>"
@@ -330,28 +336,41 @@ class CimInstance(CimClass):
 		return self._newschema.methods
 
 	def run_method(self, method_name, **kwargs):
-		properties = {}
-		method = self.schema.find(f".//METHOD[@NAME='{method_name}']")
-		if method is None:
-			raise AttributeError(method_name)
-		for prop_name, prop_value in kwargs.items():
-			method_param = method.find(f".//PARAMETER[@NAME='{prop_name}']")
-			is_list = False
-			if method_param is None:
-				is_list = True
-				method_param = method.find(f".//PARAMETER.ARRAY[@NAME='{prop_name}']")
-			if method_param is None:
-				raise AttributeError(prop_name)
-			prop_type = method_param.attrib.get('TYPE')
-			if prop_type is None:
-				raise AttributeError(f"Schema invalid. Property {prop_name} of method {method_name} in schema doesn't have type")
-			value = NewCimInstance(prop_type, prop_value)
-			if not is_list:
-				properties[prop_name] = value
-			else:
-				properties.setdefault(prop_name, []).append(value)
+		parameters = {}
+		schema_method = getattr(self._newschema, method_name)
+		if schema_method is None:
+			raise AttributeError("Method " + method_name + " not defined")
+		for param_name, param_value in kwargs.items():
+			param = getattr(schema_method, param_name)
+			param_cimtype = param.cim_type
+			value = param_cimtype(param_value)
+			if param.type == 'singleton':
+				_ = parameters.setdefault(param_name, value)
+			elif param.type == 'array':
+				_ = parameters.setdefault(param_name, []).append(value)
+
+
+#		method = self.schema.find(f".//METHOD[@NAME='{method_name}']")
+#		if method is None:
+#			raise AttributeError(method_name)
+#		for prop_name, prop_value in kwargs.items():
+#			method_param = method.find(f".//PARAMETER[@NAME='{prop_name}']")
+#			is_list = False
+#			if method_param is None:
+#				is_list = True
+#				method_param = method.find(f".//PARAMETER.ARRAY[@NAME='{prop_name}']")
+#			if method_param is None:
+#				raise AttributeError(prop_name)
+#			prop_type = method_param.attrib.get('TYPE')
+#			if prop_type is None:
+#				raise AttributeError(f"Schema invalid. Property {prop_name} of method {method_name} in schema doesn't have type")
+#			value = NewCimInstance(prop_type, prop_value)
+#			if not is_list:
+#				properties[prop_name] = value
+#			else:
+#				properties.setdefault(prop_name, []).append(value)
 		try:
-			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **properties)
+			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **parameters)
 			root = ET.fromstring(ret)
 			output = root.find(f".//p:{method_name}_OUTPUT", {"p": self.schema_uri})
 			return_value_e = output.find("p:ReturnValue", {"p": self.schema_uri})
@@ -417,6 +436,8 @@ class CimInstance(CimClass):
 		return out
 
 	def __getattr__(self, attr):
+		if attr in self._newschema.methods:
+			return getattr(self._newschema, attr)
 		if attr not in self._newschema.props:
 			raise AttributeError(attr)
 		value = self._properties.get(attr)
