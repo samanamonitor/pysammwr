@@ -163,9 +163,9 @@ class CimParamProp:
 		tag = root.tag[len(self.typename):]
 		if tag == "":
 			self.type = "singleton"
-		elif root.tag == "PARAMETER.ARRAY":
+		elif root.tag == self.typename + ".ARRAY":
 			self.type = 'array'
-		elif root.tag == "PARAMETER.REFERENCE":
+		elif root.tag == self.typename + ".REFERENCE":
 			self.type == 'reference'
 		else:
 			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root).decode("utf-8")}")
