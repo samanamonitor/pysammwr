@@ -198,6 +198,7 @@ class CimMethod:
 		param = self._parameters.get(attr)
 		if param is None:
 			raise AttributeError("Parameter " + attr + " not defined in method " + self.name)
+		return param
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name='{self.name}' value_type='{self.value_type}' params={str(self.params)}>"
