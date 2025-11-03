@@ -194,7 +194,6 @@ class CimMethod:
 	def params(self):
 		return [ param for param in self._parameters ]
 
-	@property
 	def __getattr__(self, attr):
 		param = self._parameters.get(attr)
 		if param is None:
