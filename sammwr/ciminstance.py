@@ -348,27 +348,6 @@ class CimInstance(CimClass):
 				_ = parameters.setdefault(param_name, value)
 			elif param.type == 'array':
 				_ = parameters.setdefault(param_name, []).append(value)
-
-
-#		method = self.schema.find(f".//METHOD[@NAME='{method_name}']")
-#		if method is None:
-#			raise AttributeError(method_name)
-#		for prop_name, prop_value in kwargs.items():
-#			method_param = method.find(f".//PARAMETER[@NAME='{prop_name}']")
-#			is_list = False
-#			if method_param is None:
-#				is_list = True
-#				method_param = method.find(f".//PARAMETER.ARRAY[@NAME='{prop_name}']")
-#			if method_param is None:
-#				raise AttributeError(prop_name)
-#			prop_type = method_param.attrib.get('TYPE')
-#			if prop_type is None:
-#				raise AttributeError(f"Schema invalid. Property {prop_name} of method {method_name} in schema doesn't have type")
-#			value = NewCimInstance(prop_type, prop_value)
-#			if not is_list:
-#				properties[prop_name] = value
-#			else:
-#				properties.setdefault(prop_name, []).append(value)
 		try:
 			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **parameters)
 			root = ET.fromstring(ret)
@@ -414,7 +393,7 @@ class CimInstance(CimClass):
 
 	def set(self, prop_name, prop_value):
 		schema_prop = getattr(self._newschema, prop_name)
-		value = schema_prop.cim_type(prop)
+		value = schema_prop.cim_type(prop_value)
 
 		if schema_prop.type == 'array':
 			_ = self._properties.setdefault(prop_name, []).append(value)
