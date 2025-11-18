@@ -55,6 +55,7 @@ class CIM_Registry:
         else:
             self.p = WRProtocol(*args, **kwargs)
         self.resource_uri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/StdRegProv"
+        self.cimnamespace = "root/cimv2"
         self.namespaces = {
             'p': self.resource_uri
         }
@@ -76,7 +77,7 @@ class CIM_Registry:
 
     def enumkey(self, hDefKey, sSubKeyName):
         self._path = "%s\\%s" % (hkeynames[hDefKey], sSubKeyName)
-        res = self.p.execute_method(self.resource_uri, 'EnumKey', hDefKey=hDefKey, sSubKeyName=sSubKeyName)
+        res = self.p.execute_method(self.cimnamespace, self.resource_uri, 'EnumKey', hDefKey=hDefKey, sSubKeyName=sSubKeyName)
         self._root = ET.fromstring(res)
         self.reviewreturnvalue()
         snames = self._root.findall('.//p:sNames', namespaces=self.namespaces)
@@ -84,7 +85,7 @@ class CIM_Registry:
 
     def enumvalues(self, hDefKey, sSubKeyName):
         self._path = "%s\\%s" % (hkeynames[hDefKey], sSubKeyName)
-        res = self.p.execute_method(self.resource_uri, 'EnumValues', hDefKey=hDefKey, sSubKeyName=sSubKeyName)
+        res = self.p.execute_method(self.cimnamespace, self.resource_uri, 'EnumValues', hDefKey=hDefKey, sSubKeyName=sSubKeyName)
         self._root = ET.fromstring(res)
         self._hDefKey = hDefKey
         self._sSubKeyName = sSubKeyName
@@ -103,7 +104,7 @@ class CIM_Registry:
             'sSubKeyName': sSubKeyName, 
             'sValueName':sValueName
         }
-        res = self.p.execute_method(self.resource_uri, self._method, **self._kwargs)
+        res = self.p.execute_method(self.cimnamespace, self.resource_uri, self._method, **self._kwargs)
         self._root = ET.fromstring(res)
         self.reviewreturnvalue()
         func = self.__getattribute__(self._method)
