@@ -1,0 +1,51 @@
+<Items>
+    <CLASS NAME="MSFT_TaskMonthlyTrigger" SUPERCLASS="MSFT_TaskTrigger">
+        <PROPERTY NAME="DaysOfMonth" CLASSORIGIN="MSFT_TaskMonthlyTrigger" TYPE="uint16" />
+        <PROPERTY NAME="Enabled" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="boolean" />
+        <PROPERTY NAME="EndBoundary" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="ExecutionTimeLimit" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="Id" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="MonthOfYear" CLASSORIGIN="MSFT_TaskMonthlyTrigger" TYPE="uint16" />
+        <PROPERTY NAME="RandomDelay" CLASSORIGIN="MSFT_TaskMonthlyTrigger" TYPE="string" />
+        <PROPERTY NAME="Repetition" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="RunOnLastDayOfMonth" CLASSORIGIN="MSFT_TaskMonthlyTrigger" TYPE="boolean" />
+        <PROPERTY NAME="StartBoundary" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+    </CLASS>
+    <CLASS NAME="MSFT_TaskWeeklyTrigger" SUPERCLASS="MSFT_TaskTrigger">
+        <PROPERTY NAME="DaysOfWeek" CLASSORIGIN="MSFT_TaskWeeklyTrigger" TYPE="uint16" />
+        <PROPERTY NAME="Enabled" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="boolean" />
+        <PROPERTY NAME="EndBoundary" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="ExecutionTimeLimit" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="Id" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="RandomDelay" CLASSORIGIN="MSFT_TaskWeeklyTrigger" TYPE="string" />
+        <PROPERTY NAME="Repetition" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="StartBoundary" CLASSORIGIN="MSFT_TaskTrigger" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="WeeksInterval" CLASSORIGIN="MSFT_TaskWeeklyTrigger" TYPE="uint16" />
+    </CLASS>
+    <CLASS NAME="MSFT_TaskPrincipal">
+        <PROPERTY NAME="DisplayName" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="string" />
+        <PROPERTY NAME="GroupId" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="string" />
+        <PROPERTY NAME="Id" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="string" />
+        <PROPERTY NAME="LogonType" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="sint32" />
+        <PROPERTY NAME="RunLevel" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="sint32" />
+        <PROPERTY NAME="UserId" CLASSORIGIN="MSFT_TaskPrincipal" TYPE="string" />
+    </CLASS>
+    <CLASS NAME="MSFT_TaskPrincipal2" SUPERCLASS="MSFT_TaskPrincipal">
+        <PROPERTY NAME="DisplayName" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="GroupId" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="Id" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="string" />
+        <PROPERTY NAME="LogonType" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="sint32" />
+        <PROPERTY NAME="ProcessTokenSidType" CLASSORIGIN="MSFT_TaskPrincipal2" TYPE="sint32" />
+        <PROPERTY.ARRAY NAME="RequiredPrivilege" CLASSORIGIN="MSFT_TaskPrincipal2" TYPE="string" />
+        <PROPERTY NAME="RunLevel" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="sint32" />
+        <PROPERTY NAME="UserId" CLASSORIGIN="MSFT_TaskPrincipal" PROPAGATED="true" TYPE="string" />
+    </CLASS>
+    <CLASS NAME="MSFT_ClusteredScheduledTask">
+        <PROPERTY NAME="ClusterName" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="string" />
+        <PROPERTY NAME="CurrentOwner" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="string" />
+        <PROPERTY NAME="Resource" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="string" />
+        <PROPERTY NAME="TaskDefinition" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="string" />
+        <PROPERTY NAME="TaskName" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="string" />
+        <PROPERTY NAME="TaskType" CLASSORIGIN="MSFT_ClusteredScheduledTask" TYPE="uint32" />
+    </CLASS>
+</Items>

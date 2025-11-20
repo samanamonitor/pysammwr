@@ -353,12 +353,17 @@ class CimInstance(CimClass):
 			param = getattr(schema_method, param_name)
 			if isinstance(param_value, CimClass):
 				value = param_value
+			elif isinstance(param_value, list):
+				value = param_value
 			else:
 				value = param.cim_type(param_value)
 			if param.type == 'singleton':
 				_ = parameters.setdefault(param_name, value)
 			elif param.type == 'array':
-				_ = parameters.setdefault(param_name, []).append(value)
+				if isinstance(param_value, list):
+					_ = parameters.setdefault(param_name, value)
+				else:
+					_ = parameters.setdefault(param_name, []).append(value)
 		try:
 			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **parameters)
 			root = ET.fromstring(ret)

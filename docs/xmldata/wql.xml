@@ -1,0 +1,40 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:n="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd" xmlns:b="http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd">
+    <s:Header>
+        <a:To>http://wsamzn-13uiol76:5985/wsman</a:To>
+        <w:ResourceURI s:mustUnderstand="true">http://schemas.dmtf.org/wbem/wscim/1/*</w:ResourceURI>
+        <a:ReplyTo>
+            <a:Address s:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>
+        </a:ReplyTo>
+        <a:Action s:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate</a:Action>
+        <w:MaxEnvelopeSize s:mustUnderstand="true">512000</w:MaxEnvelopeSize>
+        <a:MessageID>uuid:34222DCF-DEFE-4A5E-8513-226BEA0EE299</a:MessageID>
+        <w:Locale xml:lang="en-US" s:mustUnderstand="false" />
+        <p:DataLocale xml:lang="en-US" s:mustUnderstand="false" />
+        <p:SessionId s:mustUnderstand="false">uuid:AE7D39DF-66F5-4407-9197-EDBF68A7FF9C</p:SessionId>
+        <p:OperationID s:mustUnderstand="false">uuid:AA2ACE2A-D600-4755-9039-7FDC7977B9A4</p:OperationID>
+        <p:SequenceId s:mustUnderstand="false">1</p:SequenceId>
+        <w:SelectorSet>
+            <w:Selector Name="__cimnamespace">Root/Microsoft/Windows/TaskScheduler</w:Selector>
+        </w:SelectorSet>
+        <w:OptionSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_CMDLETNAME" Type="xs:string">Unregister-ScheduledTask</w:Option>
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_COMPUTERNAME" Type="xs:string">wsamzn-13uiol76</w:Option>
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_MODULEVERSION" Type="xs:string">1.0</w:Option>
+            <w:Option Name="__MI_CallbackRegistration" Type="xs:int">27</w:Option>
+            <w:Option Name="wmiarray:__MI_OPERATIONOPTIONS_CHANNELVALUE" Type="xs:unsignedInt">0</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_IMPROVEDPERF_STREAMING" Type="xs:unsignedInt">1</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_PROMPTUSERMODE" Type="xs:unsignedInt">2</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_PROMPTUSERMODEREGULAR_ACKVALUE" Type="xs:unsignedInt">1</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_WRITEERRORMODE" Type="xs:unsignedInt">0</w:Option>
+            <w:Option Name="msftwinrm:UsePreciseArrays" Type="xs:boolean">true</w:Option>
+        </w:OptionSet>
+    </s:Header>
+    <s:Body>
+        <n:Enumerate>
+            <w:OptimizeEnumeration />
+            <w:MaxElements>32000</w:MaxElements>
+            <w:EnumerationMode>EnumerateObjectAndEPR</w:EnumerationMode>
+            <w:Filter Dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL">SELECT * FROM MSFT_ScheduledTask WHERE ((TaskName LIKE &apos;test&apos;))</w:Filter>
+        </n:Enumerate>
+    </s:Body>
+</s:Envelope>

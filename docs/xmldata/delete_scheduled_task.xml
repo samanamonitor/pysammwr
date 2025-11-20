@@ -1,0 +1,36 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:p="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd">
+    <s:Header>
+        <a:To>http://wsamzn-13uiol76:5985/wsman</a:To>
+        <w:ResourceURI s:mustUnderstand="true">http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_ScheduledTask</w:ResourceURI>
+        <a:ReplyTo>
+            <a:Address s:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>
+        </a:ReplyTo>
+        <a:Action s:mustUnderstand="true">http://schemas.xmlsoap.org/ws/2004/09/transfer/Delete</a:Action>
+        <w:MaxEnvelopeSize s:mustUnderstand="true">512000</w:MaxEnvelopeSize>
+        <a:MessageID>uuid:19D09878-4DCF-4E44-8088-80199A4A2EFA</a:MessageID>
+        <w:Locale xml:lang="en-US" s:mustUnderstand="false" />
+        <p:DataLocale xml:lang="en-US" s:mustUnderstand="false" />
+        <p:SessionId s:mustUnderstand="false">uuid:AE7D39DF-66F5-4407-9197-EDBF68A7FF9C</p:SessionId>
+        <p:OperationID s:mustUnderstand="false">uuid:65ECE548-8E39-44D5-A4CB-DD952F51C57F</p:OperationID>
+        <p:SequenceId s:mustUnderstand="false">1</p:SequenceId>
+        <w:SelectorSet>
+            <w:Selector Name="__cimnamespace">Root/Microsoft/Windows/TaskScheduler</w:Selector>
+            <w:Selector Name="TaskName">test</w:Selector>
+            <w:Selector Name="TaskPath">\</w:Selector>
+        </w:SelectorSet>
+        <w:OptionSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_CMDLETNAME" Type="xs:string">Unregister-ScheduledTask</w:Option>
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_COMPUTERNAME" Type="xs:string">wsamzn-13uiol76</w:Option>
+            <w:Option Name="wmi:MI_OPERATIONOPTIONS_POWERSHELL_MODULEVERSION" Type="xs:string">1.0</w:Option>
+            <w:Option Name="__MI_CallbackRegistration" Type="xs:int">27</w:Option>
+            <w:Option Name="wmiarray:__MI_OPERATIONOPTIONS_CHANNELVALUE" Type="xs:unsignedInt">0</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_IMPROVEDPERF_STREAMING" Type="xs:unsignedInt">1</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_PROMPTUSERMODE" Type="xs:unsignedInt">2</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_PROMPTUSERMODEREGULAR_ACKVALUE" Type="xs:unsignedInt">1</w:Option>
+            <w:Option Name="wmi:__MI_OPERATIONOPTIONS_WRITEERRORMODE" Type="xs:unsignedInt">0</w:Option>
+            <w:Option Name="msftwinrm:UsePreciseArrays" Type="xs:boolean">true</w:Option>
+            <w:Option Name="msftwinrm:includepropertymetadata" Type="xs:boolean">true</w:Option>
+        </w:OptionSet>
+    </s:Header>
+    <s:Body></s:Body>
+</s:Envelope>
