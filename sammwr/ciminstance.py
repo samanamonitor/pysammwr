@@ -436,7 +436,9 @@ class CimInstance(CimClass):
 		if attr not in self._newschema.props:
 			raise AttributeError(attr)
 		value = self._properties.get(attr)
-		if isinstance(value, CimClass):
+		if isinstance(value, CimInstance):
+			return value
+		elif isinstance(value, CimClass):
 			return value.value
 		elif isinstance(value, list):
 			return value
