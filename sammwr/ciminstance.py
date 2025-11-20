@@ -18,6 +18,7 @@ def cache():
 
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
+
 	def dict(self):
 		if self.value is None:
 			return { 
@@ -29,15 +30,18 @@ class CimClass:
 			"@xsi:type": self.type_name,
 			"#text": str(self.value)
 		}
+
 	def __str__(self):
 		if self.value is None:
 			return ""
 		return str(self.value)
+
 	def __repr__(self):
 		return self.value.__repr__()
 
 class CimString(CimClass):
 	type_name="cim:cimString"
+
 	def __init__(self, value):
 		if isinstance(value, CimString):
 			self.value = value.value
@@ -56,6 +60,7 @@ class CimString(CimClass):
 
 class CimBoolean(CimClass):
 	type_name="cim:cimBoolean"
+
 	def __init__(self, value):
 		if isinstance(value, CimBoolean):
 			self.value = value.value
@@ -76,6 +81,7 @@ class CimBoolean(CimClass):
 
 class CimInt(CimClass):
 	type_name="cim:cimInt"
+
 	def __init__(self, value):
 		if isinstance(value, CimInt):
 			self.value = value.value
@@ -107,6 +113,7 @@ class CimUnsignedInt(CimInt):
 
 class CimDateTime(CimClass):
 	type_name="cim:cimDateTime"
+
 	def __init__(self, value):
 		if isinstance(value, CimDateTime):
 			self.value = value.value
@@ -150,6 +157,7 @@ cim_types={
 }
 
 class CimParamProp:
+
 	def __init__(self, root):
 		self.root = root
 		self.name = root.attrib.get('NAME')
@@ -180,6 +188,7 @@ class CimParameter(CimParamProp):
 	typename="PARAMETER"
 
 class CimMethod:
+
 	def __init__(self, root):
 		self.root = root
 		self.name = root.attrib.get('NAME')
@@ -342,8 +351,10 @@ class CimInstance(CimClass):
 			raise AttributeError("Method " + method_name + " not defined")
 		for param_name, param_value in kwargs.items():
 			param = getattr(schema_method, param_name)
-			param_cimtype = param.cim_type
-			value = param_cimtype(param_value)
+			if isinstance(param_value, CimClass):
+				value = param_value
+			else:
+				value = param.cim_type(param_value)
 			if param.type == 'singleton':
 				_ = parameters.setdefault(param_name, value)
 			elif param.type == 'array':
@@ -519,9 +530,11 @@ class CimInstanceIterator:
 		self.class_name = class_name
 		self.protocol = protocol
 		self.ec, self.items = self.enumerate()
+
 	@property
 	def resource_uri(self):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
+
 	def __next__(self):
 		if len(self.items) == 0:
 			if self.ec is None:
