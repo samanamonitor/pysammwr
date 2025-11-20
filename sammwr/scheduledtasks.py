@@ -9,7 +9,7 @@ class ScheduledTasks:
 			self._protocol = WRProtocol(**kwargs)
 		self.ci = CimInstance("Root/Microsoft/Windows/TaskScheduler", "PS_ScheduledTask", protocol=self._protocol)
 
-	def DisableScheduledTask(self, Taskname=None, TaskPath=None, InputObject=None):
+	def DisableScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
 			out = self.ci.run_method("DisableByObject", InputObject=InputObject)
 		else:
@@ -18,7 +18,7 @@ class ScheduledTasks:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1]
 
-	def EnableScheduledTask(self, Taskname=None, TaskPath=None, InputObject=None):
+	def EnableScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
 			out = self.ci.run_method("EnableByObject", InputObject=InputObject)
 		else:
@@ -27,7 +27,7 @@ class ScheduledTasks:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1]
 
-	def ExportScheduledTask(self, Taskname=None, TaskPath=None, InputObject=None):
+	def ExportScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
 			out = self.ci.run_method("ExportByObject", InputObject=InputObject)
 		else:
