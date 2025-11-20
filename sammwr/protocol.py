@@ -242,9 +242,9 @@ class WRProtocol(Protocol):
         }
         body = req['env:Envelope'].setdefault('env:Body', {})
         parameters = body.setdefault('p:%s_INPUT' % method_name, {})
-        _ = parameters.setdefault('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance")
+        _ = parameters.setdefault('@xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance")
         _ = parameters.setdefault('@xmlns:p', resource_uri)
-        _ = parameters.setdefault('xsi:type', '%s_INPUT_Type')
+        _ = parameters.setdefault('@xsi:type', '%s_INPUT_Type' % method_name)
         for k, v in kwargs.items():
             if isinstance(v, list):
                 param = parameters.setdefault(f'p:{k}', [])
