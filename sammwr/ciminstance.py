@@ -164,10 +164,10 @@ class CimParamProp:
 		self.value_type = root.attrib.get('TYPE')
 		self.type = None
 		self.cim_type = cim_types.get(self.value_type)
-		self.key = False
+		self.is_key = False
 		key_temp = root.find(".//QUALIFIER[@NAME='key']/VALUE")
 		if key_temp is not None:
-			self.key = (key_temp.text.lower() == "true")
+			self.is_key = (key_temp.text.lower() == "true")
 		if self.cim_type is None:
 			raise TypeError(f"Invalid cim_type {self.typename} data={ET.tostring(root).decode("utf-8")}")
 		if len(root.tag) < len(self.typename):
@@ -227,8 +227,8 @@ class CimClassSchema:
 		for i in self.root:
 			if i.tag[:len("PROPERTY")] == "PROPERTY":
 				prop = CimProperty(i)
-				if prop.key:
-					self._property_key.setdefault(prop.name, prop)
+				if prop.is_key:
+					self._property_keys.setdefault(prop.name, prop)
 				_ = self._property.setdefault(prop.name, prop)
 			elif i.tag[:len("METHOD")] == "METHOD":
 				method = CimMethod(i)
