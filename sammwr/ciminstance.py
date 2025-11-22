@@ -461,6 +461,10 @@ class CimInstance(CimClass):
 					{
 						'@Name': 'ClassName',
 						'#text': class_name
+					}], option=[{
+						'@Name': 'IncludeQualifiers',
+						'@Type': 'xs:boolean',
+						'#text': 'true'
 					}])
 				schema_cache[cache_key] = schema_str
 				schema_root=ET.fromstring(schema_str)

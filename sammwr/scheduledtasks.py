@@ -1,5 +1,13 @@
 from .protocol import WRProtocol
 from .ciminstance import CimInstance
+from enum import Enum
+
+class At(Enum):
+	Once     = "NewTriggerByOnce"
+	Daily    = "NewTriggerByDaily"
+	Weekly   = "NewTriggerByWeekly"
+	AtStartup= "NewTriggerByStartup"
+	AtLogon  = "NewTriggerByLogon"
 
 class ScheduledTasks:
 	def __init__(self, protocol=None, **kwargs):
@@ -77,6 +85,19 @@ class ScheduledTasks:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1]
 
+	def NewScheduledTaskSettingsSet(self, **kwargs):
+		out = self.ci.run_method("NewSettings", **kwargs)
+		if out[0] != 0:
+			raise Exception("Unknown. Could not create CimInstance")
+		return out[1]
+
+	def NewScheduledTaskTrigger(self, at, **kwargs):
+		if not isinstance(at, At):
+			raise TypeError("Parameter at must be of type At(Enum)")
+		out = self.ci.run_method(at.value, **kwargs)
+		if out[0] != 0:
+			raise Exception("Unknown. Could not create CimInstance")
+		return out[1]
 
 	def RegisterScheduledTask(self, TaskName, TaskPath, InputObject=None, **kwargs):
 		if isinstance(InputObject, CimInstance):
