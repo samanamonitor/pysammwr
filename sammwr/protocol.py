@@ -228,7 +228,7 @@ class WRProtocol(Protocol):
         res=self.send_message(xmltodict.unparse(req))
         return res
 
-    def execute_method(self, namespace, resource_uri, method_name, **kwargs):
+    def execute_method(self, namespace, resource_uri, method_name, selector=None, **kwargs):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
@@ -240,6 +240,8 @@ class WRProtocol(Protocol):
                 '#text': namespace,
             }]
         }
+        if selector is not None:
+            req['env:Envelope']['env:Header']['w:SelectorSet']['w:Selector'] = selector
         body = req['env:Envelope'].setdefault('env:Body', {})
         parameters = body.setdefault('p:%s_INPUT' % method_name, {})
         _ = parameters.setdefault('@xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance")
