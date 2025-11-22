@@ -223,12 +223,12 @@ class CimClassSchema:
 		self.name = root.attrib.get('NAME')
 		self._property = {}
 		self._method = {}
-		self._property_key = None
+		self._property_keys = {}
 		for i in self.root:
 			if i.tag[:len("PROPERTY")] == "PROPERTY":
 				prop = CimProperty(i)
 				if prop.key:
-					self._property_key = prop
+					self._property_key.setdefault(prop.name, prop)
 				_ = self._property.setdefault(prop.name, prop)
 			elif i.tag[:len("METHOD")] == "METHOD":
 				method = CimMethod(i)
