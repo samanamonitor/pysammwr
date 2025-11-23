@@ -188,11 +188,9 @@ class CimParamProp:
 			q_value = None
 			v = q.find("VALUE.ARRAY")
 			if v is not None:
-				q_value = [ val.text for val in v.findall("VALUE") ]
+				q_value = [ NewCimInstance(q_type, val.text) for val in v.findall("VALUE") ]
 			else:
-				v = q.find("VALUE")
-				if v is not None:
-					q_value = v.text
+				NewCimInstance(q_type, q.find("VALUE"))
 			_ = self._qualifiers.setdefault(q_name, {
 				"type": q_type,
 				"value": q_value
