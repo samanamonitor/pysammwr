@@ -192,7 +192,7 @@ class CimParamProp:
 			else:
 				v = q.find("VALUE")
 				if v is not None:
-					q_value = q_value.text
+					q_value = v.text
 			_ = self._qualifiers.setdefault(q_name, {
 				"type": q_type,
 				"value": q_value
