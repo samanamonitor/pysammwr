@@ -351,6 +351,22 @@ class CimInstance(CimClass):
 	def methods(self):
 		return self._newschema.methods
 
+	def _get_selector(self):
+		selector = [
+			{
+				"@Name": "__cimnamespace",
+				"#text": self.cimnamespace
+			}]
+		for key_name in self._newschema._property_keys:
+			value = self._properties.get(key_name)
+			if value is None:
+				raise AttributeError(f"Attribute {key_name} doesn't have a value")
+			select.append({
+				"@Name": key_name,
+				"#text": value
+				})
+		return selector
+
 	def run_method(self, method_name, **kwargs):
 		parameters = {}
 		schema_method = getattr(self._newschema, method_name)
@@ -372,7 +388,8 @@ class CimInstance(CimClass):
 				else:
 					_ = parameters.setdefault(param_name, []).append(value)
 		try:
-			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name, **parameters)
+			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name,
+				selector=self._get_selector(), **parameters)
 			root = ET.fromstring(ret)
 			output = root.find(f".//p:{method_name}_OUTPUT", {"p": self.schema_uri})
 			return_value_e = output.find("p:ReturnValue", {"p": self.schema_uri})
@@ -500,14 +517,7 @@ class CimInstance(CimClass):
 			raise self._soap_fault(sf)
 
 	def delete(self, properties=[]):
-		selectors = []
-		for k in properties:
-			v = self._properties.get(k)
-			if v is not None:
-				selectors.append({
-					'@Name': k,
-					'#text': str(v)
-					})
+		selectors = self._get_selector()
 		try:
 			res = self.p.delete(self.resource_uri, selector=selectors)
 			return res
