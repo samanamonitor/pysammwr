@@ -67,7 +67,7 @@ class CimBoolean(CimClass):
 		elif isinstance(value, bool):
 			self.value = value
 		elif isinstance(value, str):
-			self.value = bool(value)
+			self.value = value.lower() == 'true'
 		elif isinstance(value, ET.Element):
 			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
@@ -181,6 +181,22 @@ class CimParamProp:
 			self.type == 'reference'
 		else:
 			raise TypeError(f"Invalid type {self.typename} data={ET.tostring(root).decode("utf-8")}")
+		self._qualifiers = {}
+		for q in self.root.findall("QUALIFIER"):
+			q_name = q.attrib.get("NAME", "").lower()
+			q_type = q.attrib.get("TYPE", "").lower()
+			q_value = None
+			v = q.find("VALUE.ARRAY")
+			if v is not None:
+				q_value = [ val.text for val in v.findall("VALUE") ]
+			else:
+				v = q.find("VALUE")
+				if v is not None:
+					q_value = q_value.text
+			_ = self._qualifiers.setdefault(q_name, {
+				"type": q_type,
+				"value": q_value
+				})
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} type={self.type} cim_type={self.cim_type.__name__}>"
@@ -516,7 +532,7 @@ class CimInstance(CimClass):
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
-	def delete(self, properties=[]):
+	def delete(self):
 		selectors = self._get_selector()
 		try:
 			res = self.p.delete(self.resource_uri, selector=selectors)
