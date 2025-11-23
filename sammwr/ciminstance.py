@@ -361,7 +361,7 @@ class CimInstance(CimClass):
 			value = self._properties.get(key_name)
 			if value is None:
 				raise AttributeError(f"Attribute {key_name} doesn't have a value")
-			select.append({
+			selector.append({
 				"@Name": key_name,
 				"#text": value
 				})
