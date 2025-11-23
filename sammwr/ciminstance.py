@@ -190,11 +190,8 @@ class CimParamProp:
 			if v is not None:
 				q_value = [ NewCimInstance(q_type, val.text) for val in v.findall("VALUE") ]
 			else:
-				NewCimInstance(q_type, q.find("VALUE"))
-			_ = self._qualifiers.setdefault(q_name, {
-				"type": q_type,
-				"value": q_value
-				})
+				q_value = NewCimInstance(q_type, q.find("VALUE"))
+			_ = self._qualifiers.setdefault(q_name, q_value)
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name={self.name} value_type={self.value_type} type={self.type} cim_type={self.cim_type.__name__}>"
