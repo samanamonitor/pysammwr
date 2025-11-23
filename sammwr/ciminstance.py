@@ -410,17 +410,27 @@ class CimInstance(CimClass):
 					return_value = int(return_value_e.text)
 				except:
 					return_value = None
-			namespaces=get_xml_namespaces(ret.decode("utf-8"))
-			cmdletOutput=output.find("p:cmdletOutput", {"p": self.schema_uri})
-			itype_ns=cmdletOutput.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
-			if itype_ns is None:
-				raise TypeError("Missing 'type' attribute. cmdletOutput: "+ ET.tostring(cmdletOutput))
-			itype_re = re.match(r"([^:]+):(.+)_Type", itype_ns)
-			if itype_re is None:
-				raise TypeError("Invalid 'type' attribute.cmdletOutput: "+ ET.tostring(cmdletOutput))
-			class_name = itype_re.group(2)
-			instance = CimInstance(self.cimnamespace, class_name, cmdletOutput, protocol=self.p)
-			return return_value, instance
+			out_params = {}
+			for _, param in schema_method._parameters.items():
+				if param._qualifiers.get('out', False):
+					output_param=output.find(f"{{*}}:{param.name}")
+					if output_param is None:
+						continue
+					embedded_instance = param._qualifiers.get("embeddedinstance")
+					if embedded_instance is not None:
+						# TODO Validate expected embedded instance
+						#itype_ns=output_param.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
+						#if itype_ns is None:
+						#	raise TypeError("Missing 'type' attribute. output_param: "+ ET.tostring(output_param))
+						#itype_re = re.match(r"([^:]+):(.+)_Type", itype_ns)
+						#if itype_re is None:
+						#	raise TypeError("Invalid 'type' attribute.output_param: "+ ET.tostring(output_param))
+						#class_name = itype_re.group(2)
+						instance = CimInstance(self.cimnamespace, embedded_instance, output_param, protocol=self.p)
+						out_params.setdefault(param.name, instance)
+					else:
+						out_params.setdefault(param.name, output_param.text)
+			return return_value, out_params
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
