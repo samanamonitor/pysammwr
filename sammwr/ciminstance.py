@@ -478,6 +478,7 @@ class CimInstance(CimClass):
 
 	def __getattr__(self, attr):
 		if attr in self._newschema.methods:
+			return lambda *args, **kwargs: self.run_method(attr, *args, **kwargs)
 			return getattr(self._newschema, attr)
 		if attr not in self._newschema.props:
 			raise AttributeError(attr)
