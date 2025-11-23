@@ -404,7 +404,7 @@ class CimInstance(CimClass):
 				selector=self._get_selector(), **parameters)
 			root = ET.fromstring(ret)
 			output = root.find(f".//{{*}}{method_name}_OUTPUT")
-			return_value_e = output.find("{*}:ReturnValue")
+			return_value_e = output.find("{*}ReturnValue")
 			return_value = None
 			if return_value_e is not None:
 				try:
