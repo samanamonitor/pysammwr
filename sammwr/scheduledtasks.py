@@ -24,7 +24,7 @@ class ScheduledTasks:
 			out = self.ci.run_method("DisableByName", TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def EnableScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
@@ -33,7 +33,7 @@ class ScheduledTasks:
 			out = self.ci.run_method("EnableByName", TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def ExportScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
@@ -42,7 +42,7 @@ class ScheduledTasks:
 			out = self.ci.run_method("ExportByName", TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def GetClusteredScheduledTask(self, *args, **kwargs):
 		raise Exception("Not Implemented")
@@ -59,13 +59,13 @@ class ScheduledTasks:
 			out = self.ci.run_method("GetInfoByName", TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def NewScheduledTask(self, **kwargs):
 		out = self.ci.run_method("New", **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskAction(self, Id, Execute, **kwargs):
 		kwargs['Execute'] = Execute
@@ -74,7 +74,7 @@ class ScheduledTasks:
 		out = self.ci.run_method("NewActionByExec", **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskPrincipal(self, **kwargs):
 		if "GroupId" in kwargs:
@@ -83,13 +83,13 @@ class ScheduledTasks:
 			out = self.ci.run_method("NewPrincipalByUser", **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskSettingsSet(self, **kwargs):
 		out = self.ci.run_method("NewSettings", **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskTrigger(self, at, **kwargs):
 		if not isinstance(at, At):
@@ -97,7 +97,7 @@ class ScheduledTasks:
 		out = self.ci.run_method(at.value, **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def RegisterScheduledTask(self, TaskName, TaskPath, InputObject=None, **kwargs):
 		if isinstance(InputObject, CimInstance):
@@ -106,7 +106,7 @@ class ScheduledTasks:
 			out = self.ci.run_method("RegisterByUser", TaskName=TaskName, TaskPath=TaskPath, **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
-		return out[1]
+		return out[1].get("cmdletOutput")
 
 	def UnregisterScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if not isinstance(InputObject, CimInstance):
