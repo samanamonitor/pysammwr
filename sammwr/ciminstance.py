@@ -384,6 +384,7 @@ class CimInstance(CimClass):
 		if schema_method is None:
 			raise AttributeError("Method " + method_name + " not defined")
 		for param_name, param_value in kwargs.items():
+			# TODO validate that input is of correct type based on embeddedinstance qualifier
 			param = getattr(schema_method, param_name)
 			if isinstance(param_value, CimClass):
 				value = param_value
@@ -402,8 +403,8 @@ class CimInstance(CimClass):
 			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name,
 				selector=self._get_selector(), **parameters)
 			root = ET.fromstring(ret)
-			output = root.find(f".//p:{method_name}_OUTPUT", {"p": self.schema_uri})
-			return_value_e = output.find("p:ReturnValue", {"p": self.schema_uri})
+			output = root.find(f".//{{*}}{method_name}_OUTPUT")
+			return_value_e = output.find("{*}:ReturnValue")
 			return_value = None
 			if return_value_e is not None:
 				try:
@@ -413,7 +414,7 @@ class CimInstance(CimClass):
 			out_params = {}
 			for _, param in schema_method._parameters.items():
 				if param._qualifiers.get('out', False):
-					output_param=output.find(f"{{*}}:{param.name}")
+					output_param=output.find(f"{{*}}{param.name}")
 					if output_param is None:
 						continue
 					embedded_instance = param._qualifiers.get("embeddedinstance")
