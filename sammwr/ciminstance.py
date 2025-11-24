@@ -525,13 +525,7 @@ class CimInstance(CimClass):
 			log.debug("Cache hit for %s", cache_key)
 
 	def get(self):
-		selectors = []
-		for k, v in self._properties.items():
-			if v is not None:
-				selectors.append({
-					'@Name': k,
-					'#text': str(v)
-					})
+		selectors = self._get_selector()
 		try:
 			res = self.p.get(self.resource_uri, selector=selectors)
 			root = ET.fromstring(res)
