@@ -599,7 +599,7 @@ class CimInstanceIterator:
 		if self.wqlfilter is not None:
 			wql = f"SELECT * FROM {self.class_name} WHERE {html.escape(self.wqlfilter)};"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
-		_txt_enum = self.protocol.enumerate(self.resource_uri, optimize=True, 
+		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
 			max_elements=max_elements, selector=selector, wql=wql)
 		log.debug(_txt_enum)
 		_xml_enum = ET.fromstring(_txt_enum)
