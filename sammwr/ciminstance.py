@@ -599,7 +599,7 @@ class CimInstanceIterator:
 			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter};"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
-			max_elements=max_elements, selector=selector, wql=wql)
+			max_elements=max_elements, selector=self._get_selector(), wql=wql)
 		log.debug(_txt_enum)
 		_xml_enum = ET.fromstring(_txt_enum)
 		items = _xml_enum.findall('.//{*}Items/')
