@@ -579,7 +579,7 @@ class CimInstanceIterator:
 		self.wqlfilter = wqlfilter
 		self.ec, self.items = self.enumerate(selector=[
 			{
-				"@NAME": "__cimnamespace", 
+				"@Name": "__cimnamespace",
 				"#text": self.cimnamespace
 			}])
 
