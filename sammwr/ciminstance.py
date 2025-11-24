@@ -4,7 +4,6 @@ from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
 from datetime import datetime
-import html
 
 log = logging.getLogger(__name__)
 ns = {
@@ -597,7 +596,7 @@ class CimInstanceIterator:
 		wql=None
 		resource_uri = self.resource_uri
 		if self.wqlfilter is not None:
-			wql = f"SELECT * FROM {self.class_name} WHERE {html.escape(self.wqlfilter)};"
+			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter};"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
 			max_elements=max_elements, selector=selector, wql=wql)
