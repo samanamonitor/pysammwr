@@ -371,6 +371,7 @@ class CimInstance(CimClass):
 		for key_name in self._newschema._property_keys:
 			value = self._properties.get(key_name)
 			if value is None:
+				continue
 				raise AttributeError(f"Attribute {key_name} doesn't have a value")
 			selector.append({
 				"@Name": key_name,
