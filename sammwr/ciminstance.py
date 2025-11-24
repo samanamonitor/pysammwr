@@ -301,7 +301,7 @@ def NewCimInstanceXml(type, xe, cimnamespace=None, protocol=None):
 		raise TypeError("type not defined " + type)
 
 class CimInstance(CimClass):
-	def __init__(self, cimnamespace, class_name=None, xml=None, protocol=None, **kwargs):
+	def __init__(self, cimnamespace, class_name=None, xml=None, protocol=None, wqlfilter=None, **kwargs):
 		if protocol is None:
 			proto_kwargs = {}
 			proto_keys = [ 'endpoint','transport','username','password','realm','service',
@@ -322,6 +322,7 @@ class CimInstance(CimClass):
 		self._properties = {}
 		self._newschema = None
 		self.class_name = self._get_class_name(xml, class_name)
+		self._wqlfilter = wqlfilter
 
 		if self.cimnamespace is None or self.class_name is None:
 			raise TypeError("Must define 'cimnamespace' and 'class_name'.")
@@ -568,13 +569,14 @@ class CimInstance(CimClass):
 	def __str__(self):
 		return self.__repr__()
 	def __iter__(self):
-		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p)
+		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter)
 
 class CimInstanceIterator:
-	def __init__(self, cimnamespace, class_name, protocol):
+	def __init__(self, cimnamespace, class_name, protocol, wqlfilter=None):
 		self.cimnamespace = cimnamespace
 		self.class_name = class_name
 		self.protocol = protocol
+		self.wqlfilter = wqlfilter
 		self.ec, self.items = self.enumerate()
 
 	@property
@@ -589,14 +591,19 @@ class CimInstanceIterator:
 		i = self.items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
+
 	def enumerate(self, max_elements=50, selector=None):
+		wql=None
+		if self.wqlfilter is not None:
+			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
 		_txt_enum = self.protocol.enumerate(self.resource_uri, optimize=True, 
-			max_elements=max_elements, selector=selector)
+			max_elements=max_elements, selector=selector, wql=wql)
 		log.debug(_txt_enum)
 		_xml_enum = ET.fromstring(_txt_enum)
 		items = _xml_enum.findall('.//{*}Items/')
 		_ec = _xml_enum.find('.//wsen:EnumerationContext', self.protocol.xmlns).text
 		return _ec, items
+
 	def pull(self, ec):
 		_txt_pull = self.protocol.pull(self.resource_uri, ec,max_elements=50)
 		_xml_pull = ET.fromstring(_txt_pull)
