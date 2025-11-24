@@ -569,7 +569,7 @@ class CimInstance(CimClass):
 	def __str__(self):
 		return self.__repr__()
 	def __iter__(self):
-		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter, selector=self._get_selector())
+		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter)
 
 class CimInstanceIterator:
 	def __init__(self, cimnamespace, class_name, protocol, wqlfilter=None):
@@ -577,7 +577,11 @@ class CimInstanceIterator:
 		self.class_name = class_name
 		self.protocol = protocol
 		self.wqlfilter = wqlfilter
-		self.ec, self.items = self.enumerate()
+		self.ec, self.items = self.enumerate(selector=[
+			{
+				"@NAME": "__cimnamespace", 
+				"#text": self.cimnamespace
+			}])
 
 	@property
 	def resource_uri(self):
