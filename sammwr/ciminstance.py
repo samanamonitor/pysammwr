@@ -600,7 +600,7 @@ class CimInstanceIterator:
 		wql=None
 		resource_uri = self.resource_uri
 		if self.wqlfilter is not None:
-			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter};"
+			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
 			max_elements=max_elements, selector=selector, wql=wql)
