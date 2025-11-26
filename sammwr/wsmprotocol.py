@@ -390,7 +390,7 @@ class WSMFault(Exception):
 			f", machine='{self.machine}' ")
 		if self.provider_fault is not None:
 			fault_list.append(str(self.provider_fault))
-        if isinstance(self.message, str):
-            fault_list.append(self.message)
+		if isinstance(self.message, str):
+			fault_list.append(self.message)
 		super().__init__("\n".join(fault_list))
 
