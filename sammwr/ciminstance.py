@@ -558,7 +558,7 @@ class CimInstance(CimClass):
 				wmfe = WsManFault(i)
 			elif "MSFT_WmiError" in i.tag:
 				try:
-					wmie = MSFT_WmiError(sf)
+					wmie = MSFT_WmiError(sf, self.p)
 				except Exception as e:
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
@@ -624,13 +624,13 @@ class CimInstanceIterator:
 		return _ec, items
 
 class MSFT_WmiError(Exception):
-	def __init__(self, soap_fault):
+	def __init__(self, soap_fault, protocol):
 		if not isinstance(soap_fault, SoapFault):
 			raise TypeError("Expecting type SoapFault")
 		self.root = soap_fault.detail.find(".//{*}MSFT_WmiError")
 		if self.root is None:
 			raise TypeError("SoapFault doesn't contain a MSFT_WmiError")
-		err_instance=CimInstance('root','MSFT_WmiError', xml=self.root, protocol=self.p)
+		err_instance=CimInstance('root','MSFT_WmiError', xml=self.root, protocol=protocol)
 		self.soap_fault=soap_fault
 		fault_list=[]
 		if soap_fault is not None:
