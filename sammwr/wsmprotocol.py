@@ -39,11 +39,11 @@ class NsEnumerate(SoapTag):
 
 class SelectorSet(ET.Element):
 	def __init__(self):
-		super().__init__(WsMan("SelectorSet"))
+		super().__init__(NsWsMan("SelectorSet"))
 		self._keys = []
 
 	def addSelector(self, key, value):
-		sel = ET.SubElement(self, WsMan("Selector"))
+		sel = ET.SubElement(self, NsWsMan("Selector"))
 		sel.set("Name", key)
 		sel.text = str(value)
 		self._keys.append(f"{key}={value}")
@@ -53,10 +53,10 @@ class SelectorSet(ET.Element):
 
 class OptionSet(ET.Element):
 	def __init__(self):
-		super().__init__(WsMan("OptionSet"))
+		super().__init__(NsWsMan("OptionSet"))
 
 	def addOption(self, name, type, value):
-		opt = ET.SubElement(self, WsMan("Option"))
+		opt = ET.SubElement(self, NsWsMan("Option"))
 		opt.set("Name", name)
 		opt.set("Type", type)
 		opt.text = str(value)
@@ -65,7 +65,7 @@ class EnumFilter(ET.Element):
 	def __init__(self, dialect, selector_set=None, wql=None, cimnamespace=None):
 		self.set("Dialect", dialect)
 		self._cimnamespace = cimnamespace
-		super().__init__(WsMan("Filter"))
+		super().__init__(NsWsMan("Filter"))
 		if dialect == DIALECT_SELECTOR:
 			if not isinstance(selector_set, SelectorSet):
 				raise TypeError("Attribute 'selector_set' must be of type SelectorSet")
