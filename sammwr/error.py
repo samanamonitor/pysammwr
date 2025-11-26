@@ -99,6 +99,8 @@ class WsManFault(Exception):
                 f"provider='{self.provider}', path='{self.path}'")
         if self.provider_fault is not None:
             fault_list.append(f"      Inner Fault: {str(self.provider_fault)}")
+        if isinstance(self.message, str):
+            fault_list.append(self.message)
         super().__init__("\n".join(fault_list))
 
 class MSFT_WmiError(Exception):
