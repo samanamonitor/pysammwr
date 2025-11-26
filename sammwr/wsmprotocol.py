@@ -309,7 +309,7 @@ class WSMReleaseResponse(WSMResponse):
 
 class WSMReleaseRequest(WSMRequest):
 	action="http://schemas.xmlsoap.org/ws/2004/09/enumeration/Release"
-	_response_class=WSReleaseResponse
+	_response_class=WSMReleaseResponse
 	def __init__(self, enum_context, *args, **kwargs):
 		if isinstance(enum_context, WSMEnumerateResponse) or isinstance(enum_context, WSMPullResponse):
 			resource_uri = enum_context._request.resource_uri.text
