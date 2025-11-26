@@ -111,10 +111,10 @@ class WSMClient:
 					root= ET.fromstring(ex.response_text)
 					fault = root.find("{*}Body/{*}Fault")
 					if fault is not None:
-						sf = SoapFault(fault, root=root, response_text=ex.response_text)
+						sf = SoapFault(fault)
 						wsmf = sf.detail.find("{*}WSManFault")
 						if wsmf is not None:
-							raise WSMFault(wsmf)
+							raise WSMFault(sf)
 						raise sf
 					raise
 
