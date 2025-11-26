@@ -497,6 +497,8 @@ class CimInstance(CimClass):
 		return f"<{self.cimnamespace}/{self.class_name}>" + self._properties.__repr__()
 
 	def _get_schema_xml(self, cimnamespace, class_name):
+		#other schema uri?
+		# "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/Win32_ComputerSystem"
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
@@ -620,50 +622,3 @@ class CimInstanceIterator:
 		else:
 			_ec = None
 		return _ec, items
-
-# https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
-class WsManFault(Exception):
-	def __init__(self, wmf_detail, ns, soap_fault):
-		self.detail = wmf_detail.text
-		self.code = wmf_detail.attrib.get('Code')
-		self.machine = wmf_detail.attrib.get('Machine')
-		self.message = wmf_detail.find('f:Message', { "f": ns })
-		self.provider_fault = None
-		if len(self.message) == 0:
-			self.message = self.message.text
-		else:
-			for m in self.message:
-				ns, tag = tagns(m.tag)
-				if tag == "ProviderFault":
-					self.provider_id=m.attrib.get("providerId")
-					self.provider=m.attrib.get("provider")
-					self.path = m.attrib.get("path")
-					wsmf = m.find("./")
-					if wsmf is None:
-						self.provider_fault = None
-						continue
-					_, faulttag = tagns(wsmf.tag)
-					if faulttag == "WSManFault":
-						self.provider_fault = WsManFault(wsmf, ns, soap_fault)
-		fault_list = []
-		fault_list.append(f"WsManFault: detail='{self.detail}', code='{self.code}'" + 
-			f", machine='{self.machine}' ")
-		if self.provider_fault is not None:
-			fault_list.append(f"   Provider: id='{self.provider_id}', " +
-				f"provider='{self.provider}', path='{self.path}'")
-		if self.provider_fault is not None:
-			fault_list.append(f"      Inner Fault: {str(self.provider_fault)}")
-		super().__init__("\n".join(fault_list))
-
-class MSFT_WmiError(Exception):
-	def __init__(self, err_instance, wsman_fault=None, soap_fault=None):
-		self.soap_fault=soap_fault
-		self.wsman_fault=wsman_fault
-		fault_list=[]
-		if soap_fault is not None:
-			fault_list.append(str(soap_fault))
-		if wsman_fault is not None:
-			fault_list.append(str(wsman_fault))
-		self.cim = err_instance
-		fault_list.append(f"WMI Error({self.cim.MessageID}): {self.cim.Message}")
-		super().__init__("\n".join(fault_list))
