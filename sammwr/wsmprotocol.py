@@ -135,6 +135,7 @@ class WSMClient:
 		return request._response_class(restxt, request)
 
 class WSMRequest(ET.ElementTree):
+	_response_class = WSMResponse
 	def __init__(self, action, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US"):
 		self.envelope     = ET.Element(NsEnvelope("Envelope"))
 		super().__init__(self.envelope)
