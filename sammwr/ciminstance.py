@@ -5,6 +5,7 @@ from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault, WsManFault
+from .wsmprotocol import WSMClient, WSMGetRequest, SelectorSet
 
 log = logging.getLogger(__name__)
 ns = {
@@ -318,6 +319,7 @@ class CimInstance(CimClass):
 		else:
 			self.p = protocol
 
+		self.wsmclient = WSMClient(self.p.transport)
 		self.cimnamespace = cimnamespace
 		self.ns = "p1"
 		self._properties = {}
@@ -530,12 +532,22 @@ class CimInstance(CimClass):
 			log.debug("Cache hit for %s", cache_key)
 
 	def get(self):
-		selectors = self._get_selector()
+		selectors = SelectorSet()
+		selectors.addSelector("__cimnamespace", self.cimnamespace)
+		for key_name in self._newschema._property_keys:
+			value = self._properties.get(key_name)
+			if value is None:
+				continue
+			selectors.addSelector(key_name, value)
+
 		try:
-			res = self.p.get(self.resource_uri, selector=selectors)
-			root = ET.fromstring(res)
-			obj = root.find(".//{http://www.w3.org/2003/05/soap-envelope}Body/")
-			self._from_xml(obj)
+			res = self.wsmclient.do(WSMGetRequest(self.resource_uri))
+			#res = self.p.get(self.resource_uri, selector=selectors)
+			#root = ET.fromstring(res)
+			#obj = root.find(".//{http://www.w3.org/2003/05/soap-envelope}Body/")
+			for obj in res.Items:
+				self._from_xml(obj)
+				break
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
