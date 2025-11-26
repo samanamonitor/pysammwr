@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from .utils import tagns
 
 class WRError(Exception):
     def __init__(self, *args):

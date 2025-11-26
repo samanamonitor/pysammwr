@@ -7,7 +7,6 @@ import xmltodict
 import uuid
 import os
 import io
-from .utils import tagns, get_xml_namespaces
 from .error import SoapFault
 try:
     from kerberos import GSSError
