@@ -551,11 +551,11 @@ class CimInstance(CimClass):
 		wmfe = None
 		wmie = None
 		for i in sf.detail:
-			if tag == "FaultDetail":
+			if i.tag == "FaultDetail":
 				fault_detail = i.text
-			elif tag == "WSManFault":
+			elif i.tag == "WSManFault":
 				wmfe = WsManFault(i)
-			elif tag == "MSFT_WmiError":
+			elif i.tag == "MSFT_WmiError":
 				try:
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
 					wmie = MSFT_WmiError(errinst, wmfe, sf)
