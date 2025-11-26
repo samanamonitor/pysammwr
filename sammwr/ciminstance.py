@@ -4,6 +4,7 @@ from .protocol import SoapFault, WRProtocol
 from .utils import tagns, get_xml_namespaces
 import logging
 from datetime import datetime
+from .error import MSFT_WmiError
 
 log = logging.getLogger(__name__)
 ns = {
