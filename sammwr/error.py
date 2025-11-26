@@ -68,11 +68,11 @@ class SoapFault(Exception):
 
 # https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
 class WsManFault(Exception):
-    def __init__(self, wmf_detail, ns, soap_fault):
+    def __init__(self, wmf_detail, soap_fault):
         self.detail = wmf_detail.text
         self.code = wmf_detail.attrib.get('Code')
         self.machine = wmf_detail.attrib.get('Machine')
-        self.message = wmf_detail.find('f:Message', { "f": ns })
+        self.message = wmf_detail.find('{*}Message')
         self.provider_fault = None
         if len(self.message) == 0:
             self.message = self.message.text
@@ -89,7 +89,7 @@ class WsManFault(Exception):
                         continue
                     _, faulttag = tagns(wsmf.tag)
                     if faulttag == "WSManFault":
-                        self.provider_fault = WsManFault(wsmf, ns, soap_fault)
+                        self.provider_fault = WsManFault(wsmf, soap_fault)
         fault_list = []
         fault_list.append(f"WsManFault: detail='{self.detail}', code='{self.code}'" + 
             f", machine='{self.machine}' ")

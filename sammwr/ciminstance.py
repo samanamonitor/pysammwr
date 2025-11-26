@@ -1,7 +1,7 @@
 import re
 import xml.etree.ElementTree as ET
 from .protocol import WRProtocol
-from .utils import tagns, get_xml_namespaces
+from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault, WsManFault, MSFT_WmiError
@@ -551,11 +551,10 @@ class CimInstance(CimClass):
 		wmfe = None
 		wmie = None
 		for i in sf.detail:
-			ns, tag = tagns(i.tag)
 			if tag == "FaultDetail":
 				fault_detail = i.text
 			elif tag == "WSManFault":
-				wmfe = WsManFault(i, ns, sf)
+				wmfe = WsManFault(i, sf)
 			elif tag == "MSFT_WmiError":
 				try:
 					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
