@@ -8,6 +8,7 @@ import uuid
 import os
 import io
 from .utils import tagns, get_xml_namespaces
+from .error import SoapFault
 try:
     from kerberos import GSSError
 except ModuleNotFoundError:
@@ -18,61 +19,6 @@ import logging
 log = logging.getLogger(__name__)
 
 override = lambda x, y: y if x is None else x
-
-class SoapFault(Exception):
-    ns={'s': 'http://www.w3.org/2003/05/soap-envelope'}
-    def __init__(self, fault_element, root=None, response_text=""):
-        self.root = root
-        self.response_text = response_text
-        self.namespaces = get_xml_namespaces(response_text)
-        if not isinstance(fault_element, ET.Element):
-            raise TypeError
-
-        if fault_element.tag != f"{{{self.ns['s']}}}Fault":
-            raise TypeError(fault_element.tag)
-
-        code=fault_element.find("s:Code/s:Value", self.ns)
-        if code is not None:
-            self.code = code.text
-
-        subcode = fault_element.find("s:Code/s:Subcode", self.ns)
-        self.subcode = None
-        if subcode is not None:
-            self.subcode = self._process_subcode(subcode)
-
-        self.reason = fault_element.find("s:Reason/s:Text", self.ns)
-        if self.reason is not None:
-            self.reason = self.reason.text
-
-        detail = fault_element.find("s:Detail", self.ns)
-        detail_str = ""
-        self.fault_detail = ""
-        self.detail_type = "text"
-        if len(detail) == 0:
-            self.detail = detail.text
-            detail_str = self.detail
-        else:
-            self.detail = detail
-            detail_types = []
-            for d in self.detail:
-                if "FaultDetail" in d.tag:
-                    self.fault_detail = d.text
-                    continue
-                (_, tag) = tagns(d.tag)
-                detail_types.append(tag)
-            detail_str = ",".join(detail_types)
-
-        super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' fault_detail: '{self.fault_detail}' detail: '{detail_str}'")
-
-    def _process_subcode(self, element):
-        out = {}
-        value = element.find("s:Value", self.ns)
-        if value is not None:
-            out['value'] = value.text
-        subcode = element.find("s:Subcode", self.ns)
-        if subcode is not None:
-            out['subcode'] = self.process_subcode(subcode)
-        return out
 
 class WRProtocol(Protocol):
     xmlns = {
@@ -197,6 +143,10 @@ class WRProtocol(Protocol):
         return res
 
     def enumerate(self, resource_uri, optimize=False, max_elements=10, en_filter=None, wql=None, selector=None):
+        # TODO: implement
+        #  * w:OptimizeEnumeration
+        #  * w:MaxElements
+        #  * w:EnumerationMode (EnumerateObjectAndEPR, EnumerateObject, EnumerateEPR)
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
@@ -240,7 +190,7 @@ class WRProtocol(Protocol):
                 '#text': namespace,
             }]
         }
-        if selector is not None:
+        if isinstance(selector, list):
             req['env:Envelope']['env:Header']['w:SelectorSet']['w:Selector'] = selector
         body = req['env:Envelope'].setdefault('env:Body', {})
         parameters = body.setdefault('p:%s_INPUT' % method_name, {})
