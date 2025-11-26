@@ -6,9 +6,9 @@ import xml.etree.ElementTree as ET
 import uuid
 from winrm.transport import Transport
 from winrm.exceptions import WinRMTransportError
-from sammwr.protocol import SoapFault
 from kerberos import GSSError
 import logging
+from .error import SoapFault
 from .utils import tagns
 
 log = logging.getLogger(__name__)
@@ -99,6 +99,7 @@ class WSMClient:
 				self._transpor_retries = 0
 				log.debug("Response: %s", restxt)
 				break
+
 			except WinRMTransportError as ex:
 				if ex.response_text == '' and int(ex.code) == 400:
 					if self._transpor_retries > 3:
@@ -110,7 +111,13 @@ class WSMClient:
 					root= ET.fromstring(ex.response_text)
 					fault = root.find("{*}Body/{*}Fault")
 					if fault is not None:
-						raise SoapFault(fault, root=root, response_text=ex.response_text)
+						sf = SoapFault(fault, root=root, response_text=ex.response_text)
+						wsmf = sf.detail.find("{*}WSManFault")
+						if wsmf is not None:
+							raise WSMFault(wsmf)
+						raise sf
+					raise
+
 			except GSSError as e:
 				err_maj = e.args[0][1]
 				err_min = e.args[1][1]
@@ -124,6 +131,7 @@ class WSMClient:
 					self._transport.session = None
 				else:
 					raise
+
 		return request._response_class(restxt, request)
 
 class WSMRequest(ET.ElementTree):
@@ -334,3 +342,52 @@ class WSMGetStatusRequest(WSMRequest):
 	_response_class = WSMGetStatusResponse
 	def __init__(self, *args, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
+
+class ProviderFault(Exception):
+	def __init__(self, element):
+		if not isinstance(element, ET.Element):
+			raise TypeError("element")
+		if "ProviderFault" not in element.tag:
+			raise TypeError(f"Expecting 'ProviderFault' tag and received {element.tag}")
+		self.root = element
+		outstr = []
+		for k, v in element.attrib.items():
+			outstr.append(f"{k}='{v}'")
+		self.innerFaults = []
+		for i in element:
+			if "WSManFault" in i.tag:
+				print(i.tag)
+				self.innerFaults.append(f"\n{str(WSMFault(i))}")
+			elif "ExtendedError" in i.tag:
+				status = i.find("{*}__ExtendedStatus")
+				if status is None: continue
+				ee = []
+				for d in status:
+					_, tag = tagns(d.tag)
+					ee.append(f"{tag}='{d.text}'")
+				self.innerFaults.append("ExtendedError:\n\t" + "\n\t".join(ee))
+		outstr.append("\n".join(self.innerFaults))
+		super().__init__("ProviderFault: " + " ".join(outstr))
+
+# https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
+class WSMFault(Exception):
+	def __init__(self, wmf_detail):
+		self.root=wmf_detail
+		self.detail = wmf_detail.text
+		self.code = wmf_detail.attrib.get('Code')
+		self.machine = wmf_detail.attrib.get('Machine')
+		self.message = wmf_detail.find('{*}Message')
+		self.provider_fault = None
+		if len(self.message) == 0:
+			self.message = self.message.text
+		else:
+			for m in self.message:
+				ns, tag = tagns(m.tag)
+				if tag == "ProviderFault":
+					self.provider_fault = ProviderFault(m)
+		fault_list = []
+		fault_list.append(f"detail='{self.detail}', code='{self.code}'" +
+			f", machine='{self.machine}' ")
+		if self.provider_fault is not None:
+			fault_list.append(str(self.provider_fault))
+		super().__init__("\n".join(fault_list))

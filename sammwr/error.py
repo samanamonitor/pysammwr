@@ -56,6 +56,7 @@ class SoapFault(Exception):
                 detail_types.append(tag)
             detail_str = ",".join(detail_types)
         super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' fault_detail: '{self.fault_detail}' detail: '{detail_str}'")
+
     def _process_subcode(self, element):
         out = {}
         value = element.find("{*}Value")
