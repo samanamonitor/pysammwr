@@ -106,6 +106,7 @@ class WSMClient:
 					self._transpor_retries += 1
 					self._transport.session = None
 				else:
+					log.debug("Error: %s", ex.response_text)
 					root= ET.fromstring(ex.response_text)
 					fault = root.find("{*}Body/{*}Fault")
 					if fault is not None:
@@ -114,6 +115,7 @@ class WSMClient:
 				err_maj = e.args[0][1]
 				err_min = e.args[1][1]
 				if err_maj == 0x80000 and err_min == 0x25ea107:
+					log.warning("Session token has expired. Retrying %d/3", self._transpor_retries)
 					if self._transpor_retries > 3:
 						raise
 					self._transpor_retries += 1
