@@ -134,6 +134,18 @@ class WSMClient:
 
 		return request._response_class(restxt, request)
 
+class WSMResponse(ET.ElementTree):
+	def __init__(self, xml, request):
+		super().__init__(ET.fromstring(xml))
+		self._request = request
+	def __getattr__(self, item):
+		if item == "Body":
+			return self.find("{*}Body")
+		out = self.find(f"{{*}}Header/{{*}}{item}")
+		if out is not None:
+			return out.text
+		raise AttributeError(item)
+
 class WSMRequest(ET.ElementTree):
 	_response_class = WSMResponse
 	def __init__(self, action, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US"):
@@ -182,18 +194,6 @@ class WSMRequest(ET.ElementTree):
 		if not isinstance(transport, Transport):
 			raise TypeError("transport")
 		self._transport = transport
-
-class WSMResponse(ET.ElementTree):
-	def __init__(self, xml, request):
-		super().__init__(ET.fromstring(xml))
-		self._request = request
-	def __getattr__(self, item):
-		if item == "Body":
-			return self.find("{*}Body")
-		out = self.find(f"{{*}}Header/{{*}}{item}")
-		if out is not None:
-			return out.text
-		raise AttributeError(item)
 
 class WSMGetResponse(WSMResponse):
 	@property
