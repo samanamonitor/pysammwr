@@ -500,6 +500,7 @@ class CimInstance(CimClass):
 	def _get_schema_xml(self, cimnamespace, class_name):
 		#other schema uri?
 		# "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/Win32_ComputerSystem"
+		log.debug("Getting Schema for cimnamespace='%s' class_name='%s'", cimnamespace, class_name)
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
 		schema_str = schema_cache.get(cache_key)
