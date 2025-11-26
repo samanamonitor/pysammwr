@@ -102,16 +102,3 @@ class WsManFault(Exception):
         if isinstance(self.message, str):
             fault_list.append(self.message)
         super().__init__("\n".join(fault_list))
-
-class MSFT_WmiError(Exception):
-    def __init__(self, err_instance, wsman_fault=None, soap_fault=None):
-        self.soap_fault=soap_fault
-        self.wsman_fault=wsman_fault
-        fault_list=[]
-        if soap_fault is not None:
-            fault_list.append(str(soap_fault))
-        if wsman_fault is not None:
-            fault_list.append(str(wsman_fault))
-        self.cim = err_instance
-        fault_list.append(f"WMI Error({self.cim.MessageID}): {self.cim.Message}")
-        super().__init__("\n".join(fault_list))

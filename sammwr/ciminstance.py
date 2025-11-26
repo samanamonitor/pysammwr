@@ -4,7 +4,7 @@ from .protocol import WRProtocol
 from .utils import tagns
 import logging
 from datetime import datetime
-from .error import SoapFault, WsManFault, MSFT_WmiError
+from .error import SoapFault, WsManFault
 
 log = logging.getLogger(__name__)
 ns = {
@@ -330,7 +330,7 @@ class CimInstance(CimClass):
 
 		self._get_schema_xml(self.cimnamespace, self.class_name)
 
-		if xml is not None:
+		if isinstance(xml, ET.Element):
 			self._from_xml(xml)
 		else:
 			for prop_name, prop_value in kwargs.items():
@@ -558,8 +558,7 @@ class CimInstance(CimClass):
 				wmfe = WsManFault(i)
 			elif "MSFT_WmiError" in i.tag:
 				try:
-					errinst=CimInstance('root','MSFT_WmiError', xml=i, protocol=self.p)
-					wmie = MSFT_WmiError(errinst, wmfe, sf)
+					wmie = MSFT_WmiError(sf)
 				except Exception as e:
 					log.error("cannot generate wmie:" + str(e))
 					wmie=None
@@ -623,3 +622,19 @@ class CimInstanceIterator:
 		else:
 			_ec = None
 		return _ec, items
+
+class MSFT_WmiError(Exception):
+	def __init__(self, soap_fault):
+		if not isinstance(soap_fault, SoapFault):
+			raise TypeError("Expecting type SoapFault")
+		self.root = soap_fault.detail.find(".//{*}MSFT_WmiError")
+		if self.root is None:
+			raise TypeError("SoapFault doesn't contain a MSFT_WmiError")
+		err_instance=CimInstance('root','MSFT_WmiError', xml=self.root, protocol=self.p)
+		self.soap_fault=soap_fault
+		fault_list=[]
+		if soap_fault is not None:
+			fault_list.append(str(soap_fault))
+		self.cim = err_instance
+		fault_list.append(f"WMI Error({self.cim.MessageID}): {self.cim.Message}")
+		super().__init__("\n".join(fault_list))
