@@ -635,7 +635,7 @@ class CimInstanceIterator:
 	def __init__(self, base_instance):
 		self.cimnamespace = base_instance.cimnamespace
 		self.class_name = base_instance.class_name
-		self.protocol = base_instance.protocol
+		self.protocol = base_instance.p
 		self.wsmclient = base_instance.wsmclient
 		self.wqlfilter = base_instance.wqlfilter
 
