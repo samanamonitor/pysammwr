@@ -641,7 +641,7 @@ class CimInstanceIterator:
 
 		enum_filter = None
 		resource_uri = self.resource_uri
-		if wqlfilter is not None:
+		if self.wqlfilter is not None:
 			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 			enum_filter = EnumFilter(DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
