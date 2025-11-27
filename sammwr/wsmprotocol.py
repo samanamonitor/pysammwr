@@ -37,6 +37,9 @@ class NsMsWsMan(SoapTag):
 class NsEnumerate(SoapTag):
 	ns="http://schemas.xmlsoap.org/ws/2004/09/enumeration"
 
+class NsXSI(SoapTag):
+	ns="http://www.w3.org/2001/XMLSchema-instance"
+
 class SelectorSet(ET.Element):
 	def __init__(self):
 		super().__init__(NsWsMan("SelectorSet"))
@@ -343,6 +346,12 @@ class WSMGetStatusRequest(WSMRequest):
 	_response_class = WSMGetStatusResponse
 	def __init__(self, *args, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
+
+class WSMMethodResponse(WSMResponse):
+	pass
+
+class WSMMethodRequest(WSMRequest):
+	pass
 
 class ProviderFault(Exception):
 	def __init__(self, element):
