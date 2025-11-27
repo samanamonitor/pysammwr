@@ -95,6 +95,8 @@ class CimBoolean(CimClass):
 			self.value = value
 		else:
 			raise TypeError(self.__class__.__name__, value.__class__.__name__)
+	def __str__(self):
+		return str(self.value).lower()
 
 class CimInt(CimClass):
 	type_name="cim:cimInt"
