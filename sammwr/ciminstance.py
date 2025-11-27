@@ -450,7 +450,7 @@ class CimInstance(CimClass):
 			action = f"{self.schema_uri}/{method_name}"
 			req = WSMRequest(action, self.schema_uri, selector_set=selectors)
 			m_input = ET.SubElement(req.body, NsMsWsMan(f"{method_name}_INPUT"))
-			m_input.set(NsXSI(f"{method_name}_INPUT_Type"))
+			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			ns=self.schema_uri
 			for k, v in parameters:
 				m_input.append(v.xml(k))
