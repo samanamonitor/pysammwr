@@ -25,7 +25,8 @@ class CimClass:
 
 	def xml(self, tag):
 		out = ET.Element(tag)
-		out.set(NsXSI("type"), NsCim(self.type_name))
+		out.set(NsXSI("type"), self.type_name)
+		out.set("xmlns:cim","http://schemas.dmtf.org/wbem/wscim/1/common" )
 
 		if self.value is None:
 			out.set(NsXSI("nil"), "true")
@@ -149,8 +150,9 @@ class CimDateTime(CimClass):
 
 	def xml(self, tag):
 		out = super().xml(tag)
+		dt = ET.SubElement(out, "cim:Datetime")
 		if self.value is not None:
-			out.text = datetime.isoformat(self.value)
+			dt = datetime.isoformat(self.value)
 		return out
 
 	def dict(self):
