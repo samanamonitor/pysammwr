@@ -66,13 +66,15 @@ class OptionSet(ET.Element):
 
 class EnumFilter(ET.Element):
 	def __init__(self, dialect, selector_set=None, wql=None, cimnamespace=None):
+		super().__init__(NsWsMan("Filter"))
 		self.set("Dialect", dialect)
 		self._cimnamespace = cimnamespace
-		super().__init__(NsWsMan("Filter"))
+
 		if dialect == DIALECT_SELECTOR:
 			if not isinstance(selector_set, SelectorSet):
 				raise TypeError("Attribute 'selector_set' must be of type SelectorSet")
 			self.append(selector_set)
+
 		elif dialect == DIALECT_WQL:
 			if not isinstance(wql, str):
 				raise TypeError("Attribute 'wql' must be of type str")
@@ -242,7 +244,10 @@ class WSMDeleteRequest(WSMRequest):
 class WSMEnumerateResponse(WSMResponse):
 	@property
 	def Items(self):
-		return self.find("{*}Body/{*}EnumerateResponse/{*}Items")
+		out = self.find("{*}Body/{*}EnumerateResponse/{*}Items")
+		if out is None:
+			return []
+		return out
 	@property
 	def EnumerationContext(self):
 		out = self.find("{*}Body/{*}EnumerateResponse/{*}EnumerationContext")
@@ -258,10 +263,13 @@ class WSMEnumerateRequest(WSMRequest):
 	_response_class = WSMEnumerateResponse
 	def __init__(self, *args, optimize=False, max_elements=50, enum_filter=None, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
+
 		self.enumerate = ET.SubElement(self.body, NsEnumerate("Enumerate"))
 		ET.SubElement(self.enumerate, NsWsMan("MaxElements")).text = str(max_elements)
+
 		if optimize:
 			ET.SubElement(self.enumerate, NsWsMan("OptimizeEnumeration"))
+
 		if isinstance(enum_filter, ET.Element):
 			if enum_filter.get("Dialect") == DIALECT_WQL:
 				self.resource_uri.text = "http://schemas.dmtf.org/wbem/wscim/1/*"
