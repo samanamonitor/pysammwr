@@ -23,10 +23,12 @@ class NsCim(SoapTag):
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
 
-	def xml(self, tag):
+	def xml(self, tag, include_type=True, include_cim_namespace=True):
 		out = ET.Element(tag)
-		out.set(NsXSI("type"), self.type_name)
-		out.set("xmlns:cim","http://schemas.dmtf.org/wbem/wscim/1/common" )
+		if include_type:
+			out.set(NsXSI("type"), self.type_name)
+		if include_cim_namespace:
+			out.set("xmlns:cim","http://schemas.dmtf.org/wbem/wscim/1/common" )
 
 		if self.value is None:
 			out.set(NsXSI("nil"), "true")
@@ -148,11 +150,11 @@ class CimDateTime(CimClass):
 			return
 		self.value = "undefined"
 
-	def xml(self, tag):
-		out = super().xml(tag)
+	def xml(self, tag, **kwargs):
+		out = super().xml(tag, **kwargs)
 		dt = ET.SubElement(out, "cim:Datetime")
 		if self.value is not None:
-			dt = datetime.isoformat(self.value)
+			dt.text = datetime.isoformat(self.value)
 		return out
 
 	def dict(self):
@@ -513,18 +515,18 @@ class CimInstance(CimClass):
 			self._properties.setdefault(prop_name, value)
 		return value
 
-	def xml(self, tag):
-		ns=f"{{{self.schema_uri}}}"
-		out = ET.Element(f"{ns}{tag}")
+	def xml(self, tag, **kwargs):
+		ns=f"{{{self.resource_uri}}}"
+		out = super().xml(f"{ns}{tag}", **kwargs)
 		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"
 			value = v
 			if isinstance(v, CimClass):
-				out.append(v.xml(tag))
+				out.append(v.xml(tag, include_type=False, include_cim_namespace=False))
 			elif isinstance(v, list):
 				for cv in v:
-					out.append(cv.xml(tag))
+					out.append(cv.xml(tag, include_type=False, include_cim_namespace=False))
 		return out
 
 	def dict(self):
