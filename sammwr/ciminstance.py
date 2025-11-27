@@ -352,6 +352,7 @@ class CimInstance(CimClass):
 		self._newschema = None
 		self.class_name = self._get_class_name(xml, class_name)
 		self._wqlfilter = wqlfilter
+		self.type_name = self.resource_uri
 
 		if self.cimnamespace is None or self.class_name is None:
 			raise TypeError("Must define 'cimnamespace' and 'class_name'.")
