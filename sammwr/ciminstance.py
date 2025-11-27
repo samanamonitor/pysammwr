@@ -30,7 +30,7 @@ class CimClass:
 		if self.value is None:
 			out.set(NsXSI("nil"), "true")
 		else:
-			out.text = value
+			out.text = self.value
 		return out
 
 	def dict(self):
