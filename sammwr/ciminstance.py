@@ -141,7 +141,7 @@ class CimDateTime(CimClass):
 			self.value = value.value
 			return
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get("{*}nil", "false").lower() == "true"
+			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
