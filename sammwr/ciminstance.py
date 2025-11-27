@@ -90,7 +90,7 @@ class CimBoolean(CimClass):
 			if nil:
 				self.value = None
 				return
-			self.value = bool(value.text)
+			self.value = value.text.lower() == "true"
 		elif value is None:
 			self.value = value
 		else:
