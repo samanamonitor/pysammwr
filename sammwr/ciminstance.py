@@ -455,8 +455,10 @@ class CimInstance(CimClass):
 			for k, v in parameters:
 				m_input.append(v.xml(k))
 
+			req._ready = True
 			res = self.wsmclient.do(req)
 			return res
+
 			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name,
 				selector=self._get_selector(), **parameters)
 			root = ET.fromstring(ret)
