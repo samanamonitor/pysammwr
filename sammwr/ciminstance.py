@@ -451,7 +451,7 @@ class CimInstance(CimClass):
 			m_input = ET.SubElement(req.body, NsMsWsMan(f"{method_name}_INPUT"))
 			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			ns=self.schema_uri
-			for k, v in parameters:
+			for k, v in parameters.items():
 				m_input.append(v.xml(k))
 
 			req._ready = True
