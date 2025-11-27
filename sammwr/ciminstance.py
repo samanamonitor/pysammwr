@@ -568,7 +568,7 @@ class CimInstance(CimClass):
 				option_set=OptionSet()
 				option_set.addOption('IncludeQualifiers', 'xs:boolean', 'true')
 
-				schema_res = self.wsmclient(WSMGetRequest(schema_uri, 
+				schema_res = self.wsmclient.do(WSMGetRequest(schema_uri,
 					selector_set=selector_set, option_set=option_set))
 
 				schema = next(iter(schema_res.Items))
