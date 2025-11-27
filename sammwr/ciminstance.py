@@ -519,10 +519,10 @@ class CimInstance(CimClass):
 			tag=f"{ns}{k}"
 			value = v
 			if isinstance(v, CimClass):
-				value = v.xml(tag)
+				out.append(v.xml(tag))
 			elif isinstance(v, list):
-				value = [ cv.xml(tag) for cv in v ]
-			out.append(value)
+				for cv in v:
+					out.append(cv.xml(tag))
 		return out
 
 	def dict(self):
