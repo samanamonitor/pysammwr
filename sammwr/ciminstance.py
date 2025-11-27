@@ -152,6 +152,7 @@ class CimDateTime(CimClass):
 
 	def xml(self, tag, **kwargs):
 		out = super().xml(tag, **kwargs)
+		out.text = None
 		dt = ET.SubElement(out, "cim:Datetime")
 		if self.value is not None:
 			dt.text = datetime.isoformat(self.value)
