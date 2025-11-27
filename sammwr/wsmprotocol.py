@@ -391,7 +391,7 @@ class WSMFault(Exception):
 			self.root=fault.detail.find(".//{*}WSManFault")
 			if self.root is None:
 				raise TypeError("SoapFault doesn't contain a WSManFault")
-		elif isinstance(fault, WSMFault):
+		elif isinstance(fault, ET.Element) and "WSManFault" in fault.tag:
 			self.root = fault
 		else:
 			raise TypeError("Expecting type 'SoapFault' or 'WSMFault")
