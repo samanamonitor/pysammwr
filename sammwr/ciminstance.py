@@ -5,7 +5,7 @@ from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault, WsManFault
-from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, WSMEnumerateRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
+from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, WSMEnumerateRequest, WSMPullRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
 
 log = logging.getLogger(__name__)
 ns = {
@@ -655,7 +655,7 @@ class CimInstanceIterator:
 		if len(self.res.Items) == 0:
 			if self.res.EndOfSequence:
 				raise StopIteration
-			self.res = self.wsmclient.do(WSMEnumerateRequest(self.res))
+			self.res = self.wsmclient.do(WSMPullRequest(self.res))
 		i = self.res.Items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
