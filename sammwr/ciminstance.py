@@ -628,9 +628,6 @@ class CimInstance(CimClass):
 			raise WSMFault(sf)
 		raise sf
 
-	def __str__(self):
-		return self.__repr__()
-
 	def __iter__(self):
 		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter)
 
