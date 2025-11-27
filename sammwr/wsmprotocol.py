@@ -372,7 +372,6 @@ class ProviderFault(Exception):
 		self.innerFaults = []
 		for i in element:
 			if "WSManFault" in i.tag:
-				print(i.tag)
 				self.innerFaults.append(f"\n{str(WSMFault(i))}")
 			elif "ExtendedError" in i.tag:
 				status = i.find("{*}__ExtendedStatus")
@@ -387,12 +386,15 @@ class ProviderFault(Exception):
 
 # https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
 class WSMFault(Exception):
-	def __init__(self, soap_fault):
-		if not isinstance(soap_fault, SoapFault):
-			raise TypeError("Expecting type 'SoapFault'")
-		self.root=soap_fault.detail.find(".//{*}WSManFault")
-		if self.root is None:
-			raise TypeError("SoapFault doesn't contain a WSManFault")
+	def __init__(self, fault):
+		if isinstance(fault, SoapFault):
+			self.root=fault.detail.find(".//{*}WSManFault")
+			if self.root is None:
+				raise TypeError("SoapFault doesn't contain a WSManFault")
+		elif isinstance(fault, WSMFault):
+			self.root = fault
+		else:
+			raise TypeError("Expecting type 'SoapFault' or 'WSMFault")
 		self.detail = self.root.text
 		self.code = self.root.attrib.get('Code')
 		self.machine = self.root.attrib.get('Machine')
