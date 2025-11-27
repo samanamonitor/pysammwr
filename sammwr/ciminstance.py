@@ -446,7 +446,6 @@ class CimInstance(CimClass):
 					_ = parameters.setdefault(param_name, []).append(value)
 		try:
 			selectors = self._get_key_selectors()
-			selectors.addSelector("__cimnamespace", self.cimnamespace)
 			action = f"{self.schema_uri}/{method_name}"
 			req = WSMRequest(action, self.schema_uri, selector_set=selectors)
 			m_input = ET.SubElement(req.body, NsMsWsMan(f"{method_name}_INPUT"))
