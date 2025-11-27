@@ -387,8 +387,11 @@ class ProviderFault(Exception):
 
 # https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
 class WSMFault(Exception):
-	def __init__(self, wmf_detail):
-		self.root=wmf_detail
+	def __init__(self, soap_fault):
+		if not isinstance(soap_fault, SoapFault):
+			raise TypeError("Expecting type 'SoapFault'")
+		wmf_detail = soap_fault.detail
+		self.root=soap_fault.detail.find(".//{*}WSManFault")
 		self.detail = wmf_detail.text
 		self.code = wmf_detail.attrib.get('Code')
 		self.machine = wmf_detail.attrib.get('Machine')
