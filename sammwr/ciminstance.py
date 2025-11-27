@@ -646,17 +646,19 @@ class CimInstanceIterator:
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 			enum_filter = EnumFilter(DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
 		self.res = self.wsmclient.do(WSMEnumerateRequest(resource_uri, enum_filter=enum_filter))
+		self.items = self.res.Items
 
 	@property
 	def resource_uri(self):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def __next__(self):
-		if len(self.res.Items) == 0:
+		if len(self.items) == 0:
 			if self.res.EndOfSequence:
 				raise StopIteration
 			self.res = self.wsmclient.do(WSMPullRequest(self.res))
-		i = self.res.Items.pop()
+			self.items = self.res.Items
+		i = self.items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
 

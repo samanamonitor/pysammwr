@@ -244,10 +244,8 @@ class WSMDeleteRequest(WSMRequest):
 class WSMEnumerateResponse(WSMResponse):
 	@property
 	def Items(self):
-		out = self.find("{*}Body/{*}EnumerateResponse/{*}Items")
-		if out is None:
-			return []
-		return out
+		return self.findall("{*}Body/{*}EnumerateResponse/{*}Items/")
+
 	@property
 	def EnumerationContext(self):
 		out = self.find("{*}Body/{*}EnumerateResponse/{*}EnumerationContext")
