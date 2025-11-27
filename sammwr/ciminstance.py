@@ -141,8 +141,10 @@ class CimDateTime(CimClass):
 			if dt is None:
 				self.value = None
 			self.value = datetime.fromisoformat(dt.text)
+			return
 		elif value is None:
 			self.value = value
+			return
 		self.value = "undefined"
 
 	def xml(self, tag):
