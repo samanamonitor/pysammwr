@@ -516,11 +516,12 @@ class CimInstance(CimClass):
 		out = ET.Element(f"{ns}{tag}")
 		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
 		for k, v in self._properties.items():
+			tag=f"{ns}{k}"
 			value = v
 			if isinstance(v, CimClass):
-				value = v.xml(f"{ns}{k}")
+				value = v.xml(tag)
 			elif isinstance(v, list):
-				value = [ cv.xml() for cv in v ]
+				value = [ cv.xml(tag) for cv in v ]
 			out.append(value)
 		return out
 
