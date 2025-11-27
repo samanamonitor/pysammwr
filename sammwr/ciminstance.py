@@ -5,7 +5,7 @@ from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault, WsManFault
-from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag
+from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
 
 log = logging.getLogger(__name__)
 ns = {
@@ -22,6 +22,7 @@ class NsCim(SoapTag):
 
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
+	value = "undefined"
 
 	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False):
 		out = ET.Element(tag)
@@ -152,7 +153,6 @@ class CimDateTime(CimClass):
 		elif value is None:
 			self.value = value
 			return
-		self.value = "undefined"
 
 	def xml(self, tag, **kwargs):
 		out = super().xml(tag, no_text=True, **kwargs)
@@ -357,7 +357,6 @@ class CimInstance(CimClass):
 		self.class_name = self._get_class_name(xml, class_name)
 		self._wqlfilter = wqlfilter
 		self.type_name = self.resource_uri
-		self.value = ""
 
 		if self.cimnamespace is None or self.class_name is None:
 			raise TypeError("Must define 'cimnamespace' and 'class_name'.")
@@ -630,57 +629,36 @@ class CimInstance(CimClass):
 		raise sf
 
 	def __iter__(self):
-		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter)
+		return CimInstanceIterator(self)
 
 class CimInstanceIterator:
-	def __init__(self, cimnamespace, class_name, protocol, wqlfilter=None):
-		self.cimnamespace = cimnamespace
-		self.class_name = class_name
-		self.protocol = protocol
-		self.wqlfilter = wqlfilter
-		self.ec, self.items = self.enumerate(selector=[
-			{
-				"@Name": "__cimnamespace",
-				"#text": self.cimnamespace
-			}])
+	def __init__(self, base_instance):
+		self.cimnamespace = base_instance.cimnamespace
+		self.class_name = base_instance.class_name
+		self.protocol = base_instance.protocol
+		self.wsmclient = base_instance.wsmclient
+		self.wqlfilter = base_instance.wqlfilter
+
+		enum_filter = None
+		resource_uri = self.resource_uri
+		if wqlfilter is not None:
+			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
+			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
+			enum_filter = EnumFilter(DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
+		self.res = self.wsmclient.do(WSMEnumerateRequest(resource_uri, enum_filter=enum_filter))
 
 	@property
 	def resource_uri(self):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def __next__(self):
-		if len(self.items) == 0:
-			if self.ec is None:
+		if len(self.res.Items) == 0:
+			if self.res.EndOfSequence:
 				raise StopIteration
-			(self.ec, self.items) = self.pull(self.ec)
-		i = self.items.pop()
+			self.res = self.wsmclient.do(WSMEnumerateRequest(self.res))
+		i = self.res.Items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
-
-	def enumerate(self, max_elements=50, selector=None):
-		wql=None
-		resource_uri = self.resource_uri
-		if self.wqlfilter is not None:
-			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
-			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
-		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
-			max_elements=max_elements, selector=selector, wql=wql)
-		log.debug(_txt_enum)
-		_xml_enum = ET.fromstring(_txt_enum)
-		items = _xml_enum.findall('.//{*}Items/')
-		_ec = _xml_enum.find('.//wsen:EnumerationContext', self.protocol.xmlns).text
-		return _ec, items
-
-	def pull(self, ec):
-		_txt_pull = self.protocol.pull(self.resource_uri, ec,max_elements=50)
-		_xml_pull = ET.fromstring(_txt_pull)
-		items = _xml_pull.findall('.//{*}Items/')
-		ec_node = _xml_pull.find('.//wsen:EnumerationContext',self.protocol.xmlns)
-		if ec_node is not None:
-			_ec = ec_node.text
-		else:
-			_ec = None
-		return _ec, items
 
 class MSFT_WmiError(Exception):
 	def __init__(self, soap_fault, protocol):
