@@ -23,7 +23,7 @@ class NsCim(SoapTag):
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
 
-	def xml(self, tag, include_type=True, include_cim_namespace=True):
+	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False):
 		out = ET.Element(tag)
 		if include_type:
 			out.set(NsXSI("type"), self.type_name)
@@ -32,6 +32,8 @@ class CimClass:
 
 		if self.value is None:
 			out.set(NsXSI("nil"), "true")
+		elif no_text:
+			pass
 		else:
 			out.text = str(self)
 		return out
@@ -153,8 +155,7 @@ class CimDateTime(CimClass):
 		self.value = "undefined"
 
 	def xml(self, tag, **kwargs):
-		out = super().xml(tag, **kwargs)
-		out.text = None
+		out = super().xml(tag, no_text=True, **kwargs)
 		dt = ET.SubElement(out, "cim:Datetime")
 		if self.value is not None:
 			dt.text = datetime.isoformat(self.value)
@@ -522,7 +523,7 @@ class CimInstance(CimClass):
 
 	def xml(self, tag, **kwargs):
 		ns=f"{{{self.resource_uri}}}"
-		out = super().xml(f"{ns}{tag}", **kwargs)
+		out = super().xml(f"{ns}{tag}", no_text=True, **kwargs)
 		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"
