@@ -609,9 +609,9 @@ class CimInstance(CimClass):
 			raise self._soap_fault(sf)
 
 	def _soap_fault(self, sf):
-		if sf.find("{*}MSFT_WmiError"):
+		if sf.detail.find("{*}MSFT_WmiError"):
 			raise MSFT_WmiError(sf, self.protocol)
-		if sf.find("{*}WSManFault"):
+		if sf.detail.find("{*}WSManFault"):
 			raise WSMFault(sf)
 		raise sf
 
