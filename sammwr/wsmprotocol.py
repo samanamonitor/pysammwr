@@ -390,12 +390,13 @@ class WSMFault(Exception):
 	def __init__(self, soap_fault):
 		if not isinstance(soap_fault, SoapFault):
 			raise TypeError("Expecting type 'SoapFault'")
-		wmf_detail = soap_fault.detail
 		self.root=soap_fault.detail.find(".//{*}WSManFault")
-		self.detail = wmf_detail.text
-		self.code = wmf_detail.attrib.get('Code')
-		self.machine = wmf_detail.attrib.get('Machine')
-		self.message = wmf_detail.find('{*}Message')
+		if self.root is None:
+			raise TypeError("SoapFault doesn't contain a WSManFault")
+		self.detail = self.root.text
+		self.code = self.root.attrib.get('Code')
+		self.machine = self.root.attrib.get('Machine')
+		self.message = self.root.find('{*}Message')
 		self.provider_fault = None
 		if len(self.message) == 0:
 			self.message = self.message.text
