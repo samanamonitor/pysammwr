@@ -637,7 +637,7 @@ class CimInstanceIterator:
 		self.class_name = base_instance.class_name
 		self.protocol = base_instance.p
 		self.wsmclient = base_instance.wsmclient
-		self.wqlfilter = base_instance.wqlfilter
+		self.wqlfilter = base_instance._wqlfilter
 
 		enum_filter = None
 		resource_uri = self.resource_uri
