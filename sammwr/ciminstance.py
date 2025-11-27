@@ -353,6 +353,7 @@ class CimInstance(CimClass):
 		self._get_schema_xml(self.cimnamespace, self.class_name)
 
 		if isinstance(xml, ET.Element):
+			self._xml = xml
 			self._from_xml(xml)
 		else:
 			for prop_name, prop_value in kwargs.items():
