@@ -5,7 +5,7 @@ from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault, WsManFault
-from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, WSMEnumerateRequest, WSMPullRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
+from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, WSMEnumerateRequest, WSMPullRequest, WSMMethodRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
 
 log = logging.getLogger(__name__)
 ns = {
