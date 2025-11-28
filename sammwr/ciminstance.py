@@ -520,8 +520,13 @@ class CimInstance(CimClass):
 			self._properties.setdefault(prop_name, value)
 		return value
 
-	def xml(self, tag, **kwargs):
-		out = super().xml(f"{tag}", no_text=True, **kwargs)
+	def xml(self, tag, namespace=None, **kwargs):
+		ns=f"{{{self.resource_uri}}}"
+		if namespace is not None:
+			tag = f"{{{namespace}}}{tag}"
+		else:
+			tag = f"{{{ns}}}{tag}"
+		out = super().xml(tag, no_text=True, **kwargs)
 		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"
