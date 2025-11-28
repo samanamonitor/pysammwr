@@ -448,19 +448,8 @@ class CimInstance(CimClass):
 		parameters = self._parameters_to_cim(schema_method, **kwargs)
 		try:
 			selectors = self._get_key_selectors()
-			action = f"{self.schema_uri}/{method_name}"
-			req = WSMRequest(action, self.schema_uri, selector_set=selectors)
-			ns=f"{{{self.schema_uri}}}"
-			m_input = ET.SubElement(req.body, f"{ns}{method_name}_INPUT")
-			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
-			for k, v in parameters.items():
-				if isinstance(v, list):
-					for i in v:
-						m_input.append(i.xml(f"{ns}{k}", include_cim_namespace=False))
-				else:
-					m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
 
-			req._ready = True
+			req=WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, **parameters)
 			res = self.wsmclient.do(req)
 			output = res.Output
 			return_value_e = output.find("{*}ReturnValue")
