@@ -415,35 +415,34 @@ class CimInstance(CimClass):
 				})
 		return selector
 
-	def run_method(self, method_name, **kwargs):
+	def _parameters_to_cim(self, **kwargs):
 		parameters = {}
 		schema_method = getattr(self._newschema, method_name)
 
 		if schema_method is None:
 			raise AttributeError("Method " + method_name + " not defined")
-
 		for param_name, param_value in kwargs.items():
 			# TODO validate that input is of correct type based on embeddedinstance qualifier
 			param = getattr(schema_method, param_name)
-
 			if isinstance(param_value, CimClass):
 				value = param_value
-
 			elif isinstance(param_value, list):
 				value = param_value
-
 			else:
 				value = param.cim_type(param_value)
-
 			if param.type == 'singleton':
 				_ = parameters.setdefault(param_name, value)
-
 			elif param.type == 'array':
 				if isinstance(param_value, list):
 					_ = parameters.setdefault(param_name, value)
-
 				else:
 					_ = parameters.setdefault(param_name, []).append(value)
+		return parameters
+
+	def run_method(self, method_name, **kwargs):
+		schema_method = getattr(self._newschema, method_name)
+
+		parameters = self._parameters_to_cim(**kwargs)
 		try:
 			selectors = self._get_key_selectors()
 			action = f"{self.schema_uri}/{method_name}"
@@ -521,8 +520,7 @@ class CimInstance(CimClass):
 		return value
 
 	def xml(self, tag, **kwargs):
-		ns=f"{{{self.resource_uri}}}"
-		out = super().xml(f"{ns}{tag}", no_text=True, **kwargs)
+		out = super().xml(f"{tag}", no_text=True, **kwargs)
 		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"

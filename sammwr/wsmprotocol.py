@@ -188,16 +188,20 @@ class WSMRequest(ET.ElementTree):
 		self.message_id.text = f"uuid:{str(uuid.uuid4()).upper()}"
 		self.operation_timeout.text = "PT20S"
 		self._ready = False
+
 	def setEndpoint(self, endpoint):
 		self.to.text = endpoint
+
 	def addSelectorSet(self, selector_set):
 		if not isinstance(selector_set, SelectorSet):
 			raise TypeError
 		self.header.append(selector_set)
+
 	def addOptionSet(self, option_set):
 		if not isinstance(option_set, OptionSet):
 			raise TypeError
 		self.header.append(option_set)
+
 	def setTransport(self, transport):
 		if not isinstance(transport, Transport):
 			raise TypeError("transport")
@@ -360,7 +364,21 @@ class WSMMethodResponse(WSMResponse):
 	pass
 
 class WSMMethodRequest(WSMRequest):
-	pass
+	_response_class = WSMMethodResponse
+	def __init__(self, method_name, schema_uri, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US", **kwargs):
+		action = schema_uri + "/" + method_name
+		super().__init__(action, resource_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
+		ns=f"{{{schema_uri}}}"
+		m_input = ET.SubElement(self.body, f"{ns}{method_name}_INPUT")
+		m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
+		for k, v in kwargs.items():
+			if isinstance(v, list):
+				for i in v:
+					value = m_input.append(i.xml(f"{ns}{k}", include_cim_namespace=False))
+			else:
+				m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
+		self._ready = True
+
 
 class ProviderFault(Exception):
 	def __init__(self, element):
