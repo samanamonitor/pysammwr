@@ -167,6 +167,7 @@ class WSMRequest(ET.ElementTree):
 		self.message_id   = ET.SubElement(self.header,   NsAddressing("MessageID"))
 		self.locale       = ET.SubElement(self.header,   NsWsMan("Locale"))
 		self.data_locale  = ET.SubElement(self.header,   NsMsWsMan("DataLocale"))
+		self.resource_uri.set(NsEnvelope("mustUnderstand"), "true")
 		self.address.set    (NsEnvelope("mustUnderstand"), "true")
 		self.action.set     (NsEnvelope("mustUnderstand"), "true")
 		self.mes.set        (NsEnvelope("mustUnderstand"), "true")
