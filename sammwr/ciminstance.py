@@ -415,12 +415,9 @@ class CimInstance(CimClass):
 				})
 		return selector
 
-	def _parameters_to_cim(self, **kwargs):
+	def _parameters_to_cim(self, schema_method, **kwargs):
 		parameters = {}
-		schema_method = getattr(self._newschema, method_name)
 
-		if schema_method is None:
-			raise AttributeError("Method " + method_name + " not defined")
 		for param_name, param_value in kwargs.items():
 			# TODO validate that input is of correct type based on embeddedinstance qualifier
 			param = getattr(schema_method, param_name)
@@ -440,9 +437,13 @@ class CimInstance(CimClass):
 		return parameters
 
 	def run_method(self, method_name, **kwargs):
+
 		schema_method = getattr(self._newschema, method_name)
 
-		parameters = self._parameters_to_cim(**kwargs)
+		if schema_method is None:
+			raise AttributeError("Method " + method_name + " not defined")
+
+		parameters = self._parameters_to_cim(schema_method, **kwargs)
 		try:
 			selectors = self._get_key_selectors()
 			action = f"{self.schema_uri}/{method_name}"
