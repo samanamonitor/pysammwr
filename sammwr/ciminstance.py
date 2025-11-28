@@ -448,11 +448,11 @@ class CimInstance(CimClass):
 			selectors = self._get_key_selectors()
 			action = f"{self.schema_uri}/{method_name}"
 			req = WSMRequest(action, self.schema_uri, selector_set=selectors)
-			m_input = ET.SubElement(req.body, NsMsWsMan(f"{method_name}_INPUT"))
-			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			ns=self.schema_uri
+			m_input = ET.SubElement(req.body, f"{ns}{method_name}_INPUT")
+			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			for k, v in parameters.items():
-				m_input.append(v.xml(NsMsWsMan(k), include_cim_namespace=False))
+				m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
 
 			req._ready = True
 			res = self.wsmclient.do(req)
