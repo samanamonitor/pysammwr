@@ -456,12 +456,7 @@ class CimInstance(CimClass):
 
 			req._ready = True
 			res = self.wsmclient.do(req)
-			return res
-
-			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name,
-				selector=self._get_selector(), **parameters)
-			root = ET.fromstring(ret)
-			output = root.find(f".//{{*}}{method_name}_OUTPUT")
+			output = res.Body.find(f"{{*}}{method_name}_OUTPUT")
 			return_value_e = output.find("{*}ReturnValue")
 			return_value = None
 			if return_value_e is not None:
