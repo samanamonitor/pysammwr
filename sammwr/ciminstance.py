@@ -529,7 +529,7 @@ class CimInstance(CimClass):
 		else:
 			tag = f"{ns}{tag}"
 		out = super().xml(tag, no_text=True, **kwargs)
-		out.set(NsXSI("type"), f"{ns}{self.class_name}_Type")
+		out.set(NsXSI("type"), f"{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"
 			value = v
