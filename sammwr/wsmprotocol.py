@@ -368,15 +368,15 @@ class WSMMethodRequest(WSMRequest):
 	def __init__(self, method_name, schema_uri, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US", **kwargs):
 		action = schema_uri + "/" + method_name
 		super().__init__(action, resource_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
-		ns=f"{{{schema_uri}}}"
-		m_input = ET.SubElement(self.body, f"{ns}{method_name}_INPUT")
+		ns=f"{schema_uri}"
+		m_input = ET.SubElement(self.body, f"{{{ns}}}{method_name}_INPUT")
 		m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 		for k, v in kwargs.items():
 			if isinstance(v, list):
 				for i in v:
-					value = m_input.append(i.xml(f"{ns}{k}", include_cim_namespace=False))
+					value = m_input.append(i.xml(k, include_cim_namespace=False, namespace=ns))
 			else:
-				m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
+				m_input.append(v.xml(k, include_cim_namespace=False, namespace=ns))
 		self._ready = True
 
 
