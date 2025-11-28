@@ -361,11 +361,14 @@ class WSMGetStatusRequest(WSMRequest):
 		super().__init__(self.action, *args, **kwargs)
 
 class WSMMethodResponse(WSMResponse):
-	pass
+	@property
+	def Output(self):
+		return res.Body.find(f"{{*}}{res._request.method_name}_OUTPUT")
 
 class WSMMethodRequest(WSMRequest):
 	_response_class = WSMMethodResponse
 	def __init__(self, method_name, schema_uri, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US", **kwargs):
+		self.method_name= method_name
 		action = schema_uri + "/" + method_name
 		super().__init__(action, resource_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
 		ns=f"{schema_uri}"
@@ -374,9 +377,9 @@ class WSMMethodRequest(WSMRequest):
 		for k, v in kwargs.items():
 			if isinstance(v, list):
 				for i in v:
-					value = m_input.append(i.xml(k, include_cim_namespace=False, namespace=ns))
+					value = m_input.append(i.xml(k, include_cim_namespace=False, outer_namespace=ns))
 			else:
-				m_input.append(v.xml(k, include_cim_namespace=False, namespace=ns))
+				m_input.append(v.xml(k, include_cim_namespace=False, outer_namespace=ns))
 		self._ready = True
 
 

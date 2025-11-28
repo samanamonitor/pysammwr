@@ -462,7 +462,7 @@ class CimInstance(CimClass):
 
 			req._ready = True
 			res = self.wsmclient.do(req)
-			output = res.Body.find(f"{{*}}{method_name}_OUTPUT")
+			output = res.Output
 			return_value_e = output.find("{*}ReturnValue")
 			return_value = None
 			if return_value_e is not None:
