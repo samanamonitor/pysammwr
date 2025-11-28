@@ -4,8 +4,8 @@ from .protocol import WRProtocol
 from .utils import tagns
 import logging
 from datetime import datetime
-from .error import SoapFault, WsManFault
-from .wsmprotocol import WSMClient, WSMRequest, WSMGetRequest, WSMEnumerateRequest, WSMPullRequest, WSMDeleteRequest, WSMMethodRequest, SelectorSet, OptionSet, WSMFault, NsMsWsMan, NsXSI, SoapTag, EnumFilter, DIALECT_SELECTOR, DIALECT_WQL
+from .error import SoapFault
+import wsmprotocol as wsmp
 
 log = logging.getLogger(__name__)
 ns = {
@@ -17,7 +17,7 @@ schema_cache = {}
 def cache():
 	return schema_cache
 
-class NsCim(SoapTag):
+class NsCim(wsmp.SoapTag):
 	ns="http://schemas.dmtf.org/wbem/wscim/1/common"
 
 class CimClass:
@@ -29,12 +29,12 @@ class CimClass:
 			tag = f"{{{outer_namespace}}}{tag}"
 		out = ET.Element(tag)
 		if include_type:
-			out.set(NsXSI("type"), self.type_name)
+			out.set(wsmp.NsXSI("type"), self.type_name)
 		if include_cim_namespace:
 			out.set("xmlns:cim","http://schemas.dmtf.org/wbem/wscim/1/common" )
 
 		if self.value is None:
-			out.set(NsXSI("nil"), "true")
+			out.set(wsmp.NsXSI("nil"), "true")
 		elif no_text:
 			pass
 		else:
@@ -351,7 +351,7 @@ class CimInstance(CimClass):
 		else:
 			self.p = protocol
 
-		self.wsmclient = WSMClient(self.p.transport)
+		self.wsmclient = wsmp.WSMClient(self.p.transport)
 		self.cimnamespace = cimnamespace
 		self.ns = "p1"
 		self._properties = {}
@@ -449,7 +449,7 @@ class CimInstance(CimClass):
 		try:
 			selectors = self._get_key_selectors()
 
-			req=WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, **parameters)
+			req=wsmp.WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, **parameters)
 			res = self.wsmclient.do(req)
 			output = res.Output
 			return_value_e = output.find("{*}ReturnValue")
@@ -518,7 +518,7 @@ class CimInstance(CimClass):
 		else:
 			tag = f"{ns}{tag}"
 		out = super().xml(tag, no_text=True, **kwargs)
-		out.set(NsXSI("type"), f"{self.class_name}_Type")
+		out.set(wsmp.NsXSI("type"), f"{self.class_name}_Type")
 		for k, v in self._properties.items():
 			tag=f"{ns}{k}"
 			value = v
@@ -569,14 +569,14 @@ class CimInstance(CimClass):
 		self._newschema = schema_cache.get(cache_key)
 		if self._newschema is None:
 			try:
-				selector_set=SelectorSet()
+				selector_set=wsmp.SelectorSet()
 				selector_set.addSelector('__cimnamespace', cimnamespace)
 				selector_set.addSelector('ClassName', class_name)
 
-				option_set=OptionSet()
+				option_set=wsmp.OptionSet()
 				option_set.addOption('IncludeQualifiers', 'xs:boolean', 'true')
 
-				schema_res = self.wsmclient.do(WSMGetRequest(schema_uri,
+				schema_res = self.wsmclient.do(wsmp.WSMGetRequest(schema_uri,
 					selector_set=selector_set, option_set=option_set))
 
 				schema = next(iter(schema_res.Items))
@@ -589,7 +589,7 @@ class CimInstance(CimClass):
 			log.debug("Cache hit for %s", cache_key)
 
 	def _get_key_selectors(self):
-		selectors = SelectorSet()
+		selectors = wsmp.SelectorSet()
 		selectors.addSelector("__cimnamespace", self.cimnamespace)
 		for key_name in self._newschema._property_keys:
 			value = self._properties.get(key_name)
@@ -602,7 +602,7 @@ class CimInstance(CimClass):
 		selectors = self._get_key_selectors()
 
 		try:
-			res = self.wsmclient.do(WSMGetRequest(self.resource_uri, selector_set=selectors))
+			res = self.wsmclient.do(wsmp.WSMGetRequest(self.resource_uri, selector_set=selectors))
 			for obj in res.Items:
 				self._from_xml(obj)
 				break
@@ -612,7 +612,7 @@ class CimInstance(CimClass):
 	def delete(self):
 		selectors = self._get_key_selectors()
 		try:
-			res = self.wsmclient.do(WSMDeleteRequest(self.resource_uri, selector_set=selectors))
+			res = self.wsmclient.do(wsmp.WSMDeleteRequest(self.resource_uri, selector_set=selectors))
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
@@ -620,7 +620,7 @@ class CimInstance(CimClass):
 		if sf.detail.find("{*}MSFT_WmiError"):
 			raise MSFT_WmiError(sf, self.p)
 		if sf.detail.find("{*}WSManFault"):
-			raise WSMFault(sf)
+			raise wsmp.WSMFault(sf)
 		raise sf
 
 	def __iter__(self):
@@ -639,8 +639,8 @@ class CimInstanceIterator:
 		if self.wqlfilter is not None:
 			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
-			enum_filter = EnumFilter(DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
-		self.res = self.wsmclient.do(WSMEnumerateRequest(resource_uri, enum_filter=enum_filter))
+			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
+		self.res = self.wsmclient.do(wsmp.WSMEnumerateRequest(resource_uri, enum_filter=enum_filter))
 		self.items = self.res.Items
 
 	@property
@@ -651,7 +651,7 @@ class CimInstanceIterator:
 		if len(self.items) == 0:
 			if self.res.EndOfSequence:
 				raise StopIteration
-			self.res = self.wsmclient.do(WSMPullRequest(self.res))
+			self.res = self.wsmclient.do(wsmp.WSMPullRequest(self.res))
 			self.items = self.res.Items
 		i = self.items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
