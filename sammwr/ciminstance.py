@@ -452,7 +452,7 @@ class CimInstance(CimClass):
 			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			ns=self.schema_uri
 			for k, v in parameters.items():
-				m_input.append(v.xml(NsMsWsMan(k)))
+				m_input.append(v.xml(NsMsWsMan(k), include_cim_namespace=False))
 
 			req._ready = True
 			res = self.wsmclient.do(req)

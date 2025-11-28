@@ -154,27 +154,28 @@ class WSMResponse(ET.ElementTree):
 class WSMRequest(ET.ElementTree):
 	_response_class = WSMResponse
 	def __init__(self, action, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US"):
-		self.envelope     = ET.Element(NsEnvelope("Envelope"))
+		self.envelope          = ET.Element(NsEnvelope("Envelope"))
 		super().__init__(self.envelope)
-		self.header       = ET.SubElement(self.envelope, NsEnvelope("Header"))
-		self.body         = ET.SubElement(self.envelope, NsEnvelope("Body"))
-		self.to           = ET.SubElement(self.header,   NsAddressing("To"))
-		self.resource_uri = ET.SubElement(self.header,   NsWsMan("ResourceURI"))
-		self.replyto      = ET.SubElement(self.header,   NsAddressing("ReplyTo"))
-		self.address      = ET.SubElement(self.replyto,  NsAddressing("Address"))
-		self.action       = ET.SubElement(self.header,   NsAddressing("Action"))
-		self.mes          = ET.SubElement(self.header,   NsWsMan("MaxEnvelopeSize"))
-		self.message_id   = ET.SubElement(self.header,   NsAddressing("MessageID"))
-		self.locale       = ET.SubElement(self.header,   NsWsMan("Locale"))
-		self.data_locale  = ET.SubElement(self.header,   NsMsWsMan("DataLocale"))
+		self.header            = ET.SubElement(self.envelope, NsEnvelope("Header"))
+		self.body              = ET.SubElement(self.envelope, NsEnvelope("Body"))
+		self.to                = ET.SubElement(self.header,   NsAddressing("To"))
+		self.replyto           = ET.SubElement(self.header,   NsAddressing("ReplyTo"))
+		self.address           = ET.SubElement(self.replyto,  NsAddressing("Address"))
+		self.mes               = ET.SubElement(self.header,   NsWsMan("MaxEnvelopeSize"))
+		self.message_id        = ET.SubElement(self.header,   NsAddressing("MessageID"))
+		self.locale            = ET.SubElement(self.header,   NsWsMan("Locale"))
+		self.data_locale       = ET.SubElement(self.header,   NsMsWsMan("DataLocale"))
+		self.operation_timeout = ET.SubElement(self.header,   NsWsMan("OperationTimeout"))
+		self.resource_uri      = ET.SubElement(self.header,   NsWsMan("ResourceURI"))
+		self.action            = ET.SubElement(self.header,   NsAddressing("Action"))
 		self.resource_uri.set(NsEnvelope("mustUnderstand"), "true")
-		self.address.set    (NsEnvelope("mustUnderstand"), "true")
-		self.action.set     (NsEnvelope("mustUnderstand"), "true")
-		self.mes.set        (NsEnvelope("mustUnderstand"), "true")
-		self.locale.set     ("xml:lang", lang)
-		self.locale.set     (NsEnvelope("mustUnderstand"), "false")
-		self.data_locale.set("xml:lang", lang)
-		self.data_locale.set(NsEnvelope("mustUnderstand"), "false")
+		self.address.set     (NsEnvelope("mustUnderstand"), "true")
+		self.action.set      (NsEnvelope("mustUnderstand"), "true")
+		self.mes.set         (NsEnvelope("mustUnderstand"), "true")
+		self.locale.set      (NsEnvelope("mustUnderstand"), "false")
+		self.locale.set      ("xml:lang", lang)
+		self.data_locale.set (NsEnvelope("mustUnderstand"), "false")
+		self.data_locale.set ("xml:lang", lang)
 		if isinstance(selector_set, ET.Element):
 			self.header.append(selector_set)
 		if isinstance(option_set, ET.Element):
@@ -185,6 +186,7 @@ class WSMRequest(ET.ElementTree):
 		self.action.text = action
 		self.mes.text = max_envelope_size
 		self.message_id.text = f"uuid:{str(uuid.uuid4()).upper()}"
+		self.operation_timeout.text = "PT20S"
 		self._ready = False
 	def setEndpoint(self, endpoint):
 		self.to.text = endpoint
