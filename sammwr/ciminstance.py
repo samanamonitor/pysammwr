@@ -452,7 +452,11 @@ class CimInstance(CimClass):
 			m_input = ET.SubElement(req.body, f"{ns}{method_name}_INPUT")
 			m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
 			for k, v in parameters.items():
-				m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
+				if isinstance(v, list):
+					for i in v:
+						m_input.append(i.xml(f"{ns}{k}", include_cim_namespace=False))
+				else:
+					m_input.append(v.xml(f"{ns}{k}", include_cim_namespace=False))
 
 			req._ready = True
 			res = self.wsmclient.do(req)
