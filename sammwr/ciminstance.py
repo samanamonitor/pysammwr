@@ -5,7 +5,7 @@ from .utils import tagns
 import logging
 from datetime import datetime
 from .error import SoapFault
-import wsmprotocol as wsmp
+from . import wsmprotocol as wsmp
 
 log = logging.getLogger(__name__)
 ns = {
