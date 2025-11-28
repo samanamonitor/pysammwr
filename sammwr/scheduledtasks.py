@@ -110,7 +110,7 @@ class ScheduledTasks:
 
 	def UnregisterScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if not isinstance(InputObject, CimInstance):
-			InputObject = GetScheduledTask(self._protocol, TaskName, TaskPath)
+			InputObject = self.GetScheduledTask(TaskName, TaskPath)
 		out = InputObject.delete()
 		return
 
