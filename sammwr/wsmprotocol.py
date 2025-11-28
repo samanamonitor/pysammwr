@@ -363,7 +363,7 @@ class WSMGetStatusRequest(WSMRequest):
 class WSMMethodResponse(WSMResponse):
 	@property
 	def Output(self):
-		return res.Body.find(f"{{*}}{res._request.method_name}_OUTPUT")
+		return self.Body.find(f"{{*}}{res._request.method_name}_OUTPUT")
 
 class WSMMethodRequest(WSMRequest):
 	_response_class = WSMMethodResponse
