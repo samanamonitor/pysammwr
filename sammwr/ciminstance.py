@@ -24,7 +24,7 @@ class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
 	value = "undefined"
 
-	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False):
+	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False, **kwargs):
 		out = ET.Element(tag)
 		if include_type:
 			out.set(NsXSI("type"), self.type_name)
