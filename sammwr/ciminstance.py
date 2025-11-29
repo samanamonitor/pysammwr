@@ -14,9 +14,6 @@ ns = {
 
 schema_cache = {}
 
-def cache():
-	return schema_cache
-
 class NsCim(wsmp.SoapTag):
 	ns="http://schemas.dmtf.org/wbem/wscim/1/common"
 
