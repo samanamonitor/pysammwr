@@ -400,35 +400,21 @@ class CimInstance(CimClass):
 	def methods(self):
 		return self._newschema.methods
 
-	def _get_selector(self):
-		selector = [
-			{
-				"@Name": "__cimnamespace",
-				"#text": self.cimnamespace
-			}]
-		for key_name in self._newschema._property_keys:
-			value = self._properties.get(key_name)
-			if value is None:
-				continue
-				raise AttributeError(f"Attribute {key_name} doesn't have a value")
-			selector.append({
-				"@Name": key_name,
-				"#text": value
-				})
-		return selector
-
 	def _parameters_to_cim(self, schema_method, **kwargs):
 		parameters = {}
 
 		for param_name, param_value in kwargs.items():
 			# TODO validate that input is of correct type based on embeddedinstance qualifier
 			param = getattr(schema_method, param_name)
+
 			if isinstance(param_value, CimClass):
 				value = param_value
 			elif isinstance(param_value, list):
+				# TODO: convert all elements of the list into CimClass
 				value = param_value
 			else:
 				value = param.cim_type(param_value)
+
 			if param.type == 'singleton':
 				_ = parameters.setdefault(param_name, value)
 			elif param.type == 'array':
@@ -520,13 +506,12 @@ class CimInstance(CimClass):
 		out = super().xml(tag, no_text=True, **kwargs)
 		out.set(wsmp.NsXSI("type"), f"{self.class_name}_Type")
 		for k, v in self._properties.items():
-			tag=f"{ns}{k}"
 			value = v
 			if isinstance(v, CimClass):
-				out.append(v.xml(tag, include_type=False, include_cim_namespace=False))
+				out.append(v.xml(k, include_type=False, include_cim_namespace=False))
 			elif isinstance(v, list):
 				for cv in v:
-					out.append(cv.xml(tag, include_type=False, include_cim_namespace=False))
+					out.append(cv.xml(k, include_type=False, include_cim_namespace=False))
 		return out
 
 	def dict(self):
