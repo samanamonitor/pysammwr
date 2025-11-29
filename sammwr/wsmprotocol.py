@@ -377,9 +377,9 @@ class WSMMethodRequest(WSMRequest):
 		for k, v in kwargs.items():
 			if isinstance(v, list):
 				for i in v:
-					value = m_input.append(i.xml(k, include_cim_namespace=False, outer_namespace=ns))
+					m_input.append(i.xml(k, include_cim_namespace=False, namespace=ns))
 			else:
-				m_input.append(v.xml(k, include_cim_namespace=False, outer_namespace=ns))
+				m_input.append(v.xml(k, include_cim_namespace=False, namespace=ns))
 		self._ready = True
 
 
