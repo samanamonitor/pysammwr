@@ -24,9 +24,9 @@ class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
 	value = "undefined"
 
-	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False, outer_namespace=None):
-		if outer_namespace is not None:
-			tag = f"{{{outer_namespace}}}{tag}"
+	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False, namespace=None):
+		if namespace is not None:
+			tag = f"{{{namespace}}}{tag}"
 		out = ET.Element(tag)
 		if include_type:
 			out.set(wsmp.NsXSI("type"), self.type_name)
@@ -497,21 +497,22 @@ class CimInstance(CimClass):
 			self._properties.setdefault(prop_name, value)
 		return value
 
-	def xml(self, tag, outer_namespace=None, **kwargs):
-		ns=f"{{{self.resource_uri}}}"
-		if outer_namespace is not None:
-			tag = f"{{{outer_namespace}}}{tag}"
-		else:
-			tag = f"{ns}{tag}"
-		out = super().xml(tag, no_text=True, **kwargs)
+	def xml(self, tag=None, namespace=None, **kwargs):
+		if tag is None:
+			tag = self.class_name
+		if namespace is None:
+			namespace = self.resource_uri
+
+		out = super().xml(tag, no_text=True, namespace=namespace, **kwargs)
 		out.set(wsmp.NsXSI("type"), f"{self.class_name}_Type")
+
 		for k, v in self._properties.items():
 			value = v
 			if isinstance(v, CimClass):
-				out.append(v.xml(k, include_type=False, include_cim_namespace=False, outer_namespace=self.resource_uri))
+				out.append(v.xml(k, include_type=False, include_cim_namespace=False, namespace=self.resource_uri))
 			elif isinstance(v, list):
 				for cv in v:
-					out.append(cv.xml(k, include_type=False, include_cim_namespace=False, outer_namespace=self.resource_uri))
+					out.append(cv.xml(k, include_type=False, include_cim_namespace=False, namespace=self.resource_uri))
 		return out
 
 	def dict(self):
