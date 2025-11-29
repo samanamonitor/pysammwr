@@ -432,7 +432,7 @@ class CimInstance(CimClass):
 		try:
 			selectors = self._get_key_selectors()
 
-			req=wsmp.WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, **parameters)
+			req=wsmp.WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, selector_set=selectors, **parameters)
 			res = self.wsmclient.do(req)
 			output = res.Output
 			return_value_e = output.find("{*}ReturnValue")
