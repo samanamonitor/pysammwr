@@ -508,10 +508,10 @@ class CimInstance(CimClass):
 		for k, v in self._properties.items():
 			value = v
 			if isinstance(v, CimClass):
-				out.append(v.xml(k, include_type=False, include_cim_namespace=False))
+				out.append(v.xml(k, include_type=False, include_cim_namespace=False, outer_namespace=self.resource_uri))
 			elif isinstance(v, list):
 				for cv in v:
-					out.append(cv.xml(k, include_type=False, include_cim_namespace=False))
+					out.append(cv.xml(k, include_type=False, include_cim_namespace=False, outer_namespace=self.resource_uri))
 		return out
 
 	def dict(self):
