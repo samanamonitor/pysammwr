@@ -1,6 +1,7 @@
 from .winrmcommand import WinRMCommand
 from .shell import WinRMShell
 from base64 import b64encode
+import xml.etree.ElementTree as ET
 
 class POSHCommand(WinRMCommand):
     def __init__(self, shell=None, scriptline=None, scriptfile=None, **kwargs):
@@ -18,6 +19,7 @@ class POSHCommand(WinRMCommand):
                 script = "\" & { $ProgressPreference = 'SilentlyContinue';" + f.read() + "} \""
         elif self.scriptline is not None:
             script = "\" & {$ProgressPreference = 'SilentlyContinue';" + self.scriptline + " } \""
+
         if script is not None:
             self.interactive = False
             encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
