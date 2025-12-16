@@ -5,8 +5,8 @@ from base64 import b64encode
 class POSHCommand(WinRMCommand):
     def __init__(self, shell=None, scriptline=None, scriptfile=None, **kwargs):
         if not isinstance(shell, WinRMShell):
-            shell = WinRMCommand(**kwargs)
-        super().__init__(self, shell, "")
+            shell = WinRMShell(**kwargs)
+        super().__init__(shell, "")
         self.scriptfile=scriptfile
         self.scriptline=scriptline
         self.posh_error=''
