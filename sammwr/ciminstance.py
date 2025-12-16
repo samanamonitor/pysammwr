@@ -7,10 +7,10 @@ from datetime import datetime
 from .error import SoapFault
 from . import wsmprotocol as wsmp
 
+# TODO: remove dependency on WRProtocol
+
+
 log = logging.getLogger(__name__)
-ns = {
-	"xsi": "http://www.w3.org/2001/XMLSchema-instance"
-}
 
 schema_cache = {}
 
@@ -67,7 +67,7 @@ class CimString(CimClass):
 		elif isinstance(value, str):
 			self.value = value
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -88,7 +88,7 @@ class CimBoolean(CimClass):
 		elif isinstance(value, str):
 			self.value = value.lower() == 'true'
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -115,7 +115,7 @@ class CimInt(CimClass):
 				log.error(e)
 				self.value = -1
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -140,7 +140,7 @@ class CimDateTime(CimClass):
 			self.value = value.value
 			return
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -322,7 +322,7 @@ def NewCimInstanceXml(type, xe, cimnamespace=None, protocol=None):
 	if isinstance(value, CimClass):
 		return value
 
-	xsitype = xe.attrib.get(f"{{{ns['xsi']}}}type")
+	xsitype = xe.attrib.get(wsmp.NsXSI("type"))
 	if xsitype is not None and type == 'string':
 		class_name = xsitype_to_class_name(xsitype)
 		return CimInstance(cimnamespace, class_name, xml=xe, protocol=protocol)
@@ -377,9 +377,9 @@ class CimInstance(CimClass):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def _get_class_name(self, element, class_name):
-		if element is None:
+		if not isinstance(element, ET.Element)
 			return class_name
-		etype = element.attrib.get(f"{{{ns['xsi']}}}type")
+		etype = element.attrib.get(NsXSI("type"))
 		if etype is None:
 			return class_name
 		return xsitype_to_class_name(etype)
@@ -471,7 +471,7 @@ class CimInstance(CimClass):
 
 		schema_prop = getattr(self._newschema, prop_name)
 
-		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
+		xsitype = prop.attrib.get(NsXSI("type"))
 		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
