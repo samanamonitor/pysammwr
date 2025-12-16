@@ -26,7 +26,7 @@ class POSHCommand(WinRMCommand):
             self.interactive = True
             params = []
 
-        self.command_id = self.shell.run_command('powershell', params)
+        self.command_id = self.shell.run('powershell.exe', params)
         self.receive()
         self.decode_posh_error()
 
