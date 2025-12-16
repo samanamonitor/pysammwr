@@ -1,9 +1,12 @@
 from .winrmcommand import WinRMCommand
+from .shell import WinRMShell
 from base64 import b64encode
 
 class POSHCommand(WinRMCommand):
-    def __init__(self, *args, shell=None, scriptline=None, scriptfile=None, **kwargs):
-        WinRMCommand.__init__(self, *args, shell=shell, **kwargs)
+    def __init__(self, shell=None, scriptline=None, scriptfile=None, **kwargs):
+        if not isinstance(shell, WinRMShell):
+            shell = WinRMCommand(**kwargs)
+        super().__init__(self, shell, "")
         self.scriptfile=scriptfile
         self.scriptline=scriptline
         self.posh_error=''
