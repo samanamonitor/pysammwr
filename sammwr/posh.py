@@ -16,9 +16,9 @@ class POSHCommand(WinRMCommand):
         script = None
         if self.scriptfile is not None:
             with open(self.scriptfile, "r") as f:
-                script = "\" & { $ProgressPreference = 'SilentlyContinue';" + f.read() + "} \""
+                script = "$ProgressPreference = 'SilentlyContinue';" + f.read()
         elif self.scriptline is not None:
-            script = "\" & {$ProgressPreference = 'SilentlyContinue';" + self.scriptline + " } \""
+            script = "$ProgressPreference='SilentlyContinue'; " + self.scriptline
 
         if script is not None:
             self.interactive = False
