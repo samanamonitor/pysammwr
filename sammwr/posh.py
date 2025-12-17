@@ -63,7 +63,7 @@ class UploadFile:
         self.fullscript=f'''
             $script='{script}'
             $path='{local_path}'
-            $uri='{uri}'
+            $uri='{base_url}/{script}'
             $ignore_cert='{"$true" if ignore_cert else "$false"}'
             $a=New-Item -Path $path -ItemType 'Directory' -Force
             if (-not $?) {{ exit 1}} else {{exit 0}}
