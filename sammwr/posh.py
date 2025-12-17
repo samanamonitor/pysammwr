@@ -62,7 +62,7 @@ class UploadFile:
     def __init__(self, script, base_url, local_path, ignore_cert=True, **kwargs):
         self.fullscript=f'''
             $script='{script}'
-            $path='{path}'
+            $path='{local_path}'
             $uri='{uri}'
             $ignore_cert='{"$true" if ignore_cert else "$false"}'
             $a=New-Item -Path $path -ItemType 'Directory' -Force
