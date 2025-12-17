@@ -5,8 +5,6 @@ class WinRMCommand:
         if not isinstance(shell, WinRMShell):
             raise TypeError("Can only accept WinRMShell.")
         self.shell = shell
-        if not self.shell.connected:
-            raise ExceptionWinRMShellNotConnected()
         self.cmd = cmd
         self.params = params
         self.data = {}
@@ -20,18 +18,26 @@ class WinRMCommand:
         self.interactive = interactive
 
     def run(self):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         self.command_id = self.shell.run(self.cmd, self.params)
 
     def signal(self, s):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         self.signal_res = self.shell.signal(self.command_id, s)
 
     def close(self):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         if self.command_id is not None:
             command_id=self.command_id
             self.signal('terminate')
             self.command_id = None
 
     def send(self, data, expect_receive=True, end=False):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         if not self.interactive:
             return
         self.shell.send(self.command_id, data.encode('ascii'), expect_receive=False, end=end)
@@ -39,6 +45,8 @@ class WinRMCommand:
             self.receive()
 
     def receive(self):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         if self.command_id is None:
             return None
         self.stdout, self.stderr, self.code, self.done, self.total_time = \
@@ -47,6 +55,8 @@ class WinRMCommand:
             self.error=True
 
     def exit(self):
+        if not self.shell.connected:
+            raise ExceptionWinRMShellNotConnected()
         if not self.interactive:
             raise Exception("This is not an interactive session. Cannot exit")
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
