@@ -2,6 +2,7 @@ from .winrmcommand import WinRMCommand
 from .shell import WinRMShell
 from base64 import b64encode
 import xml.etree.ElementTree as ET
+from time import time
 
 class POSHCommand(WinRMCommand):
     def __init__(self, shell=None, scriptline=None, scriptfile=None, **kwargs):
