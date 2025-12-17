@@ -33,10 +33,10 @@ class POSHCommand(WinRMCommand):
         self.decode_posh_error()
 
     def decode_posh_error(self):
-        if len(self.std_err) == 0:
+        if len(self.stderr) == 0:
             return
-        if self.std_err[0] == '#':
-            temp = self.std_err.split('\n', 1)
+        if self.stderr[0] == '#':
+            temp = self.stderr.split('\n', 1)
             if len(temp) < 2:
                 return
         try:
@@ -56,4 +56,4 @@ class POSHCommand(WinRMCommand):
         return "<%s interactive=%s code=%d error=%s std_out_bytes=%d std_err_bytes=%d>" % \
             (self.__class__.__name__, self.interactive,
                 self.code, self.error,
-                len(self.std_out), len(self.std_err))
+                len(self.std_out), len(self.stderr))

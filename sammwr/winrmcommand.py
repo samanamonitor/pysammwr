@@ -9,8 +9,8 @@ class WinRMCommand:
         self.params = params
         self.data = {}
         self.command_id = None
-        self.std_out = None
-        self.std_err = None
+        self.stdout = None
+        self.stderr = None
         self.code = None
         self.done = None
         self.total_time = None
