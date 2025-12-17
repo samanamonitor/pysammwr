@@ -41,7 +41,7 @@ class WinRMCommand:
     def receive(self):
         if self.command_id is None:
             return None
-        self.std_out, self.std_err, self.code, self.done, self.total_time = \
+        self.stdout, self.stderr, self.code, self.done, self.total_time = \
             self.shell.receive(self.command_id, interactive=self.interactive)
         if self.code != 0:
             self.error=True
@@ -50,6 +50,13 @@ class WinRMCommand:
         if not self.interactive:
             raise Exception("This is not an interactive session. Cannot exit")
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
+
     def __str__(self):
         return self.command_id
 
+    def __enter__(self):
+        self.shell.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.shell.close()

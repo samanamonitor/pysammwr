@@ -57,4 +57,3 @@ class POSHCommand(WinRMCommand):
             (self.__class__.__name__, self.interactive,
                 self.code, self.error,
                 len(self.std_out), len(self.std_err))
-
