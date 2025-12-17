@@ -57,3 +57,39 @@ class POSHCommand(WinRMCommand):
             (self.__class__.__name__, self.interactive,
                 self.code, self.error,
                 len(self.std_out), len(self.stderr))
+
+class UploadFile:
+    def __init__(self, script, base_url, local_path, ignore_cert=True, **kwargs):
+        self.fullscript=f'''
+            $script='{script}'
+            $path='{path}'
+            $uri='{uri}'
+            $ignore_cert='{"$true" if ignore_cert else "$false"}'
+            $a=New-Item -Path $path -ItemType 'Directory' -Force
+            if (-not $?) {{ exit 1}} else {{exit 0}}
+            if ($ignore_cert) {{
+                [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {{$true}}
+            }}
+            Invoke-WebRequest -Uri $uri -OutFile $path\\$script
+            if (-not $?) {{ exit 1}} else {{exit 0}}
+        '''
+        self.ps=POSHCommand(scriptline=self.fullscript, **kwargs)
+    def __iter__(self):
+        self._done = False
+        return self
+    def __next__(self):
+        if self._done:
+            raise StopIteration
+        _start=time()
+        with self.ps:
+            self.ps.run()
+        duration=time() - _start
+        self._done = True
+        return {
+            "up": 1 if self.ps.code == 0 else 0,
+            "code": self.ps.code, 
+            "stdout": self.ps.stdout, 
+            "stderr": self.ps.posh_error,
+            "duration": duration
+        }
+
