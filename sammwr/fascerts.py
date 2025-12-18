@@ -119,7 +119,6 @@ class FasCerts:
 				self.output.Delete()
 			self.st.UnregisterScheduledTask(InputObject=self.task)
 
-		data = json.loads(out[0])
 		self.done = True
 		return data
 
