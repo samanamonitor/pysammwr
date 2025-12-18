@@ -102,7 +102,7 @@ class FasCerts:
 
 		self.output = self.get_output()
 		if not self.output_is_valid(self.output):
-			st.StartScheduledTask(InputObject=self.task)
+			self.st.StartScheduledTask(InputObject=self.task)
 
 		return self
 
