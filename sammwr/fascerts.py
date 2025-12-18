@@ -101,7 +101,7 @@ class FasCerts:
 		self.task = self.prepare_task()
 
 		self.output = self.get_output()
-		if self.output_is_valid(self.output):
+		if not self.output_is_valid(self.output):
 			st.StartScheduledTask(InputObject=self.task)
 
 		return self
