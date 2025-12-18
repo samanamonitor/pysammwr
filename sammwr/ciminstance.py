@@ -377,9 +377,9 @@ class CimInstance(CimClass):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def _get_class_name(self, element, class_name):
-		if not isinstance(element, ET.Element)
+		if not isinstance(element, ET.Element):
 			return class_name
-		etype = element.attrib.get(NsXSI("type"))
+		etype = element.attrib.get(wsmp.NsXSI("type"))
 		if etype is None:
 			return class_name
 		return xsitype_to_class_name(etype)
@@ -420,6 +420,9 @@ class CimInstance(CimClass):
 				else:
 					_ = parameters.setdefault(param_name, []).append(value)
 		return parameters
+
+	def details(self):
+		return self._properties
 
 	def run_method(self, method_name, **kwargs):
 
@@ -471,7 +474,7 @@ class CimInstance(CimClass):
 
 		schema_prop = getattr(self._newschema, prop_name)
 
-		xsitype = prop.attrib.get(NsXSI("type"))
+		xsitype = prop.attrib.get(wsmp.NsXSI("type"))
 		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
@@ -541,7 +544,14 @@ class CimInstance(CimClass):
 		return value
 
 	def __repr__(self):
-		return f"<{self.cimnamespace}/{self.class_name}>" + self._properties.__repr__()
+		id_data=[]
+		for key_name in self._newschema._property_keys:
+			value = self._properties.get(key_name)
+			if value is None:
+				continue
+			id_data.append(f"{key_name}='{value}'")
+		idstr = f"({" ".join(id_data)})" if len(id_data) > 0 else ""
+		return f"<{self.cimnamespace}/{self.class_name}{idstr}>"
 
 	def _get_schema_xml(self, cimnamespace, class_name):
 		#other schema uri?
@@ -571,9 +581,10 @@ class CimInstance(CimClass):
 		else:
 			log.debug("Cache hit for %s", cache_key)
 
-	def _get_key_selectors(self):
+	def _get_key_selectors(self, include_cim_namespace=True):
 		selectors = wsmp.SelectorSet()
-		selectors.addSelector("__cimnamespace", self.cimnamespace)
+		if include_cim_namespace:
+			selectors.addSelector("__cimnamespace", self.cimnamespace)
 		for key_name in self._newschema._property_keys:
 			value = self._properties.get(key_name)
 			if value is None:
@@ -619,11 +630,19 @@ class CimInstanceIterator:
 
 		enum_filter = None
 		resource_uri = self.resource_uri
+		selector_set = None
 		if self.wqlfilter is not None:
+			selector_set = wsmp.SelectorSet()
+			selector_set.addSelector("__cimnamespace", self.cimnamespace)
 			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
 			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
 			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
-		self.res = self.wsmclient.do(wsmp.WSMEnumerateRequest(resource_uri, enum_filter=enum_filter))
+		else:
+			ss = base_instance._get_key_selectors(include_cim_namespace=False)
+			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_SELECTOR, selector_set=ss)
+
+		self.res = self.wsmclient.do(wsmp.WSMEnumerateRequest(resource_uri, 
+			enum_filter=enum_filter, selector_set=selector_set))
 		self.items = self.res.Items
 
 	@property
@@ -636,6 +655,8 @@ class CimInstanceIterator:
 				raise StopIteration
 			self.res = self.wsmclient.do(wsmp.WSMPullRequest(self.res))
 			self.items = self.res.Items
+			if len(self.items) == 0:
+				raise StopIteration
 		i = self.items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)

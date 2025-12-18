@@ -48,8 +48,15 @@ class ScheduledTasks:
 		raise Exception("Not Implemented")
 
 	def GetScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
-		st = CimInstance("Root/Microsoft/Windows/TaskScheduler", "MSFT_ScheduledTask", protocol=self._protocol, TaskName=TaskName, TaskPath=TaskPath)
-		st.get()
+		wqlfilter =[]
+		if TaskName is not None:
+			tn = TaskName.replace("*", "%")
+			wqlfilter.append(f"((TaskName LIKE '{tn}'))")
+		if TaskPath is not None:
+			tp = TaskPath.replace("*", "%")
+			wqlfilter.append(f"((TaskPath LIKE '{TaskPath}'))")
+		st = CimInstance("Root/Microsoft/Windows/TaskScheduler", "MSFT_ScheduledTask", 
+			protocol=self._protocol, wqlfilter=" AND ".join(wqlfilter))
 		return st
 
 	def GetScheduledTaskInfo(self, TaskName=None, TaskPath=None, InputObject=None):
@@ -114,3 +121,8 @@ class ScheduledTasks:
 		out = InputObject.delete()
 		return
 
+	def StartScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
+		if isinstance(InputObject, CimInstance):
+			out = self.ci.StartByObject(InputObject=InputObject)
+		else:
+			out = self.ci.StartByPath(TaskName=TaskName, TaskPath=TaskPath)

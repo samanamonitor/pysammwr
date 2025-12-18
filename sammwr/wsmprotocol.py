@@ -266,7 +266,7 @@ class WSMEnumerateResponse(WSMResponse):
 class WSMEnumerateRequest(WSMRequest):
 	action="http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate"
 	_response_class = WSMEnumerateResponse
-	def __init__(self, *args, optimize=False, max_elements=50, enum_filter=None, **kwargs):
+	def __init__(self, *args, optimize=False, max_elements=50, enum_filter=None, selector_set=None, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
 
 		self.enumerate = ET.SubElement(self.body, NsEnumerate("Enumerate"))
@@ -278,9 +278,10 @@ class WSMEnumerateRequest(WSMRequest):
 		if isinstance(enum_filter, ET.Element):
 			if enum_filter.get("Dialect") == DIALECT_WQL:
 				self.resource_uri.text = "http://schemas.dmtf.org/wbem/wscim/1/*"
-				ss = SelectorSet()
-				ss.addSelector("__cimnamespace", "root/cimv2")
-				self.addSelectorSet(ss)
+				if selector_set is None:
+					selector_set = SelectorSet()
+					selector_set.addSelector("__cimnamespace", "root/cimv2")
+				self.addSelectorSet(selector_set)
 			self.enumerate.append(enum_filter)
 		self._ready = True
 
@@ -370,7 +371,7 @@ class WSMMethodRequest(WSMRequest):
 	def __init__(self, method_name, schema_uri, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US", **kwargs):
 		self.method_name= method_name
 		action = schema_uri + "/" + method_name
-		super().__init__(action, resource_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
+		super().__init__(action, schema_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
 		ns=f"{schema_uri}"
 		m_input = ET.SubElement(self.body, f"{{{ns}}}{method_name}_INPUT")
 		m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
