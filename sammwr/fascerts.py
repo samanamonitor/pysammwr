@@ -120,7 +120,7 @@ class FasCerts:
 			self.st.UnregisterScheduledTask(InputObject=self.task)
 
 		self.done = True
-		return data
+		return out
 
 
 
