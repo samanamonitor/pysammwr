@@ -155,7 +155,7 @@ class CimDateTime(CimClass):
 
 	def xml(self, tag, **kwargs):
 		out = super().xml(tag, no_text=True, **kwargs)
-		dt = ET.SubElement(out, "cim:Datetime")
+		dt = ET.SubElement(out, "{http://schemas.dmtf.org/wbem/wscim/1/common}Datetime")
 		if self.value is not None:
 			dt.text = datetime.isoformat(self.value)
 		return out
