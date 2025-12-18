@@ -134,6 +134,14 @@ class WinRMShell:
         return self.posh(scriptline=cmd)
 
     def getfile(self, remotefile):
+        if not self.connected:
+            raise Exception("Not Connected")
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
         return self.receive(self.command_id)
 
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
