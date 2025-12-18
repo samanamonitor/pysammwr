@@ -6,6 +6,10 @@ from .posh import POSHCommand
 from datetime import datetime
 import json
 
+import logging
+
+log=logging.getLogger(__name__)
+
 escape = lambda s : "".join([ i if i != '\\' else i+i for i in s ])
 
 class FasCerts:
@@ -49,6 +53,7 @@ class FasCerts:
 		pc=POSHCommand(shell=self.shell, scriptline=script)
 		with pc:
 			pc.run()
+		log.debug("Installed script %s.\nstdout=%s\nstderr=%s\ncode=%d", self.script, pc.stdout, pc.posh_error, pc.code)
 		if pc.code != 0:
 			raise Exception("Error executing install script." + pc.posh_error)
 
@@ -56,7 +61,9 @@ class FasCerts:
 		script_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.script))
 		try:
 			script_instance.get()
+			log.debug("Script %s found", self.script)
 		except:
+			log.debug("Script %s not found", self.script)
 			if self.retry:
 				raise Exception("Too many retries.")
 			self.retry = True
@@ -69,10 +76,12 @@ class FasCerts:
 		ts=self.st.GetScheduledTask(TaskName=self.taskName, TaskPath=escape(self.taskPath))
 		ts_list=list(ts)
 		if len(ts_list) == 0:
+			log.debug("Task %s%s not found.", self.taskPath, self.taskName)
 			# install Task
 			act=self.st.NewScheduledTaskAction(None, Execute="powershell.exe", Argument=self.script, WorkingDirectory=self.workdir)
 			task=self.st.RegisterScheduledTask(TaskName=self.taskName, TaskPath=self.taskPath, 
 				Action=[act], User=self.p.username, Password=self.p.password)
+			log.debug("Task %s%s created. %s", self.taskPath, self.taskName, task)
 		else:
 			task=ts_list[0]
 		return task
@@ -81,8 +90,10 @@ class FasCerts:
 		output_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.output_file))
 		of_list = list(output_instance)
 		if len(of_list) > 0:
+			log.debug("Outputfile %s found.", self.output_file)
 			return of_list[0]
 		else:
+			log.debug("Outputfile %s not found.", self.output_file)
 			return None
 
 	def output_is_valid(self, output):
@@ -90,9 +101,9 @@ class FasCerts:
 			return False
 		duration = datetime.now().timestamp() - output.LastModified.timestamp()
 		if duration > self.max_duration:
+			log.debug("Outputfile %s is too old.", self.output_file)
 			return False
-		else:
-			return False
+		log.debug("Outputfile %s is valid.", self.output_file)
 		return True
 
 	def __iter__(self):
@@ -103,6 +114,7 @@ class FasCerts:
 		self.output = self.get_output()
 		if not self.output_is_valid(self.output):
 			self.st.StartScheduledTask(InputObject=self.task)
+			log.debug("Task %s%s started.", self.taskPath, self.taskName)
 
 		return self
 
@@ -113,6 +125,7 @@ class FasCerts:
 		with self.shell:
 			out=self.shell.getfile(self.output_file)
 
+		log.debug("Output read: %s", out)
 		if self.cleanup:
 			self.script_instance.Delete()
 			if self.output is not None:
@@ -120,7 +133,4 @@ class FasCerts:
 			self.st.UnregisterScheduledTask(InputObject=self.task)
 
 		self.done = True
-		return out
-
-
-
+		return out[0]
