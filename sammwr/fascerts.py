@@ -53,12 +53,12 @@ class FasCerts:
 			raise Exception("Error executing install script." + pc.posh_error)
 
 	def prepare_script(self):
-		if self.retry:
-			raise Exception("Too many retries.")
 		script_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.script))
 		try:
 			script_instance.get()
 		except:
+			if self.retry:
+				raise Exception("Too many retries.")
 			self.retry = True
 			self.install_script()
 			return self.prepare_script()
