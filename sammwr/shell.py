@@ -135,5 +135,5 @@ class WinRMShell:
 
     def getfile(self, remotefile):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
-        return self.receive()
+        return self.receive(self.command_id)
 

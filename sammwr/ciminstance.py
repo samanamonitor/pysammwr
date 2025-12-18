@@ -494,7 +494,7 @@ class CimInstance(CimClass):
 		if schema_prop.type == 'array':
 			_ = self._properties.setdefault(prop_name, []).append(value)
 		else:
-			self._properties.setdefault(prop_name, value)
+			self._properties[prop_name] = value
 		return value
 
 	def xml(self, tag=None, namespace=None, **kwargs):
@@ -639,7 +639,8 @@ class CimInstanceIterator:
 			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
 		else:
 			ss = base_instance._get_key_selectors(include_cim_namespace=False)
-			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_SELECTOR, selector_set=ss)
+			if len(ss) > 0:
+				enum_filter = wsmp.EnumFilter(wsmp.DIALECT_SELECTOR, selector_set=ss)
 
 		self.res = self.wsmclient.do(wsmp.WSMEnumerateRequest(resource_uri, 
 			enum_filter=enum_filter, selector_set=selector_set))
