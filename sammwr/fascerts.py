@@ -4,6 +4,8 @@ from .ciminstance import CimInstance
 from .scheduledtasks import ScheduledTasks
 from .posh import POSHCommand
 from datetime import datetime
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 import json
 
 import logging
@@ -128,6 +130,36 @@ class FasCerts:
 		log.debug("Outputfile %s is valid.", self.output_file)
 		return True
 
+	def get_crl_expiration(self, pem_data):
+		start = datetime.now().timestamp()
+		if not isinstance(pem_data, bytes):
+			return -1
+		cert = x509.load_pem_x509_certificate(pem_data, default_backend())
+		crl_dist = cert.extensions.get_extension_for_class(x509.extensions.CRLDistributionPoints)
+		crl_data = None
+		crl_strings = []
+		for distribution_value in crl_dist.value:
+			for name in distribution_value.full_name:
+				value = name.value
+				crl_strings.append(value)
+				with request.urlopen(crl_url) as response:
+					crl_data=response.read()
+				if isinstance(b'', bytes) and len(crl_data) > 0:
+					break
+			if isinstance(b'', bytes) and len(crl_data) > 0:
+				break
+
+		if not isinstance(crl_data, bytes):
+			raise TypeError("Unable to download CRL. %s", crl_strings)
+
+		if crl_data[:5] == b'-----':
+			crl = x509.load_pem_x509_crl(crl_data, backend=default_backend())
+		else:
+			crl = x509.load_der_x509_crl(crl_data, backend=default_backend())
+
+		self.crl_verification_time = datetime.now().timestamp() - start
+		return crl.next_update_utc.timestamp() - datetime.now().timestamp()
+
 	def __iter__(self):
 		self._process_start = datetime.now().timestamp()
 		self.done = False
@@ -160,7 +192,7 @@ class FasCerts:
 		try:
 			data = json.loads(out[0])
 		except:
-			data = json.loads({ "outstr": out[0]})
+			data = { "outstr": out[0]}
 
 		data['install_script_time'] = self.install_script_time
 		data['prepare_script_time'] = self.prepare_script_time
@@ -168,6 +200,16 @@ class FasCerts:
 		data['get_output_time'] = self.get_output_time
 		data['get_output_data_time'] = self.get_output_data_time
 		data['process_time_total'] = datetime.now().timestamp() - self._process_start
+
+		server_cert = data.get('CurrentCertificate', {}).get('Certificate')
+		crl_cert_check = data.get('UserCert', server_cert)
+		try:
+			data['crl_expiration_seconds'] = self.get_crl_expiration(crl_cert_check)
+		except Exception as e:
+			log.error("Unable to get CRL information")
+			data['crl_expiration_seconds'] = -1
+		data['crl_verification_time'] = self.crl_verification_time
+
 		log.debug("Output: %s", data)
 
 		return data
