@@ -9,10 +9,6 @@ import json
 import logging
 log=logging.getLogger(__name__)
 
-
-# TODO: add processing time to output
-
-
 escape = lambda s : "".join([ i if i != '\\' else i+i for i in s ])
 
 class FasCerts:
@@ -53,6 +49,7 @@ class FasCerts:
 			)
 
 	def install_script(self):
+		start=datetime.now().timestamp()
 		script=f'''
 		$directoryPath='{self.workdir}'
 		$uri='{self.uri}'
@@ -72,8 +69,10 @@ class FasCerts:
 		if pc.code != 0:
 			raise Exception("Error executing install script." + pc.posh_error)
 		log.debug("Installed script %s.\nstdout=%s\nstderr=%s\ncode=%d", self.script, pc.stdout, pc.posh_error, pc.code)
+		self.install_script_time=datetime.now().timestamp() - start
 
 	def prepare_script(self):
+		start=datetime.now().timestamp()
 		script_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.script))
 		try:
 			script_instance.get()
@@ -86,9 +85,11 @@ class FasCerts:
 			self.install_script()
 			return self.prepare_script()
 		self.retry = False
+		self.prepare_script_time=datetime.now().timestamp() - start
 		return script_instance
 
 	def prepare_task(self):
+		start=datetime.now().timestamp()
 		ts=self.st.GetScheduledTask(TaskName=self.taskName, TaskPath=escape(self.taskPath))
 		ts_list=list(ts)
 		if len(ts_list) == 0:
@@ -100,17 +101,21 @@ class FasCerts:
 			log.debug("Task %s%s created. %s", self.taskPath, self.taskName, task)
 		else:
 			task=ts_list[0]
+		self.prepare_task_time=datetime.now().timestamp() - start
 		return task
 
 	def get_output(self):
+		start=datetime.now().timestamp()
 		output_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.output_file))
 		of_list = list(output_instance)
+		out=None
 		if len(of_list) > 0:
 			log.debug("Outputfile %s found.", self.output_file)
-			return of_list[0]
+			out = of_list[0]
 		else:
 			log.debug("Outputfile %s not found.", self.output_file)
-			return None
+		self.get_output_time = datetime.now().timestamp() - start
+		return out
 
 	def output_is_valid(self, output):
 		if output is None:
@@ -123,6 +128,7 @@ class FasCerts:
 		return True
 
 	def __iter__(self):
+		self._process_start = datetime.now().timestamp()
 		self.done = False
 		self.script_instance = self.prepare_script()
 		self.task = self.prepare_task()
@@ -135,12 +141,14 @@ class FasCerts:
 		return self
 
 	def __next__(self):
+		start=datetime.now().timestamp()
 		if self.done:
 			raise StopIteration
 
 		with self.shell:
 			out=self.shell.getfile(self.output_file)
 
+		self.get_output_data_time = datetime.now().timestamp() - start
 		log.debug("Output read: %s", out)
 		if self.cleanup:
 			self.script_instance.Delete()
@@ -152,5 +160,13 @@ class FasCerts:
 		try:
 			data = json.loads(out[0])
 		except:
-			data = out[0]
+			data = json.loads({ "outstr": out[0]})
+
+		data['install_script_time'] = self.install_script_time
+		data['prepare_script_time'] = self.prepare_script_time
+		data['prepare_task_time'] = self.prepare_task_time
+		data['get_output_time'] = self.get_output_time
+		data['get_output_data_time'] = self.get_output_data_time
+		data['process_time_total'] = datetime.now().timestamp() - self._process_start
+
 		return data
