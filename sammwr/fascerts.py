@@ -38,7 +38,7 @@ class FasCerts:
 		self.install_script_seconds = 0.0
 		self.crl_verification_seconds = 0.0
 		self.crl_expiration_seconds = -1
-		self.check_crl_now = False
+		self.check_crl_now = True
 		if self.p.transport.auth_method != "ntlm":
 			raise Exception("This module can only be used with 'ntlm' transport")
 		log.debug("Started module with parameters:\n" + \
