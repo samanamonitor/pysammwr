@@ -205,9 +205,9 @@ class FasCerts:
 		server_cert = data.get('CurrentCertificate', {}).get('Certificate')
 		crl_cert_check = data.get('UserCert', server_cert)
 		try:
-			data['crl_expiration_seconds'] = self.get_crl_expiration(crl_cert_check)
+			data['crl_expiration_seconds'] = self.get_crl_expiration(crl_cert_check.encode('utf-8'))
 		except Exception as e:
-			log.error("Unable to get CRL information")
+			log.error("Unable to get CRL information. %s", str(e))
 			data['crl_expiration_seconds'] = -1
 		data['crl_verification_time'] = self.crl_verification_time
 
