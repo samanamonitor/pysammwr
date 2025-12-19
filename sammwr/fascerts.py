@@ -142,8 +142,8 @@ class FasCerts:
 		crl_strings = []
 		for distribution_value in crl_dist.value:
 			for name in distribution_value.full_name:
-				value = name.value
-				crl_strings.append(value)
+				crl_url = name.value
+				crl_strings.append(crl_url)
 				with request.urlopen(crl_url) as response:
 					crl_data=response.read()
 				if isinstance(b'', bytes) and len(crl_data) > 0:
