@@ -35,6 +35,7 @@ class FasCerts:
 		self.shell=WinRMShell(protocol=self.p)
 		self.retry = False
 		self.install_script_time = 0.0
+		self.crl_verification_time = 0.0
 		if self.p.transport.auth_method != "ntlm":
 			raise Exception("This module can only be used with 'ntlm' transport")
 		log.debug("Started module with parameters:\n" + \
