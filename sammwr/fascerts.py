@@ -149,7 +149,6 @@ class FasCerts:
 			out=self.shell.getfile(self.output_file)
 
 		self.get_output_data_time = datetime.now().timestamp() - start
-		log.debug("Output read: %s", out)
 		if self.cleanup:
 			self.script_instance.Delete()
 			if self.output is not None:
@@ -168,5 +167,6 @@ class FasCerts:
 		data['get_output_time'] = self.get_output_time
 		data['get_output_data_time'] = self.get_output_data_time
 		data['process_time_total'] = datetime.now().timestamp() - self._process_start
+		log.debug("Output: %s", data)
 
 		return data
