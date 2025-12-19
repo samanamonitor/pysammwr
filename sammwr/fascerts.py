@@ -35,8 +35,8 @@ class FasCerts:
 		self.st=ScheduledTasks(protocol=self.p)
 		self.shell=WinRMShell(protocol=self.p)
 		self.retry = False
-		self.install_script_time = 0.0
-		self.crl_verification_time = 0.0
+		self.install_script_seconds = 0.0
+		self.crl_verification_seconds = 0.0
 		if self.p.transport.auth_method != "ntlm":
 			raise Exception("This module can only be used with 'ntlm' transport")
 		log.debug("Started module with parameters:\n" + \
@@ -74,7 +74,7 @@ class FasCerts:
 		if pc.code != 0:
 			raise Exception("Error executing install script." + pc.posh_error)
 		log.debug("Installed script %s.\nstdout=%s\nstderr=%s\ncode=%d", self.script, pc.stdout, pc.posh_error, pc.code)
-		self.install_script_time=datetime.now().timestamp() - start
+		self.install_script_seconds=datetime.now().timestamp() - start
 
 	def prepare_script(self):
 		start=datetime.now().timestamp()
@@ -90,7 +90,7 @@ class FasCerts:
 			self.install_script()
 			return self.prepare_script()
 		self.retry = False
-		self.prepare_script_time=datetime.now().timestamp() - start
+		self.prepare_script_seconds=datetime.now().timestamp() - start
 		return script_instance
 
 	def prepare_task(self):
@@ -106,7 +106,7 @@ class FasCerts:
 			log.debug("Task %s%s created. %s", self.taskPath, self.taskName, task)
 		else:
 			task=ts_list[0]
-		self.prepare_task_time=datetime.now().timestamp() - start
+		self.prepare_task_seconds=datetime.now().timestamp() - start
 		return task
 
 	def get_output(self):
@@ -119,7 +119,7 @@ class FasCerts:
 			out = of_list[0]
 		else:
 			log.debug("Outputfile %s not found.", self.output_file)
-		self.get_output_time = datetime.now().timestamp() - start
+		self.get_output_seconds = datetime.now().timestamp() - start
 		return out
 
 	def output_is_valid(self, output):
@@ -159,7 +159,7 @@ class FasCerts:
 		else:
 			crl = x509.load_der_x509_crl(crl_data, backend=default_backend())
 
-		self.crl_verification_time = datetime.now().timestamp() - start
+		self.crl_verification_seconds = datetime.now().timestamp() - start
 		return crl.next_update_utc.timestamp() - datetime.now().timestamp()
 
 	def __iter__(self):
@@ -183,7 +183,7 @@ class FasCerts:
 		with self.shell:
 			out=self.shell.getfile(self.output_file)
 
-		self.get_output_data_time = datetime.now().timestamp() - start
+		self.get_output_data_seconds = datetime.now().timestamp() - start
 		if self.cleanup:
 			self.script_instance.Delete()
 			if self.output is not None:
@@ -196,12 +196,12 @@ class FasCerts:
 		except:
 			data = { "outstr": out[0]}
 
-		data['install_script_time'] = self.install_script_time
-		data['prepare_script_time'] = self.prepare_script_time
-		data['prepare_task_time'] = self.prepare_task_time
-		data['get_output_time'] = self.get_output_time
-		data['get_output_data_time'] = self.get_output_data_time
-		data['process_time_total'] = datetime.now().timestamp() - self._process_start
+		data['install_script_seconds'] = self.install_script_seconds
+		data['prepare_script_seconds'] = self.prepare_script_seconds
+		data['prepare_task_seconds'] = self.prepare_task_seconds
+		data['get_output_seconds'] = self.get_output_seconds
+		data['get_output_data_seconds'] = self.get_output_data_seconds
+		data['process_time_seconds'] = datetime.now().timestamp() - self._process_start
 
 		server_cert = data.get('CurrentCertificate', {}).get('Certificate')
 		crl_cert_check = data.get('UserCert', server_cert)
@@ -210,7 +210,7 @@ class FasCerts:
 		except Exception as e:
 			log.error("Unable to get CRL information. %s", str(e))
 			data['crl_expiration_seconds'] = -1
-		data['crl_verification_time'] = self.crl_verification_time
+		data['crl_verification_seconds'] = self.crl_verification_seconds
 
 		log.debug("Output: %s", data)
 
