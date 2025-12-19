@@ -32,7 +32,7 @@ class FasCerts:
 
 		self.script=self.workdir + "\\" + self.script_name
 		self.output_file=self.workdir + "\\" + self.output_path
-		self.uri=self.url_base + self.script_name
+		self.uri=self.url_base + "/" + self.script_name
 		self.st=ScheduledTasks(protocol=self.p)
 		self.shell=WinRMShell(protocol=self.p)
 		self.retry = False
