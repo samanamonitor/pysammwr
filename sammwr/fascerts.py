@@ -7,8 +7,11 @@ from datetime import datetime
 import json
 
 import logging
-
 log=logging.getLogger(__name__)
+
+
+# TODO: add processing time to output
+
 
 escape = lambda s : "".join([ i if i != '\\' else i+i for i in s ])
 
@@ -35,6 +38,19 @@ class FasCerts:
 		self.retry = False
 		if self.p.transport.auth_method != "ntlm":
 			raise Exception("This module can only be used with 'ntlm' transport")
+		log.debug("Started module with parameters:\n" + \
+			f"   script_name={self.script_name}\n" + \
+			f"   url_base={self.url_base}\n" + \
+			f"   output_path={self.output_path}\n" + \
+			f"   taskPath={self.taskPath}\n" + \
+			f"   taskName={self.taskName}\n" + \
+			f"   workdir={self.workdir}\n" + \
+			f"   max_duration={self.max_duration}\n" +\
+			f"   cleanup={self.cleanup}\n" + \
+			f"   script={self.script}\n" + \
+			f"   output_file={self.output_file}\n" + \
+			f"   uri={self.uri}\n"
+			)
 
 	def install_script(self):
 		script=f'''
@@ -53,9 +69,9 @@ class FasCerts:
 		pc=POSHCommand(shell=self.shell, scriptline=script)
 		with pc:
 			pc.run()
-		log.debug("Installed script %s.\nstdout=%s\nstderr=%s\ncode=%d", self.script, pc.stdout, pc.posh_error, pc.code)
 		if pc.code != 0:
 			raise Exception("Error executing install script." + pc.posh_error)
+		log.debug("Installed script %s.\nstdout=%s\nstderr=%s\ncode=%d", self.script, pc.stdout, pc.posh_error, pc.code)
 
 	def prepare_script(self):
 		script_instance=CimInstance("root/cimv2", "CIM_DataFile", protocol=self.p, Name=escape(self.script))
