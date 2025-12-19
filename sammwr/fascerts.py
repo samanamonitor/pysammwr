@@ -37,6 +37,7 @@ class FasCerts:
 		self.retry = False
 		self.install_script_seconds = 0.0
 		self.crl_verification_seconds = 0.0
+		self.check_crl_now = False
 		if self.p.transport.auth_method != "ntlm":
 			raise Exception("This module can only be used with 'ntlm' transport")
 		log.debug("Started module with parameters:\n" + \
@@ -170,6 +171,7 @@ class FasCerts:
 
 		self.output = self.get_output()
 		if not self.output_is_valid(self.output):
+			self.check_crl_now = True
 			self.st.StartScheduledTask(InputObject=self.task)
 			log.debug("Task %s%s started.", self.taskPath, self.taskName)
 
@@ -194,7 +196,17 @@ class FasCerts:
 		try:
 			data = json.loads(out[0])
 		except:
-			data = { "outstr": out[0]}
+			data = { "outstr": out[0] }
+
+		if self.check_crl_now:
+			server_cert = data.get('CurrentCertificate', {}).get('Certificate')
+			crl_cert_check = data.get('UserCert', server_cert)
+			try:
+				self.crl_expiration_seconds = self.get_crl_expiration(crl_cert_check.encode('utf-8'))
+			except Exception as e:
+				log.error("Unable to get CRL information. %s", str(e))
+				self.crl_expiration_seconds = -1
+			self.check_crl_now = False
 
 		data['install_script_seconds'] = self.install_script_seconds
 		data['prepare_script_seconds'] = self.prepare_script_seconds
@@ -202,14 +214,7 @@ class FasCerts:
 		data['get_output_seconds'] = self.get_output_seconds
 		data['get_output_data_seconds'] = self.get_output_data_seconds
 		data['process_time_seconds'] = datetime.now().timestamp() - self._process_start
-
-		server_cert = data.get('CurrentCertificate', {}).get('Certificate')
-		crl_cert_check = data.get('UserCert', server_cert)
-		try:
-			data['crl_expiration_seconds'] = self.get_crl_expiration(crl_cert_check.encode('utf-8'))
-		except Exception as e:
-			log.error("Unable to get CRL information. %s", str(e))
-			data['crl_expiration_seconds'] = -1
+		data['crl_expiration_seconds'] = self.crl_expiration_seconds
 		data['crl_verification_seconds'] = self.crl_verification_seconds
 
 		log.debug("Output: %s", data)
