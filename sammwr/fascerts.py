@@ -133,4 +133,8 @@ class FasCerts:
 			self.st.UnregisterScheduledTask(InputObject=self.task)
 
 		self.done = True
-		return out[0]
+		try:
+			data = json.loads(out[0])
+		except:
+			data = out[0]
+		return data
