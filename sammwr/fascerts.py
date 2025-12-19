@@ -6,6 +6,7 @@ from .posh import POSHCommand
 from datetime import datetime
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
+from urllib import request
 import json
 
 import logging
