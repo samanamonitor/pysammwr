@@ -299,6 +299,7 @@ class WMIQuery():
                 break
             except StopIteration:
                 if self._ec is None:
+                    self.p.close_session()
                     raise
                 self._ec, items = self.pull(self._ec)
                 self._item_iter = iter(items)
