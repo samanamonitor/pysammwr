@@ -4,21 +4,39 @@ from .protocol import WRProtocol
 from .utils import tagns
 import logging
 from datetime import datetime
-from .error import SoapFault, WsManFault
+from .error import SoapFault
+from . import wsmprotocol as wsmp
+
+# TODO: remove dependency on WRProtocol
+
 
 log = logging.getLogger(__name__)
-ns = {
-	"xsi": "http://www.w3.org/2001/XMLSchema-instance"
-}
 
 schema_cache = {}
-newschema_cache = {}
 
-def cache():
-	return newschema_cache
+class NsCim(wsmp.SoapTag):
+	ns="http://schemas.dmtf.org/wbem/wscim/1/common"
 
 class CimClass:
 	xmlns="http://schemas.dmtf.org/wbem/wscim/1/common"
+	value = "undefined"
+
+	def xml(self, tag, include_type=True, include_cim_namespace=True, no_text=False, namespace=None):
+		if namespace is not None:
+			tag = f"{{{namespace}}}{tag}"
+		out = ET.Element(tag)
+		if include_type:
+			out.set(wsmp.NsXSI("type"), self.type_name)
+		if include_cim_namespace:
+			out.set("xmlns:cim","http://schemas.dmtf.org/wbem/wscim/1/common" )
+
+		if self.value is None:
+			out.set(wsmp.NsXSI("nil"), "true")
+		elif no_text:
+			pass
+		else:
+			out.text = str(self)
+		return out
 
 	def dict(self):
 		if self.value is None:
@@ -49,7 +67,7 @@ class CimString(CimClass):
 		elif isinstance(value, str):
 			self.value = value
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -70,15 +88,17 @@ class CimBoolean(CimClass):
 		elif isinstance(value, str):
 			self.value = value.lower() == 'true'
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
-			self.value = bool(value.text)
+			self.value = value.text.lower() == "true"
 		elif value is None:
 			self.value = value
 		else:
 			raise TypeError(self.__class__.__name__, value.__class__.__name__)
+	def __str__(self):
+		return str(self.value).lower()
 
 class CimInt(CimClass):
 	type_name="cim:cimInt"
@@ -95,7 +115,7 @@ class CimInt(CimClass):
 				log.error(e)
 				self.value = -1
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -120,7 +140,7 @@ class CimDateTime(CimClass):
 			self.value = value.value
 			return
 		elif isinstance(value, ET.Element):
-			nil = value.attrib.get(f"{{{ns['xsi']}}}nil", "false").lower() == "true"
+			nil = value.attrib.get(wsmp.NsXSI("nil"), "false").lower() == "true"
 			if nil:
 				self.value = None
 				return
@@ -128,9 +148,17 @@ class CimDateTime(CimClass):
 			if dt is None:
 				self.value = None
 			self.value = datetime.fromisoformat(dt.text)
+			return
 		elif value is None:
 			self.value = value
-		self.value = "undefined"
+			return
+
+	def xml(self, tag, **kwargs):
+		out = super().xml(tag, no_text=True, **kwargs)
+		dt = ET.SubElement(out, "{http://schemas.dmtf.org/wbem/wscim/1/common}Datetime")
+		if self.value is not None:
+			dt.text = datetime.isoformat(self.value)
+		return out
 
 	def dict(self):
 		if self.value is None:
@@ -203,7 +231,7 @@ class CimProperty(CimParamProp):
 class CimParameter(CimParamProp):
 	typename="PARAMETER"
 
-class CimMethod:
+class CimMethodSchema:
 
 	def __init__(self, root):
 		self.root = root
@@ -230,6 +258,8 @@ class CimMethod:
 
 class CimClassSchema:
 	def __init__(self, cimnamespace, root):
+		if not isinstance(root, ET.Element):
+			raise TypeError("root")
 		self.root = root
 		self.cimnamespace = cimnamespace
 		self.name = root.attrib.get('NAME')
@@ -243,7 +273,7 @@ class CimClassSchema:
 					self._property_keys.setdefault(prop.name, prop)
 				_ = self._property.setdefault(prop.name, prop)
 			elif i.tag[:len("METHOD")] == "METHOD":
-				method = CimMethod(i)
+				method = CimMethodSchema(i)
 				_ = self._method.setdefault(method.name, method)
 
 	@property
@@ -292,7 +322,7 @@ def NewCimInstanceXml(type, xe, cimnamespace=None, protocol=None):
 	if isinstance(value, CimClass):
 		return value
 
-	xsitype = xe.attrib.get(f"{{{ns['xsi']}}}type")
+	xsitype = xe.attrib.get(wsmp.NsXSI("type"))
 	if xsitype is not None and type == 'string':
 		class_name = xsitype_to_class_name(xsitype)
 		return CimInstance(cimnamespace, class_name, xml=xe, protocol=protocol)
@@ -318,12 +348,14 @@ class CimInstance(CimClass):
 		else:
 			self.p = protocol
 
+		self.wsmclient = wsmp.WSMClient(self.p.transport)
 		self.cimnamespace = cimnamespace
 		self.ns = "p1"
 		self._properties = {}
 		self._newschema = None
 		self.class_name = self._get_class_name(xml, class_name)
 		self._wqlfilter = wqlfilter
+		self.type_name = self.resource_uri
 
 		if self.cimnamespace is None or self.class_name is None:
 			raise TypeError("Must define 'cimnamespace' and 'class_name'.")
@@ -345,14 +377,15 @@ class CimInstance(CimClass):
 		return f"http://schemas.microsoft.com/wbem/wsman/1/wmi/{self.cimnamespace}/{self.class_name}"
 
 	def _get_class_name(self, element, class_name):
-		if element is None:
+		if not isinstance(element, ET.Element):
 			return class_name
-		etype = element.attrib.get(f"{{{ns['xsi']}}}type")
+		etype = element.attrib.get(wsmp.NsXSI("type"))
 		if etype is None:
 			return class_name
 		return xsitype_to_class_name(etype)
 
 	def _from_xml(self, xml):
+		self._xml = xml
 		for prop in xml:
 			self.set_xml(prop)
 
@@ -364,37 +397,21 @@ class CimInstance(CimClass):
 	def methods(self):
 		return self._newschema.methods
 
-	def _get_selector(self):
-		selector = [
-			{
-				"@Name": "__cimnamespace",
-				"#text": self.cimnamespace
-			}]
-		for key_name in self._newschema._property_keys:
-			value = self._properties.get(key_name)
-			if value is None:
-				continue
-				raise AttributeError(f"Attribute {key_name} doesn't have a value")
-			selector.append({
-				"@Name": key_name,
-				"#text": value
-				})
-		return selector
-
-	def run_method(self, method_name, **kwargs):
+	def _parameters_to_cim(self, schema_method, **kwargs):
 		parameters = {}
-		schema_method = getattr(self._newschema, method_name)
-		if schema_method is None:
-			raise AttributeError("Method " + method_name + " not defined")
+
 		for param_name, param_value in kwargs.items():
 			# TODO validate that input is of correct type based on embeddedinstance qualifier
 			param = getattr(schema_method, param_name)
+
 			if isinstance(param_value, CimClass):
 				value = param_value
 			elif isinstance(param_value, list):
+				# TODO: convert all elements of the list into CimClass
 				value = param_value
 			else:
 				value = param.cim_type(param_value)
+
 			if param.type == 'singleton':
 				_ = parameters.setdefault(param_name, value)
 			elif param.type == 'array':
@@ -402,11 +419,25 @@ class CimInstance(CimClass):
 					_ = parameters.setdefault(param_name, value)
 				else:
 					_ = parameters.setdefault(param_name, []).append(value)
+		return parameters
+
+	def details(self):
+		return self._properties
+
+	def run_method(self, method_name, **kwargs):
+
+		schema_method = getattr(self._newschema, method_name)
+
+		if schema_method is None:
+			raise AttributeError("Method " + method_name + " not defined")
+
+		parameters = self._parameters_to_cim(schema_method, **kwargs)
 		try:
-			ret = self.p.execute_method(self.cimnamespace, self.schema_uri, method_name,
-				selector=self._get_selector(), **parameters)
-			root = ET.fromstring(ret)
-			output = root.find(f".//{{*}}{method_name}_OUTPUT")
+			selectors = self._get_key_selectors()
+
+			req=wsmp.WSMMethodRequest(method_name, self.schema_uri, self.resource_uri, selector_set=selectors, **parameters)
+			res = self.wsmclient.do(req)
+			output = res.Output
 			return_value_e = output.find("{*}ReturnValue")
 			return_value = None
 			if return_value_e is not None:
@@ -443,7 +474,7 @@ class CimInstance(CimClass):
 
 		schema_prop = getattr(self._newschema, prop_name)
 
-		xsitype = prop.attrib.get(f"{{{ns['xsi']}}}type")
+		xsitype = prop.attrib.get(wsmp.NsXSI("type"))
 		if xsitype is not None and xsitype[:4] != "cim:" and schema_prop.cim_type.__name__ == 'CimString':
 			class_name = xsitype_to_class_name(xsitype)
 			value = CimInstance(self.cimnamespace, class_name, xml=prop, protocol=self.p)
@@ -463,8 +494,26 @@ class CimInstance(CimClass):
 		if schema_prop.type == 'array':
 			_ = self._properties.setdefault(prop_name, []).append(value)
 		else:
-			self._properties.setdefault(prop_name, value)
+			self._properties[prop_name] = value
 		return value
+
+	def xml(self, tag=None, namespace=None, **kwargs):
+		if tag is None:
+			tag = self.class_name
+		if namespace is None:
+			namespace = self.resource_uri
+
+		out = super().xml(tag, no_text=True, namespace=namespace, **kwargs)
+		out.set(wsmp.NsXSI("type"), f"{self.class_name}_Type")
+
+		for k, v in self._properties.items():
+			value = v
+			if isinstance(v, CimClass):
+				out.append(v.xml(k, include_type=False, include_cim_namespace=False, namespace=self.resource_uri))
+			elif isinstance(v, list):
+				for cv in v:
+					out.append(cv.xml(k, include_type=False, include_cim_namespace=False, namespace=self.resource_uri))
+		return out
 
 	def dict(self):
 		out = {}
@@ -495,7 +544,14 @@ class CimInstance(CimClass):
 		return value
 
 	def __repr__(self):
-		return f"<{self.cimnamespace}/{self.class_name}>" + self._properties.__repr__()
+		id_data=[]
+		for key_name in self._newschema._property_keys:
+			value = self._properties.get(key_name)
+			if value is None:
+				continue
+			id_data.append(f"{key_name}='{value}'")
+		idstr = f"({" ".join(id_data)})" if len(id_data) > 0 else ""
+		return f"<{self.cimnamespace}/{self.class_name}{idstr}>"
 
 	def _get_schema_xml(self, cimnamespace, class_name):
 		#other schema uri?
@@ -503,87 +559,92 @@ class CimInstance(CimClass):
 		log.debug("Getting Schema for cimnamespace='%s' class_name='%s'", cimnamespace, class_name)
 		schema_uri='http://schemas.dmtf.org/wbem/cim-xml/2/cim-schema/2/*'
 		cache_key = "_".join(["schema", cimnamespace, class_name])
-		schema_str = schema_cache.get(cache_key)
-		self._newschema = newschema_cache.get(cache_key)
+		self._newschema = schema_cache.get(cache_key)
 		if self._newschema is None:
 			try:
-				schema_str = self.p.get(schema_uri, selector=[{
-						'@Name': '__cimnamespace',
-						'#text': cimnamespace
-					},
-					{
-						'@Name': 'ClassName',
-						'#text': class_name
-					}], option=[{
-						'@Name': 'IncludeQualifiers',
-						'@Type': 'xs:boolean',
-						'#text': 'true'
-					}])
-				schema_cache[cache_key] = schema_str
-				schema_root=ET.fromstring(schema_str)
-				self.schema =  schema_root.find(".//CLASS")
-				self._newschema = newschema_cache.setdefault(cache_key, CimClassSchema(cimnamespace, self.schema))
-				newschema_cache.setdefault(cache_key, self._newschema)
+				selector_set=wsmp.SelectorSet()
+				selector_set.addSelector('__cimnamespace', cimnamespace)
+				selector_set.addSelector('ClassName', class_name)
+
+				option_set=wsmp.OptionSet()
+				option_set.addOption('IncludeQualifiers', 'xs:boolean', 'true')
+
+				schema_res = self.wsmclient.do(wsmp.WSMGetRequest(schema_uri,
+					selector_set=selector_set, option_set=option_set))
+
+				schema = next(iter(schema_res.Items))
+				self._newschema = schema_cache.setdefault(cache_key, 
+					CimClassSchema(cimnamespace, schema))
+
 			except SoapFault as sf:
 				raise self._soap_fault(sf)
 		else:
 			log.debug("Cache hit for %s", cache_key)
 
+	def _get_key_selectors(self, include_cim_namespace=True):
+		selectors = wsmp.SelectorSet()
+		if include_cim_namespace:
+			selectors.addSelector("__cimnamespace", self.cimnamespace)
+		for key_name in self._newschema._property_keys:
+			value = self._properties.get(key_name)
+			if value is None:
+				continue
+			selectors.addSelector(key_name, value)
+		return selectors
+
 	def get(self):
-		selectors = self._get_selector()
+		selectors = self._get_key_selectors()
+
 		try:
-			res = self.p.get(self.resource_uri, selector=selectors)
-			root = ET.fromstring(res)
-			obj = root.find(".//{http://www.w3.org/2003/05/soap-envelope}Body/")
-			self._from_xml(obj)
+			res = self.wsmclient.do(wsmp.WSMGetRequest(self.resource_uri, selector_set=selectors))
+			for obj in res.Items:
+				self._from_xml(obj)
+				break
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
 	def delete(self):
-		selectors = self._get_selector()
+		selectors = self._get_key_selectors()
 		try:
-			res = self.p.delete(self.resource_uri, selector=selectors)
-			return res
+			res = self.wsmclient.do(wsmp.WSMDeleteRequest(self.resource_uri, selector_set=selectors))
 		except SoapFault as sf:
 			raise self._soap_fault(sf)
 
 	def _soap_fault(self, sf):
-		fault_detail = ""
-		wmfe = None
-		wmie = None
-		for i in sf.detail:
-			if "FaultDetail" in i.tag:
-				fault_detail = i.text
-			elif "WSManFault" in i.tag:
-				wmfe = WsManFault(i)
-			elif "MSFT_WmiError" in i.tag:
-				try:
-					wmie = MSFT_WmiError(sf, self.p)
-				except Exception as e:
-					log.error("cannot generate wmie:" + str(e))
-					wmie=None
-					pass
-		if wmie is not None:
-			raise wmie
-		if wmfe is not None:
-			raise wmfe
+		if sf.detail.find("{*}MSFT_WmiError"):
+			raise MSFT_WmiError(sf, self.p)
+		if sf.detail.find("{*}WSManFault"):
+			raise wsmp.WSMFault(sf)
 		raise sf
-	def __str__(self):
-		return self.__repr__()
+
 	def __iter__(self):
-		return CimInstanceIterator(self.cimnamespace, self.class_name, self.p, self._wqlfilter)
+		return CimInstanceIterator(self)
 
 class CimInstanceIterator:
-	def __init__(self, cimnamespace, class_name, protocol, wqlfilter=None):
-		self.cimnamespace = cimnamespace
-		self.class_name = class_name
-		self.protocol = protocol
-		self.wqlfilter = wqlfilter
-		self.ec, self.items = self.enumerate(selector=[
-			{
-				"@Name": "__cimnamespace",
-				"#text": self.cimnamespace
-			}])
+	def __init__(self, base_instance):
+		self.cimnamespace = base_instance.cimnamespace
+		self.class_name = base_instance.class_name
+		self.protocol = base_instance.p
+		self.wsmclient = base_instance.wsmclient
+		self.wqlfilter = base_instance._wqlfilter
+
+		enum_filter = None
+		resource_uri = self.resource_uri
+		selector_set = None
+		if self.wqlfilter is not None:
+			selector_set = wsmp.SelectorSet()
+			selector_set.addSelector("__cimnamespace", self.cimnamespace)
+			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
+			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
+			enum_filter = wsmp.EnumFilter(wsmp.DIALECT_WQL, wql=wql, cimnamespace=self.cimnamespace)
+		else:
+			ss = base_instance._get_key_selectors(include_cim_namespace=False)
+			if len(ss) > 0:
+				enum_filter = wsmp.EnumFilter(wsmp.DIALECT_SELECTOR, selector_set=ss)
+
+		self.res = self.wsmclient.do(wsmp.WSMEnumerateRequest(resource_uri, 
+			enum_filter=enum_filter, selector_set=selector_set))
+		self.items = self.res.Items
 
 	@property
 	def resource_uri(self):
@@ -591,37 +652,15 @@ class CimInstanceIterator:
 
 	def __next__(self):
 		if len(self.items) == 0:
-			if self.ec is None:
+			if self.res.EndOfSequence:
 				raise StopIteration
-			(self.ec, self.items) = self.pull(self.ec)
+			self.res = self.wsmclient.do(wsmp.WSMPullRequest(self.res))
+			self.items = self.res.Items
+			if len(self.items) == 0:
+				raise StopIteration
 		i = self.items.pop()
 		return CimInstance(self.cimnamespace, self.class_name, 
 			xml=i, protocol=self.protocol)
-
-	def enumerate(self, max_elements=50, selector=None):
-		wql=None
-		resource_uri = self.resource_uri
-		if self.wqlfilter is not None:
-			wql = f"SELECT * FROM {self.class_name} WHERE {self.wqlfilter}"
-			resource_uri = "http://schemas.dmtf.org/wbem/wscim/1/*"
-		_txt_enum = self.protocol.enumerate(resource_uri, optimize=True, 
-			max_elements=max_elements, selector=selector, wql=wql)
-		log.debug(_txt_enum)
-		_xml_enum = ET.fromstring(_txt_enum)
-		items = _xml_enum.findall('.//{*}Items/')
-		_ec = _xml_enum.find('.//wsen:EnumerationContext', self.protocol.xmlns).text
-		return _ec, items
-
-	def pull(self, ec):
-		_txt_pull = self.protocol.pull(self.resource_uri, ec,max_elements=50)
-		_xml_pull = ET.fromstring(_txt_pull)
-		items = _xml_pull.findall('.//{*}Items/')
-		ec_node = _xml_pull.find('.//wsen:EnumerationContext',self.protocol.xmlns)
-		if ec_node is not None:
-			_ec = ec_node.text
-		else:
-			_ec = None
-		return _ec, items
 
 class MSFT_WmiError(Exception):
 	def __init__(self, soap_fault, protocol):

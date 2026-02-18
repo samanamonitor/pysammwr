@@ -37,6 +37,9 @@ class NsMsWsMan(SoapTag):
 class NsEnumerate(SoapTag):
 	ns="http://schemas.xmlsoap.org/ws/2004/09/enumeration"
 
+class NsXSI(SoapTag):
+	ns="http://www.w3.org/2001/XMLSchema-instance"
+
 class SelectorSet(ET.Element):
 	def __init__(self):
 		super().__init__(NsWsMan("SelectorSet"))
@@ -63,13 +66,15 @@ class OptionSet(ET.Element):
 
 class EnumFilter(ET.Element):
 	def __init__(self, dialect, selector_set=None, wql=None, cimnamespace=None):
+		super().__init__(NsWsMan("Filter"))
 		self.set("Dialect", dialect)
 		self._cimnamespace = cimnamespace
-		super().__init__(NsWsMan("Filter"))
+
 		if dialect == DIALECT_SELECTOR:
 			if not isinstance(selector_set, SelectorSet):
 				raise TypeError("Attribute 'selector_set' must be of type SelectorSet")
 			self.append(selector_set)
+
 		elif dialect == DIALECT_WQL:
 			if not isinstance(wql, str):
 				raise TypeError("Attribute 'wql' must be of type str")
@@ -149,26 +154,28 @@ class WSMResponse(ET.ElementTree):
 class WSMRequest(ET.ElementTree):
 	_response_class = WSMResponse
 	def __init__(self, action, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US"):
-		self.envelope     = ET.Element(NsEnvelope("Envelope"))
+		self.envelope          = ET.Element(NsEnvelope("Envelope"))
 		super().__init__(self.envelope)
-		self.header       = ET.SubElement(self.envelope, NsEnvelope("Header"))
-		self.body         = ET.SubElement(self.envelope, NsEnvelope("Body"))
-		self.to           = ET.SubElement(self.header,   NsAddressing("To"))
-		self.resource_uri = ET.SubElement(self.header,   NsWsMan("ResourceURI"))
-		self.replyto      = ET.SubElement(self.header,   NsAddressing("ReplyTo"))
-		self.address      = ET.SubElement(self.replyto,  NsAddressing("Address"))
-		self.action       = ET.SubElement(self.header,   NsAddressing("Action"))
-		self.mes          = ET.SubElement(self.header,   NsWsMan("MaxEnvelopeSize"))
-		self.message_id   = ET.SubElement(self.header,   NsAddressing("MessageID"))
-		self.locale       = ET.SubElement(self.header,   NsWsMan("Locale"))
-		self.data_locale  = ET.SubElement(self.header,   NsMsWsMan("DataLocale"))
-		self.address.set    (NsEnvelope("mustUnderstand"), "true")
-		self.action.set     (NsEnvelope("mustUnderstand"), "true")
-		self.mes.set        (NsEnvelope("mustUnderstand"), "true")
-		self.locale.set     ("xml:lang", lang)
-		self.locale.set     (NsEnvelope("mustUnderstand"), "false")
-		self.data_locale.set("xml:lang", lang)
-		self.data_locale.set(NsEnvelope("mustUnderstand"), "false")
+		self.header            = ET.SubElement(self.envelope, NsEnvelope("Header"))
+		self.body              = ET.SubElement(self.envelope, NsEnvelope("Body"))
+		self.to                = ET.SubElement(self.header,   NsAddressing("To"))
+		self.replyto           = ET.SubElement(self.header,   NsAddressing("ReplyTo"))
+		self.address           = ET.SubElement(self.replyto,  NsAddressing("Address"))
+		self.mes               = ET.SubElement(self.header,   NsWsMan("MaxEnvelopeSize"))
+		self.message_id        = ET.SubElement(self.header,   NsAddressing("MessageID"))
+		self.locale            = ET.SubElement(self.header,   NsWsMan("Locale"))
+		self.data_locale       = ET.SubElement(self.header,   NsMsWsMan("DataLocale"))
+		self.operation_timeout = ET.SubElement(self.header,   NsWsMan("OperationTimeout"))
+		self.resource_uri      = ET.SubElement(self.header,   NsWsMan("ResourceURI"))
+		self.action            = ET.SubElement(self.header,   NsAddressing("Action"))
+		self.resource_uri.set(NsEnvelope("mustUnderstand"), "true")
+		self.address.set     (NsEnvelope("mustUnderstand"), "true")
+		self.action.set      (NsEnvelope("mustUnderstand"), "true")
+		self.mes.set         (NsEnvelope("mustUnderstand"), "true")
+		self.locale.set      (NsEnvelope("mustUnderstand"), "false")
+		self.locale.set      ("xml:lang", lang)
+		self.data_locale.set (NsEnvelope("mustUnderstand"), "false")
+		self.data_locale.set ("xml:lang", lang)
 		if isinstance(selector_set, ET.Element):
 			self.header.append(selector_set)
 		if isinstance(option_set, ET.Element):
@@ -179,17 +186,22 @@ class WSMRequest(ET.ElementTree):
 		self.action.text = action
 		self.mes.text = max_envelope_size
 		self.message_id.text = f"uuid:{str(uuid.uuid4()).upper()}"
+		self.operation_timeout.text = "PT20S"
 		self._ready = False
+
 	def setEndpoint(self, endpoint):
 		self.to.text = endpoint
+
 	def addSelectorSet(self, selector_set):
 		if not isinstance(selector_set, SelectorSet):
 			raise TypeError
 		self.header.append(selector_set)
+
 	def addOptionSet(self, option_set):
 		if not isinstance(option_set, OptionSet):
 			raise TypeError
 		self.header.append(option_set)
+
 	def setTransport(self, transport):
 		if not isinstance(transport, Transport):
 			raise TypeError("transport")
@@ -239,7 +251,8 @@ class WSMDeleteRequest(WSMRequest):
 class WSMEnumerateResponse(WSMResponse):
 	@property
 	def Items(self):
-		return self.find("{*}Body/{*}EnumerateResponse/{*}Items")
+		return self.findall("{*}Body/{*}EnumerateResponse/{*}Items/")
+
 	@property
 	def EnumerationContext(self):
 		out = self.find("{*}Body/{*}EnumerateResponse/{*}EnumerationContext")
@@ -253,18 +266,22 @@ class WSMEnumerateResponse(WSMResponse):
 class WSMEnumerateRequest(WSMRequest):
 	action="http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate"
 	_response_class = WSMEnumerateResponse
-	def __init__(self, *args, optimize=False, max_elements=50, enum_filter=None, **kwargs):
+	def __init__(self, *args, optimize=False, max_elements=50, enum_filter=None, selector_set=None, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
+
 		self.enumerate = ET.SubElement(self.body, NsEnumerate("Enumerate"))
 		ET.SubElement(self.enumerate, NsWsMan("MaxElements")).text = str(max_elements)
+
 		if optimize:
 			ET.SubElement(self.enumerate, NsWsMan("OptimizeEnumeration"))
+
 		if isinstance(enum_filter, ET.Element):
 			if enum_filter.get("Dialect") == DIALECT_WQL:
 				self.resource_uri.text = "http://schemas.dmtf.org/wbem/wscim/1/*"
-				ss = SelectorSet()
-				ss.addSelector("__cimnamespace", "root/cimv2")
-				self.addSelectorSet(ss)
+				if selector_set is None:
+					selector_set = SelectorSet()
+					selector_set.addSelector("__cimnamespace", "root/cimv2")
+				self.addSelectorSet(selector_set)
 			self.enumerate.append(enum_filter)
 		self._ready = True
 
@@ -344,6 +361,29 @@ class WSMGetStatusRequest(WSMRequest):
 	def __init__(self, *args, **kwargs):
 		super().__init__(self.action, *args, **kwargs)
 
+class WSMMethodResponse(WSMResponse):
+	@property
+	def Output(self):
+		return self.Body.find(f"{{*}}{self._request.method_name}_OUTPUT")
+
+class WSMMethodRequest(WSMRequest):
+	_response_class = WSMMethodResponse
+	def __init__(self, method_name, schema_uri, resource_uri, selector_set=None, option_set=None, max_envelope_size='512000', lang="en-US", **kwargs):
+		self.method_name= method_name
+		action = schema_uri + "/" + method_name
+		super().__init__(action, schema_uri, selector_set=selector_set, option_set=option_set, max_envelope_size=max_envelope_size, lang=lang)
+		ns=f"{schema_uri}"
+		m_input = ET.SubElement(self.body, f"{{{ns}}}{method_name}_INPUT")
+		m_input.set(NsXSI("type"), f"{method_name}_INPUT_Type")
+		for k, v in kwargs.items():
+			if isinstance(v, list):
+				for i in v:
+					m_input.append(i.xml(k, include_cim_namespace=False, namespace=ns))
+			else:
+				m_input.append(v.xml(k, include_cim_namespace=False, namespace=ns))
+		self._ready = True
+
+
 class ProviderFault(Exception):
 	def __init__(self, element):
 		if not isinstance(element, ET.Element):
@@ -357,7 +397,6 @@ class ProviderFault(Exception):
 		self.innerFaults = []
 		for i in element:
 			if "WSManFault" in i.tag:
-				print(i.tag)
 				self.innerFaults.append(f"\n{str(WSMFault(i))}")
 			elif "ExtendedError" in i.tag:
 				status = i.find("{*}__ExtendedStatus")
@@ -372,12 +411,19 @@ class ProviderFault(Exception):
 
 # https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsman/0d0e65bf-e458-4047-8065-b401dae2023e
 class WSMFault(Exception):
-	def __init__(self, wmf_detail):
-		self.root=wmf_detail
-		self.detail = wmf_detail.text
-		self.code = wmf_detail.attrib.get('Code')
-		self.machine = wmf_detail.attrib.get('Machine')
-		self.message = wmf_detail.find('{*}Message')
+	def __init__(self, fault):
+		if isinstance(fault, SoapFault):
+			self.root=fault.detail.find(".//{*}WSManFault")
+			if self.root is None:
+				raise TypeError("SoapFault doesn't contain a WSManFault")
+		elif isinstance(fault, ET.Element) and "WSManFault" in fault.tag:
+			self.root = fault
+		else:
+			raise TypeError("Expecting type 'SoapFault' or 'WSMFault")
+		self.detail = self.root.text
+		self.code = self.root.attrib.get('Code')
+		self.machine = self.root.attrib.get('Machine')
+		self.message = self.root.find('{*}Message')
 		self.provider_fault = None
 		if len(self.message) == 0:
 			self.message = self.message.text

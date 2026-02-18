@@ -19,27 +19,27 @@ class ScheduledTasks:
 
 	def DisableScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
-			out = self.ci.run_method("DisableByObject", InputObject=InputObject)
+			out = self.ci.DisableByObject(InputObject=InputObject)
 		else:
-			out = self.ci.run_method("DisableByName", TaskName=TaskName, TaskPath=TaskPath)
+			out = self.ci.DisableByName(TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def EnableScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
-			out = self.ci.run_method("EnableByObject", InputObject=InputObject)
+			out = self.ci.EnableByObject(InputObject=InputObject)
 		else:
-			out = self.ci.run_method("EnableByName", TaskName=TaskName, TaskPath=TaskPath)
+			out = self.ci.EnableByName(TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def ExportScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
-			out = self.ci.run_method("ExportByObject", InputObject=InputObject)
+			out = self.ci.ExportByObject(InputObject=InputObject)
 		else:
-			out = self.ci.run_method("ExportByName", TaskName=TaskName, TaskPath=TaskPath)
+			out = self.ci.ExportByName(TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
@@ -48,21 +48,28 @@ class ScheduledTasks:
 		raise Exception("Not Implemented")
 
 	def GetScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
-		st = CimInstance("Root/Microsoft/Windows/TaskScheduler", "MSFT_ScheduledTask", protocol=self._protocol, TaskName=TaskName, TaskPath=TaskPath)
-		st.get()
+		wqlfilter =[]
+		if TaskName is not None:
+			tn = TaskName.replace("*", "%")
+			wqlfilter.append(f"((TaskName LIKE '{tn}'))")
+		if TaskPath is not None:
+			tp = TaskPath.replace("*", "%")
+			wqlfilter.append(f"((TaskPath LIKE '{TaskPath}'))")
+		st = CimInstance("Root/Microsoft/Windows/TaskScheduler", "MSFT_ScheduledTask", 
+			protocol=self._protocol, wqlfilter=" AND ".join(wqlfilter))
 		return st
 
 	def GetScheduledTaskInfo(self, TaskName=None, TaskPath=None, InputObject=None):
 		if isinstance(InputObject, CimInstance):
-			out = self.ci.run_method("GetInfoByObject", InputObject=InputObject)
+			out = self.ci.GetInfoByObject(InputObject=InputObject)
 		else:
-			out = self.ci.run_method("GetInfoByName", TaskName=TaskName, TaskPath=TaskPath)
+			out = self.ci.GetInfoByName(TaskName=TaskName, TaskPath=TaskPath)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def NewScheduledTask(self, **kwargs):
-		out = self.ci.run_method("New", **kwargs)
+		out = self.ci.New(**kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
@@ -71,22 +78,22 @@ class ScheduledTasks:
 		kwargs['Execute'] = Execute
 		if Id is not None:
 			kwargs['Id'] = Id
-		out = self.ci.run_method("NewActionByExec", **kwargs)
+		out = self.ci.NewActionByExec(**kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskPrincipal(self, **kwargs):
 		if "GroupId" in kwargs:
-			out = self.ci.run_method("NewPrincipalByGroup", **kwargs)
+			out = self.ci.NewPrincipalByGroup(**kwargs)
 		else:
-			out = self.ci.run_method("NewPrincipalByUser", **kwargs)
+			out = self.ci.NewPrincipalByUser(**kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def NewScheduledTaskSettingsSet(self, **kwargs):
-		out = self.ci.run_method("NewSettings", **kwargs)
+		out = self.ci.NewSettings(**kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
@@ -101,16 +108,21 @@ class ScheduledTasks:
 
 	def RegisterScheduledTask(self, TaskName, TaskPath, InputObject=None, **kwargs):
 		if isinstance(InputObject, CimInstance):
-			out = self.ci.run_method("RegisterByObject", TaskName=TaskName, TaskPath=TaskPath, InputObject=InputObject)
+			out = self.ci.RegisterByObject(TaskName=TaskName, TaskPath=TaskPath, InputObject=InputObject)
 		else:
-			out = self.ci.run_method("RegisterByUser", TaskName=TaskName, TaskPath=TaskPath, **kwargs)
+			out = self.ci.RegisterByUser(TaskName=TaskName, TaskPath=TaskPath, **kwargs)
 		if out[0] != 0:
 			raise Exception("Unknown. Could not create CimInstance")
 		return out[1].get("cmdletOutput")
 
 	def UnregisterScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
 		if not isinstance(InputObject, CimInstance):
-			InputObject = GetScheduledTask(self._protocol, TaskName, TaskPath)
+			InputObject = self.GetScheduledTask(TaskName, TaskPath)
 		out = InputObject.delete()
 		return
 
+	def StartScheduledTask(self, TaskName=None, TaskPath=None, InputObject=None):
+		if isinstance(InputObject, CimInstance):
+			out = self.ci.StartByObject(InputObject=InputObject)
+		else:
+			out = self.ci.StartByPath(TaskName=TaskName, TaskPath=TaskPath)
