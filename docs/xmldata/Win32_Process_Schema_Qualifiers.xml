@@ -1,0 +1,789 @@
+<CLASS NAME="Win32_Process" SUPERCLASS="CIM_Process" DERIVATION="CIM_Process,CIM_LogicalElement,CIM_ManagedSystemElement">
+    <QUALIFIER NAME="CreateBy" TYPE="string" TOSUBCLASS="false">
+        <VALUE>Create</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="DeleteBy" TYPE="string" TOSUBCLASS="false">
+        <VALUE>DeleteInstance</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="dynamic" TYPE="boolean" TOSUBCLASS="false" TOINSTANCE="true">
+        <VALUE>TRUE</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="Locale" TYPE="sint32" TOSUBCLASS="false" TOINSTANCE="true">
+        <VALUE>1033</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="provider" TYPE="string" TOSUBCLASS="false" TOINSTANCE="true">
+        <VALUE>CIMWin32</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="SupportsCreate" TYPE="boolean" TOSUBCLASS="false">
+        <VALUE>TRUE</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="SupportsDelete" TYPE="boolean" TOSUBCLASS="false">
+        <VALUE>TRUE</VALUE>
+    </QUALIFIER>
+    <QUALIFIER NAME="UUID" TYPE="string" TOSUBCLASS="false" TOINSTANCE="true">
+        <VALUE>{8502C4DC-5FBB-11D2-AAC1-006008C78BC7}</VALUE>
+    </QUALIFIER>
+    <PROPERTY NAME="Caption" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>64</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="CommandLine" CLASSORIGIN="Win32_Process" TYPE="string">
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="CreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="CIM_Key" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="CreationDate" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="datetime">
+        <QUALIFIER NAME="Fixed" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="CSCreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="CIM_Key" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Propagated" PROPAGATED="true" TYPE="string">
+            <VALUE>CIM_OperatingSystem.CSCreationClassName</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="CSName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="CIM_Key" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Propagated" PROPAGATED="true" TYPE="string">
+            <VALUE>CIM_OperatingSystem.CSName</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="Description" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ExecutablePath" CLASSORIGIN="Win32_Process" TYPE="string">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Tool Help Structures|MODULEENTRY32|szExePath</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Privileges" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>SeDebugPrivilege</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ExecutionState" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint16">
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="Handle" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="key" PROPAGATED="true" TYPE="boolean" OVERRIDABLE="false" TOINSTANCE="true">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="HandleCount" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|HandleCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="InstallDate" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="datetime">
+        <QUALIFIER NAME="MappingStrings" PROPAGATED="true" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>MIF.DMTF|ComponentID|001.5</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="KernelModeTime" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64">
+        <QUALIFIER NAME="Override" TYPE="string" TOSUBCLASS="false">
+            <VALUE>KernelModeTime</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="MaximumWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32|WINNT.H|QUOTA_LIMITS|MaximumWorkingSetSize</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Privileges" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>SeDebugPrivilege</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="MinimumWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32|WINNT.H|QUOTA_LIMITS|MinimumWorkingSetSize</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Privileges" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>SeDebugPrivilege</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="Name" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="OSCreationClassName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="CIM_Key" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Propagated" PROPAGATED="true" TYPE="string">
+            <VALUE>CIM_OperatingSystem.CreationClassName</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="OSName" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="CIM_Key" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>256</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Propagated" PROPAGATED="true" TYPE="string">
+            <VALUE>CIM_OperatingSystem.Name</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="OtherOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|OtherOperationCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="OtherTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|OtherTransferCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PageFaults" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PageFaultCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PageFileUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PagefileUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ParentProcessId" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|InheritedFromUniqueProcessId</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PeakPageFileUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PeakPagefileUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PeakVirtualSize" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PeakVirtualSize</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PeakWorkingSetSize" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PeakWorkingSetSize</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="Priority" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|BasePriority</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Override" TYPE="string">
+            <VALUE>Priority</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="PrivatePageCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|PrivatePageCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ProcessId" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|PROCESS_INFORMATION|dwProcessId </VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="QuotaNonPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|QuotaNonPagedPoolUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="QuotaPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|QuotaPagedPoolUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="QuotaPeakNonPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|QuotaPeakNonPagedPoolUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="QuotaPeakPagedPoolUsage" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|QuotaPeakPagedPoolUsage</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ReadOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|ReadOperationCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ReadTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|ReadTransferCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="SessionId" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|SessionId</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="Status" CLASSORIGIN="CIM_ManagedSystemElement" PROPAGATED="true" TYPE="string">
+        <QUALIFIER NAME="MaxLen" PROPAGATED="true" TYPE="sint32">
+            <VALUE>10</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" PROPAGATED="true" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>OK</VALUE>
+                <VALUE>Error</VALUE>
+                <VALUE>Degraded</VALUE>
+                <VALUE>Unknown</VALUE>
+                <VALUE>Pred Fail</VALUE>
+                <VALUE>Starting</VALUE>
+                <VALUE>Stopping</VALUE>
+                <VALUE>Service</VALUE>
+                <VALUE>Stressed</VALUE>
+                <VALUE>NonRecover</VALUE>
+                <VALUE>No Contact</VALUE>
+                <VALUE>Lost Comm</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="TerminationDate" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="datetime">
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="ThreadCount" CLASSORIGIN="Win32_Process" TYPE="uint32">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|NumberOfThreads</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="UserModeTime" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64">
+        <QUALIFIER NAME="Override" TYPE="string" TOSUBCLASS="false">
+            <VALUE>UserModeTime</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="VirtualSize" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process Status|SYSTEM_PROCESS_INFORMATION|VirtualSize</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="WindowsVersion" CLASSORIGIN="Win32_Process" TYPE="string">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Functions|GetProcessVersion</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="WorkingSetSize" CLASSORIGIN="CIM_Process" PROPAGATED="true" TYPE="uint64">
+        <QUALIFIER NAME="read" PROPAGATED="true" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="WriteOperationCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|WriteOperationCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <PROPERTY NAME="WriteTransferCount" CLASSORIGIN="Win32_Process" TYPE="uint64">
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Structures|SYSTEM_PROCESS_INFORMATION|WriteTransferCount</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="read" TYPE="boolean">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+    </PROPERTY>
+    <METHOD NAME="Create" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Constructor" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Functions|CreateProcess</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Privileges" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>SeAssignPrimaryTokenPrivilege</VALUE>
+                <VALUE>SeIncreaseQuotaPrivilege</VALUE>
+                <VALUE>SeRestorePrivilege</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Static" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="CommandLine" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="In" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>Win32API|Process and Thread Functions|lpCommandLine </VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+        </PARAMETER>
+        <PARAMETER NAME="CurrentDirectory" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>1</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="In" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>Win32API|Process and Thread Functions|CreateProcess|lpCurrentDirectory </VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+        </PARAMETER>
+        <PARAMETER NAME="ProcessStartupInformation" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>2</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="In" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>WMI|Win32_ProcessStartup</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="EmbeddedInstance" TYPE="string" TOINSTANCE="true">
+                <VALUE>Win32_ProcessStartup</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+        <PARAMETER NAME="ProcessId" TYPE="uint32">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>3</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>Win32API|Process and Thread Functions|CreateProcess|lpProcessInformation|dwProcessId</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="Out" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+    <METHOD NAME="Terminate" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Destructor" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Functions|TerminateProcess</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="Privileges" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>SeDebugPrivilege</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="Reason" TYPE="uint32">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="In" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>Win32API|Process and Thread Functions|TerminateProcess|uExitCode </VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+    <METHOD NAME="GetOwner" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>WMI</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="User" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>WMI</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="Out" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+        <PARAMETER NAME="Domain" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>1</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>WMI</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="Out" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+    <METHOD NAME="GetOwnerSid" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>WMI</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="Sid" TYPE="string">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>WMI</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="Out" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+    <METHOD NAME="SetPriority" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="MappingStrings" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>Win32API|Process and Thread Functions|SetPriorityClass</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="Priority" TYPE="sint32">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="in" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>Win32API|Process and Thread Functions|SetPriorityClass|dwPriorityClass</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="ValueMap" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>0x00000040</VALUE>
+                    <VALUE>0x00004000</VALUE>
+                    <VALUE>0x00000020</VALUE>
+                    <VALUE>0x00008000</VALUE>
+                    <VALUE>0x00000080</VALUE>
+                    <VALUE>0x00000100</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+    <METHOD NAME="AttachDebugger" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+    </METHOD>
+    <METHOD NAME="GetAvailableVirtualSize" TYPE="uint32" CLASSORIGIN="Win32_Process">
+        <QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false">
+            <VALUE>TRUE</VALUE>
+        </QUALIFIER>
+        <QUALIFIER NAME="ValueMap" TYPE="string">
+            <VALUE.ARRAY>
+                <VALUE>0</VALUE>
+                <VALUE>2</VALUE>
+                <VALUE>3</VALUE>
+                <VALUE>8</VALUE>
+                <VALUE>9</VALUE>
+                <VALUE>21</VALUE>
+                <VALUE>..</VALUE>
+            </VALUE.ARRAY>
+        </QUALIFIER>
+        <PARAMETER NAME="AvailableVirtualSize" TYPE="uint64">
+            <QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false" TOSUBCLASS="false" TOINSTANCE="true">
+                <VALUE>0</VALUE>
+            </QUALIFIER>
+            <QUALIFIER NAME="MappingStrings" TYPE="string">
+                <VALUE.ARRAY>
+                    <VALUE>WMI</VALUE>
+                </VALUE.ARRAY>
+            </QUALIFIER>
+            <QUALIFIER NAME="Out" TYPE="boolean" TOSUBCLASS="false">
+                <VALUE>TRUE</VALUE>
+            </QUALIFIER>
+        </PARAMETER>
+    </METHOD>
+</CLASS>

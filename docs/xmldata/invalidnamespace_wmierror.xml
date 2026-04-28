@@ -1,0 +1,33 @@
+<s:Fault>
+    <s:Code>
+        <s:Value>s:Sender</s:Value>
+        <s:Subcode>
+            <s:Value>a:DestinationUnreachable</s:Value>
+        </s:Subcode>
+    </s:Code>
+    <s:Reason>
+        <s:Text xml:lang="en-US">The WS-Management service cannot process the request. The service cannot find the resource identified by the resource URI and selectors. </s:Text>
+    </s:Reason>
+    <s:Detail>
+        <w:FaultDetail>http://schemas.dmtf.org/wbem/wsman/1/wsman/faultDetail/InvalidResourceURI</w:FaultDetail>
+        <p:MSFT_WmiError b:IsCIM_Error="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:b="http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd" xmlns:p="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_WmiError" xmlns:cim="http://schemas.dmtf.org/wbem/wscim/1/common" xsi:type="p:MSFT_WmiError_Type">
+            <p:CIMStatusCode xsi:type="cim:cimUnsignedInt">5</p:CIMStatusCode>
+            <p:CIMStatusCodeDescription xsi:type="cim:cimString" xsi:nil="true" />
+            <p:ErrorSource xsi:type="cim:cimString" xsi:nil="true" />
+            <p:ErrorSourceFormat xsi:type="cim:cimUnsignedShort">0</p:ErrorSourceFormat>
+            <p:ErrorType xsi:type="cim:cimUnsignedShort">0</p:ErrorType>
+            <p:Message xsi:type="cim:cimString">The WS-Management service cannot process the request. The class Win32_ComputerSystem does not exist in the root/hardware namespace. </p:Message>
+            <p:MessageID xsi:type="cim:cimString">HRESULT 0x80338000</p:MessageID>
+            <p:OtherErrorSourceFormat xsi:type="cim:cimString" xsi:nil="true" />
+            <p:OtherErrorType xsi:type="cim:cimString" xsi:nil="true" />
+            <p:OwningEntity xsi:type="cim:cimString" xsi:nil="true" />
+            <p:PerceivedSeverity xsi:type="cim:cimUnsignedShort">0</p:PerceivedSeverity>
+            <p:ProbableCause xsi:type="cim:cimUnsignedShort">0</p:ProbableCause>
+            <p:ProbableCauseDescription xsi:type="cim:cimString" xsi:nil="true" />
+            <p:error_Category xsi:type="cim:cimUnsignedInt">13</p:error_Category>
+            <p:error_Code xsi:type="cim:cimUnsignedInt">2150858752</p:error_Code>
+            <p:error_Type xsi:type="cim:cimString">HRESULT</p:error_Type>
+            <p:error_WindowsErrorMessage xsi:type="cim:cimString">The WS-Management service cannot process the request. The class Win32_ComputerSystem does not exist in the root/hardware namespace. </p:error_WindowsErrorMessage>
+        </p:MSFT_WmiError>
+    </s:Detail>
+</s:Fault>

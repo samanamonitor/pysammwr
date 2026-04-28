@@ -1,0 +1,31 @@
+<s:Fault>
+    <s:Code>
+        <s:Value>s:Receiver</s:Value>
+        <s:Subcode>
+            <s:Value>w:InternalError</s:Value>
+        </s:Subcode>
+    </s:Code>
+    <s:Reason>
+        <s:Text xml:lang="en-US">An internal error occurred. </s:Text>
+    </s:Reason>
+    <s:Detail>
+        <f:WSManFault xmlns:f="http://schemas.microsoft.com/wbem/wsman/1/wsmanfault" Code="1359" Machine="WSAMZN-VCMJ15IN.samana.aws">
+            <f:Message>
+                <f:ProviderFault provider="WMI Provider" path="C:\\Windows\\system32\\WsmWmiPl.dll">
+                    <f:WSManFault xmlns:f="http://schemas.microsoft.com/wbem/wsman/1/wsmanfault" Code="1359" Machine="WSAMZN-VCMJ15IN.samana.aws">
+                        <f:Message>HRESULT = 0x80041001</f:Message>
+                    </f:WSManFault>
+                    <f:ExtendedError>
+                        <p:__ExtendedStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/__ExtendedStatus" xmlns:cim="http://schemas.dmtf.org/wbem/wscim/1/common" xsi:type="p:__ExtendedStatus_Type">
+                            <p:Description xsi:type="cim:cimString">Driver not accessible, driver could be uninstalled or disabled, or file ipmidrv.sys is missing. The reason of driver being disabled can be BMC system interface can&apos;t be correctly detected by ACPI or BMC is not functioning properly.</p:Description>
+                            <p:Operation xsi:type="cim:cimString">ExecQuery</p:Operation>
+                            <p:ParameterInfo xsi:type="cim:cimString">select * from CIM_ComputerSystem</p:ParameterInfo>
+                            <p:ProviderName xsi:type="cim:cimString">WinMgmt</p:ProviderName>
+                            <p:StatusCode xsi:type="cim:cimUnsignedInt">6</p:StatusCode>
+                        </p:__ExtendedStatus>
+                    </f:ExtendedError>
+                </f:ProviderFault>
+            </f:Message>
+        </f:WSManFault>
+    </s:Detail>
+</s:Fault>
