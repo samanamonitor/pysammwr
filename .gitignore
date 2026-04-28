@@ -12,3 +12,4 @@ Packages
 Release
 krb5.conf
 python3.*
+*.patch
