@@ -193,7 +193,8 @@ class WMIQuery():
 
     def __init__(self, class_name=None, namespace="root/cimv2", wql=None,
             selector=None, protocol=None, max_elements=50,
-            memcache_host=None, memcache_expire=90, *args, **kwargs):
+            memcache_host=None, memcache_expire=90, close_on_stopiteration=True, *args, **kwargs):
+        self._close_on_stopiteration=close_on_stopiteration
         self._wql=None
         self.selector = None
         if protocol is not None:
@@ -299,6 +300,8 @@ class WMIQuery():
                 break
             except StopIteration:
                 if self._ec is None:
+                    if self._close_on_stopiteration:
+                        self.p.close_session()
                     raise
                 self._ec, items = self.pull(self._ec)
                 self._item_iter = iter(items)
