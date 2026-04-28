@@ -1,0 +1,9 @@
+services:
+  dev:
+    build:
+      context: .
+    volumes:
+      - ./:/usr/src
+    stdin_open: true
+    tty: true
+    dns: [ "10.33.130.94", "10.33.129.109" ]
