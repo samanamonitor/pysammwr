@@ -48,14 +48,35 @@ class SoapFault(Exception):
         else:
             self.detail = detail
             detail_types = []
+            fault_params = [
+                f"code='{self.code}'",
+                f"subcode='{self.subcode}'",
+                f"reason='{self.reason}'"
+            ]
+
             for d in self.detail:
-                if "FaultDetail" in d.tag:
-                    self.fault_detail = d.text
-                    continue
                 (_, tag) = tagns(d.tag)
-                detail_types.append(tag)
+                wmi_error = []
+                if tag == "FaultDetail":
+                    fault_params.append(f"fault_detail='{self.fault_detail}'")
+                    self.fault_detail = d.text
+                elif tag == "MSFT_WmiError":
+                    detail_types.append(tag)
+                    message_item = d.find("{*}Message")
+                    if message_item is not None:
+                        wmi_error.append("wmi_message='" + message_item.text + "'")
+                    messageid_item = d.find("{*}MessageID")
+                    if messageid_item is not None:
+                        wmi_error.append("wmi_messageid='" + messageid_item.text + "'")
+                else:
+                    detail_types.append(tag)
+
             detail_str = ",".join(detail_types)
-        super().__init__(f"SoapFault: code: {self.code}, subcode: {self.subcode} reason: '{self.reason}' fault_detail: '{self.fault_detail}' detail: '{detail_str}'")
+            fault_params.append(f"detail='{detail_str}'")
+            for wmie in wmi_error:
+                fault_params.append(wmie)
+
+        super().__init__(f"SoapFault: {" ".join(fault_params)}")
 
     def _process_subcode(self, element):
         out = {}
